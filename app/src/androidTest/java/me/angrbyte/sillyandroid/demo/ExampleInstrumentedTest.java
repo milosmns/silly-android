@@ -22,7 +22,7 @@ public class ExampleInstrumentedTest {
     public void useAppContext() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
-        assertEquals("me.angrbyte.sillyandroid", appContext.getPackageName());
+        assertEquals("me.angrbyte.sillyandroid.demo", appContext.getPackageName());
     }
 
 }
