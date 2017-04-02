@@ -7,8 +7,13 @@ _Silly Android_ is a library with Android framework plugins used to make the def
 
 Requirements
 ------------
-- Gradle (jCenter and mavenCentral are supported)
+- Gradle (`jCenter` and `mavenCentral` are both supported)
 - Latest AppCompat
+
+To include the dependency, add this to your app's `build.gradle` file:
+```gradle
+  // not uploaded yet, hang on..
+```
 
 Examples
 --------
