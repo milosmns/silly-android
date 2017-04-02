@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
 
@@ -9,8 +8,8 @@ android {
         applicationId 'me.angrbyte.sillyandroid.demo'
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 1
-        versionName "0.1"
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -27,7 +26,9 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:25.3.0'
-    compile project(':library')
+
+    // compile 'me.angrybyte.sillyandroid:sillyandroid:0.1' // global
+    compile project(':library') // local
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

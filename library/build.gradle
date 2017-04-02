@@ -1,15 +1,22 @@
 apply plugin: 'com.android.library'
 
-android {
+/*
+ * To upload to Bintray, run:
+ * .\gradlew library:clean library:install
+ * .\gradlew library:bintrayUpload
+ * More information on http://inthecheesefactory.com/blog/how-to-upload-library-to-jcenter-maven-central-as-dependency/en
+ * Configuration is in gradle.properties, secures are in local.properties.
+ */
 
+android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
 
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 1
-        versionName "0.1"
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -31,3 +38,6 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 }
+
+// Maven push plugin
+apply from: '../gradle/gradle-mvn-push.gradle'
