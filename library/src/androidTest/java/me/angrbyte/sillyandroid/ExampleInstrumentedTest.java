@@ -1,5 +1,5 @@
 
-package me.angrbyte.sillyandroid.demo;
+package me.angrbyte.sillyandroid;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -22,7 +22,7 @@ public class ExampleInstrumentedTest {
     public void useAppContext() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
-        assertEquals("me.angrbyte.sillyandroid.demo.test", appContext.getPackageName());
+        assertEquals("me.angrbyte.sillyandroid.test", appContext.getPackageName());
     }
 
 }
