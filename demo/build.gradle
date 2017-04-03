@@ -28,7 +28,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.0'
 
     // compile 'me.angrybyte.sillyandroid:sillyandroid:0.1' // global
-    compile project(':library') // local
+    compile project(':sillyandroid') // local
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
