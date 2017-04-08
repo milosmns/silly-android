@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:2.3.1'
     }
 }
 
@@ -14,8 +14,8 @@ plugins {
 }
 
 ext {
-    VERSION_CODE = 6
-    VERSION_NAME = "0.3"
+    VERSION_CODE = 7
+    VERSION_NAME = "0.4"
 }
 
 allprojects {
