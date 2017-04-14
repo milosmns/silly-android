@@ -225,7 +225,7 @@ public final class SillyAndroid {
      * @return {@code True} if intent is not {@code null} and resolves to at least one activity, {@code false} otherwise
      */
     public static boolean canHandleIntent(@NonNull final Context context, @Nullable final Intent intent) {
-        return intent != null && SillyAndroid.countIntentHandlers(context, intent) > 0;
+        return intent != null && countIntentHandlers(context, intent) > 0;
     }
 
     /**
@@ -313,7 +313,7 @@ public final class SillyAndroid {
      * @param padding The padding value
      */
     public static void setPadding(@NonNull final View view, @Px final int padding) {
-        SillyAndroid.setPadding(view, padding, padding, padding, padding);
+        setPadding(view, padding, padding, padding, padding);
     }
 
     /**
@@ -325,6 +325,25 @@ public final class SillyAndroid {
      */
     public static boolean isEmpty(@Nullable final String text) {
         return text == null || text.trim().isEmpty();
+    }
+
+    /**
+     * Clamps the given number to the specified range. If number is smaller than {@code minValue}, this method returns the {@code minValue};
+     * similar for the {@code maxValue}. If the number is in range, this method returns the original number.
+     *
+     * @param number   Which number to clamp
+     * @param minValue The lowest value in the range
+     * @param maxValue The highest value in the range
+     * @return A clamped number, as described
+     */
+    public static int clamp(final int number, final int minValue, final int maxValue) {
+        if (number < minValue) {
+            return minValue;
+        } else if (number > maxValue) {
+            return maxValue;
+        } else {
+            return number;
+        }
     }
 
     /**
@@ -366,7 +385,7 @@ public final class SillyAndroid {
      */
     public static boolean close(@Nullable final Closeable closeable) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && closeable instanceof Cursor) {
-            return SillyAndroid.close((Cursor) closeable);
+            return close((Cursor) closeable);
         }
 
         if (closeable != null) {
@@ -410,13 +429,13 @@ public final class SillyAndroid {
     public static boolean isRawResourceEmpty(@NonNull final Context context, @RawRes final int rawResourceId) {
         InputStream inputStream = null;
         try {
-            inputStream = SillyAndroid.openRawResource(context, rawResourceId);
+            inputStream = openRawResource(context, rawResourceId);
             return inputStream.available() <= 0;
         } catch (Exception e) {
             Log.e(TAG, "isRawResourceEmpty: FAILED!", e);
             return false;
         } finally {
-            SillyAndroid.close(inputStream);
+            close(inputStream);
         }
     }
 
@@ -432,7 +451,7 @@ public final class SillyAndroid {
     public static String readRawResource(@NonNull final Context context, @RawRes final int rawResourceId) {
         InputStream inputStream = null;
         try {
-            inputStream = SillyAndroid.openRawResource(context, rawResourceId);
+            inputStream = openRawResource(context, rawResourceId);
             byte[] b = new byte[inputStream.available()];
             // noinspection ResultOfMethodCallIgnored - don't care about number of bytes read
             inputStream.read(b);
@@ -441,7 +460,7 @@ public final class SillyAndroid {
             Log.e(TAG, "readRawResource: FAILED!", e);
             return "";
         } finally {
-            SillyAndroid.close(inputStream);
+            close(inputStream);
         }
     }
 
@@ -549,7 +568,7 @@ public final class SillyAndroid {
         if (networkInfo != null && networkInfo.isConnected()) {
             hasOtherNetwork = true;
         }
-        return hasOtherNetwork && !SillyAndroid.isWifiConnected(context);
+        return hasOtherNetwork && !isWifiConnected(context);
     }
 
     /**
@@ -561,7 +580,7 @@ public final class SillyAndroid {
      */
     @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
     public static boolean isNetworkConnected(@NonNull final Context context) {
-        return SillyAndroid.isWifiConnected(context) || SillyAndroid.isNonWifiNetworkConnected(context);
+        return isWifiConnected(context) || isNonWifiNetworkConnected(context);
     }
 
     /**
@@ -599,7 +618,7 @@ public final class SillyAndroid {
      * @return {@code True} if there is a voice recognition service in the device, {@code false} otherwise
      */
     public static boolean isVoiceInputAvailable(@NonNull final Context context) {
-        return SillyAndroid.canHandleIntent(context, new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH));
+        return canHandleIntent(context, new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH));
     }
 
 }
