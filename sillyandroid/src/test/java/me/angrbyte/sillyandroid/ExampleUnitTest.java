@@ -1,4 +1,3 @@
-
 package me.angrbyte.sillyandroid;
 
 import org.junit.Test;

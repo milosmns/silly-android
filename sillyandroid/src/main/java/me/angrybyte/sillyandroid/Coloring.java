@@ -19,16 +19,17 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.graphics.drawable.VectorDrawable;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.graphics.drawable.DrawableWrapper;
 import android.util.Log;
-
-import me.angrbyte.sillyandroid.R;
 
 import static android.content.ContentValues.TAG;
 
@@ -39,7 +40,7 @@ import static android.content.ContentValues.TAG;
 public final class Coloring {
 
     /**
-     * Used when no drawable bounds were supplied within the original drawable
+     * Used as a bounds side when no drawable bounds are supplied within the original drawable
      */
     public static final int DEFAULT_BOUNDS = 1000;
     /**
@@ -163,25 +164,25 @@ public final class Coloring {
     }
 
     /**
-     * Makes the given color a little bit darker (by a third of {@link #BRIGHTNESS_THRESHOLD}).
+     * Makes the given color a little bit darker (by a quarter of {@link #BRIGHTNESS_THRESHOLD}).
      *
      * @param color A color to darken
      * @return A darker result color
      */
     @ColorInt
     public static int darkenColor(@ColorInt final int color) {
-        return shiftBrightness(color, -BRIGHTNESS_THRESHOLD / 3);
+        return shiftBrightness(color, -BRIGHTNESS_THRESHOLD / 4);
     }
 
     /**
-     * Makes the given color a little bit lighter (by a third of {@link #BRIGHTNESS_THRESHOLD}).
+     * Makes the given color a little bit lighter (by a quarter of {@link #BRIGHTNESS_THRESHOLD}).
      *
      * @param color A color to lighten
      * @return A lighter result color
      */
     @ColorInt
     public static int lightenColor(@ColorInt final int color) {
-        return shiftBrightness(color, BRIGHTNESS_THRESHOLD / 3);
+        return shiftBrightness(color, BRIGHTNESS_THRESHOLD / 4);
     }
 
     /**
@@ -243,6 +244,27 @@ public final class Coloring {
     }
 
     /**
+     * Colors the given bitmap to the specified color. Uses {@link PorterDuff.Mode#SRC_ATOP}.
+     *
+     * @param bitmap The original bitmap, must not be {@code null}
+     * @param color  Which color to use for coloring
+     * @return A new, colored Bitmap, never {@code null}
+     */
+    @NonNull
+    public static Bitmap colorBitmap(@NonNull final Bitmap bitmap, @ColorInt final int color) {
+        // use the original bitmap config
+        final Bitmap result = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+
+        // paint over the new canvas
+        final Paint paint = new Paint();
+        final Canvas c = new Canvas(result);
+        paint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));
+        c.drawBitmap(bitmap, 0, 0, paint);
+
+        return result;
+    }
+
+    /**
      * Creates a new drawable (implementation of the Drawable object may vary depending on the OS version).
      * The result Drawable will be colored with the given color, and clipped to match the given bounds.
      * Note that the drawable's alpha is set to 0 when argument color is {@link Color#TRANSPARENT}.
@@ -252,18 +274,20 @@ public final class Coloring {
      * @return Colored and clipped drawable object
      */
     @NonNull
-    public static Drawable createColorDrawable(@ColorInt final int color, @Nullable final Rect bounds) {
-        // create the drawable
+    public static Drawable createColoredDrawable(@ColorInt final int color, @Nullable final Rect bounds) {
+        // create the drawable depending on the OS (pre-Honeycomb couldn't use color drawables inside state lists)
         Drawable drawable;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             drawable = new ColorDrawable(color).mutate();
         } else {
             drawable = new GradientDrawable(Orientation.BOTTOM_TOP, new int[] { color, color }).mutate();
         }
+
         // set the alpha value
         if (color == Color.TRANSPARENT) {
             drawable.setAlpha(0);
         }
+
         // update bounds
         if (bounds != null) {
             drawable.setBounds(bounds);
@@ -274,37 +298,50 @@ public final class Coloring {
     /**
      * Colors the given drawable to the specified color. Uses {@link PorterDuff.Mode#SRC_ATOP}.
      *
-     * @param drawable Which drawable to color
-     * @param color    Which color to use
-     * @return A colored drawable, a new instance in most cases
+     * @param resources Which resources to use
+     * @param drawable  Which drawable to color
+     * @param color     Which color to use
+     * @return A colored drawable, new instance in most cases for bitmaps, cached instance for most other cases
      */
-    @NonNull
-    public static Drawable colorDrawable(@NonNull final Resources resources, @NonNull final Drawable drawable, @ColorInt final int color) {
-        if (!(drawable instanceof BitmapDrawable)) {
-            return colorUnknownDrawable(drawable, color);
+    @Nullable
+    public static Drawable colorDrawable(@NonNull final Resources resources, @Nullable final Drawable drawable, @ColorInt final int color) {
+        if (drawable instanceof VectorDrawable) {
+            return colorVectorDrawable((VectorDrawable) drawable, color);
         }
 
-        // it's a BitmapDrawable, prepare a new canvas
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-        Bitmap result = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig()); // use old config
+        if (drawable instanceof VectorDrawableCompat) {
+            return colorVectorDrawable((VectorDrawableCompat) drawable, color);
+        }
 
-        // paint over the new canvas
-        Paint paint = new Paint();
-        Canvas c = new Canvas(result);
-        paint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));
-        c.drawBitmap(bitmap, 0, 0, paint);
+        if (drawable instanceof ColorDrawable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            ((ColorDrawable) drawable).setColor(color);
+            return drawable;
+        }
 
-        return new BitmapDrawable(resources, result);
+        if (drawable instanceof GradientDrawable) {
+            drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+            return drawable;
+        }
+
+        if (drawable instanceof BitmapDrawable) {
+            final Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            return new BitmapDrawable(resources, colorBitmap(bitmap, color));
+        }
+
+        // have no idea what this is..
+        return colorUnknownDrawable(drawable, color);
     }
 
     /**
-     * Colors the given drawable to a specified color set using the drawable wrapping technique.
+     * Colors the given drawable to the specified color set using the drawable wrapping technique ({@link DrawableCompat#wrap(Drawable)}).
+     * This method also uses {@link PorterDuff.Mode#SRC_ATOP} to color the pixels.
      *
      * @param drawable    Which drawable to color
      * @param colorStates Which color set to use
-     * @return A colored drawable ready to use
+     * @return A colored drawable, cached instance in most cases
      */
-    public static Drawable colorDrawableWrap(Drawable drawable, ColorStateList colorStates) {
+    @Nullable
+    public static Drawable colorDrawableWrapped(@Nullable Drawable drawable, @NonNull final ColorStateList colorStates) {
         if (drawable != null) {
             drawable = DrawableCompat.wrap(drawable);
             DrawableCompat.setTintList(drawable, colorStates);
@@ -316,13 +353,15 @@ public final class Coloring {
     }
 
     /**
-     * Colors the given drawable to a specified color using the drawable wrapping technique.
+     * Colors the given drawable to a specified color using the drawable wrapping technique ({@link DrawableCompat#wrap(Drawable)}).
+     * This method also uses {@link PorterDuff.Mode#SRC_ATOP} to color the pixels.
      *
      * @param drawable Which drawable to color
      * @param color    Which color to use
-     * @return A colored drawable ready to use
+     * @return A colored drawable, cached instance in most cases
      */
-    public static Drawable colorDrawableWrap(Drawable drawable, int color) {
+    @Nullable
+    public static Drawable colorDrawableWrapped(@Nullable Drawable drawable, @ColorInt final int color) {
         if (drawable != null) {
             Drawable wrapped = DrawableCompat.wrap(drawable);
             DrawableCompat.setTint(wrapped, color);
@@ -333,146 +372,182 @@ public final class Coloring {
     }
 
     /**
-     * Tries to clone and just color filter the drawable. Uses mode {@link PorterDuff.Mode#SRC_ATOP}.
+     * Tries to clone and simply color-filter the drawable. Uses {@link PorterDuff.Mode#SRC_ATOP}.
+     * <b>Note</b>: Use this when you don't know which drawable you have.
      *
      * @param drawable Which drawable to color
      * @param color    Which color to use
      * @return A colored drawable ready for use
      */
-    @SuppressWarnings("RedundantCast")
-    public static Drawable colorUnknownDrawable(Drawable drawable, int color) {
+    @Nullable
+    public static Drawable colorUnknownDrawable(@Nullable final Drawable drawable, @ColorInt final int color) {
+        if (drawable == null) {
+            // well done developer.
+            return null;
+        }
+
         if (drawable instanceof DrawableWrapper || drawable instanceof android.support.v7.graphics.drawable.DrawableWrapper) {
-            drawable = DrawableCompat.wrap(drawable);
-            DrawableCompat.setTint(drawable, color);
-            DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_ATOP);
-            drawable = DrawableCompat.unwrap(drawable);
-            return drawable;
-        } else {
-            try {
-                Drawable copy = drawable.getConstantState().newDrawable();
-                copy.mutate();
-                copy.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
-                return copy;
-            } catch (Exception e) {
-                if (drawable != null) {
-                    Log.d(TAG, "Failed to color unknown drawable: " + drawable.getClass().getSimpleName());
+            // it's a drawable wrapper, do coloring by drawable wrapping
+            final Drawable wrapResult = colorDrawableWrapped(drawable, color);
+            if (wrapResult != null) {
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    // there is a bug for JellyBean MR2 when this won't work, so.. set the tint filter manually
+                    wrapResult.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));
                 }
-                return drawable;
+                return wrapResult;
             }
+        }
+
+        // wrapping failed, do a plain constant state clone
+        try {
+            final Drawable.ConstantState state = drawable.getConstantState();
+            if (state == null) {
+                // well done android.
+                throw new IllegalStateException("Constant state is unavailable");
+            }
+            final Drawable copy = drawable.getConstantState().newDrawable().mutate();
+            copy.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+            return copy;
+        } catch (Exception ignored) {
+            return drawable;
         }
     }
 
     /**
-     * Colors the given drawable to a specified color. Uses mode {@link PorterDuff.Mode#SRC_ATOP}.<br> Automatically loads a good quality bitmap from the {@code resourceId} if
-     * it is
-     * valid.
+     * Colors a <b>bitmap</b> drawable to the specified color. Uses {@link PorterDuff.Mode#SRC_ATOP}.
+     * Automatically loads a high quality (on Nougat+) or an optimal (on Nougat-) bitmap from the given resource ID.
      *
-     * @param resourceId Which drawable resource to load
+     * @param resources  Which resources to use
+     * @param drawableId Which drawable resource to load, must be a bitmap drawable
      * @param color      Which color to use
      * @return A colored {@link Drawable} ready for use
      */
-    public static Drawable colorDrawable(Resources resources, int resourceId, int color) {
-        BitmapFactory.Options opts = new BitmapFactory.Options();
-        opts.inDither = false; // disable dithering
-        //noinspection deprecation
-        opts.inPurgeable = true; // allocate pixels that could be freed by the system
-        //noinspection deprecation
-        opts.inInputShareable = true; // see javadoc
-        opts.inTempStorage = new byte[32 * 1024]; // temp storage - advice is to use 16K
-        opts.inPreferQualityOverSpeed = false;
+    @NonNull
+    public static Drawable colorDrawable(@NonNull final Resources resources, @DrawableRes final int drawableId, @ColorInt final int color) {
+        final BitmapFactory.Options opts = new BitmapFactory.Options();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            // noinspection deprecation
+            opts.inDither = false; // disable dithering for pre-Nougat devices
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            // noinspection deprecation
+            opts.inPurgeable = true; // allocate pixels that could be freed by the system, only for pre-Lollipop devices
+            // noinspection deprecation
+            opts.inInputShareable = true; // share an input resource stream to preserve memory, only for pre-Lollipop devices
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1 && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            // noinspection deprecation
+            opts.inPreferQualityOverSpeed = false; // load quickly on Gingerbread MR1 and later, ignored as of Nougat
+        }
+        opts.inTempStorage = new byte[32 * 1024]; // temp storage - advice is to use 16K, but..
 
-        Bitmap original = BitmapFactory.decodeResource(resources, resourceId, opts);
-        return colorDrawable(resources, new BitmapDrawable(resources, original), color);
+        // load the resource and recolor it
+        final Bitmap resourceBitmap = BitmapFactory.decodeResource(resources, drawableId, opts);
+        final Bitmap coloredBitmap = colorBitmap(resourceBitmap, color);
+        return new BitmapDrawable(resources, coloredBitmap);
     }
 
     /**
-     * Creates a new {@code StateListDrawable} drawable. States that should be provided are "normal",<br> "clicked" (pressed) and "checked" (selected). All
-     * states are actually integer colors.<br> Optionally, {@code shouldFade} can be set to false to avoid the fading effect.<br> <br> Note: <i>{@link
-     * Color#TRANSPARENT} can be used to supply a transparent state.</i>
+     * Sets a {@link PorterDuff.Mode#SRC_ATOP} color filter to the given vector drawable using the specified color.
      *
-     * @param normal     Color for the idle state
-     * @param clicked    Color for the clicked/pressed state
-     * @param checked    Color for the checked/selected state
-     * @param shouldFade Set to true to enable the fading effect, false otherwise
-     * @return A {@link StateListDrawable} drawable object ready for use
+     * @param vectorDrawable Which drawable to color
+     * @param color          Which color to use
+     * @return The same instance with the color filter applied
      */
-    @SuppressLint({ "InlinedApi", "NewApi" })
-    public static Drawable createStateDrawable(Resources resources, int normal, int clicked, int checked, boolean shouldFade) {
-        // init state arrays
-        int[] selectedState = new int[] { android.R.attr.state_selected };
-        int[] pressedState = new int[] { android.R.attr.state_pressed };
-        int[] checkedState = new int[] { android.R.attr.state_checked };
-        int[] focusedState = new int[] { android.R.attr.state_focused };
+    @NonNull
+    public static Drawable colorVectorDrawable(@NonNull final VectorDrawable vectorDrawable, @ColorInt final int color) {
+        vectorDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        return vectorDrawable;
+    }
+
+    /**
+     * Sets a {@link PorterDuff.Mode#SRC_ATOP} color filter to the given <b>compat</b> vector drawable using the specified color.
+     *
+     * @param vectorDrawableCompat Which drawable to color
+     * @param color                Which color to use
+     * @return The same instance with the color filter applied
+     */
+    @NonNull
+    public static Drawable colorVectorDrawable(@NonNull final VectorDrawableCompat vectorDrawableCompat, @ColorInt final int color) {
+        vectorDrawableCompat.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        return vectorDrawableCompat;
+    }
+
+    /**
+     * Creates a new {@link StateListDrawable}. Colors that need to be provided are backgrounds for drawable states: "normal" (or "idle"),
+     * "clicked" (or "pressed") and "checked" (or "selected"). Optionally, a <i>fade</i> argument can be set to {@code false} to avoid the
+     * fading effect when the drawable animates.
+     *
+     * <b>Note</b>: Use {@link Color#TRANSPARENT} to set a transparent state.
+     *
+     * @param resources    Which resources to use
+     * @param normal       Color for the normal/idle state
+     * @param clicked      Color for the clicked/pressed state
+     * @param checked      Color for the checked/selected state (makes sense only for Honeycomb and later)
+     * @param shouldFade   Set to {@code true} to enable the fading effect, {@code false} to disable it
+     * @param cornerRadius Set to round the corners on rectangular drawables, 0 to disable
+     * @return A {@link StateListDrawable} drawable object, new instance each time
+     */
+    @NonNull
+    public static Drawable createStateList(@NonNull final Resources resources, @ColorInt final int normal, @ColorInt final int clicked,
+                                           @ColorInt final int checked, final boolean shouldFade, @IntRange(from = 0) int cornerRadius) {
+        // initialize state arrays (they're in arrays because you can use different drawables for reverse transitions..)
+        final int[] normalState = new int[] {};
+        final int[] clickedState = new int[] { android.R.attr.state_pressed };
+        final int[] checkedState = new int[] { android.R.attr.state_checked };
+        final int[] selectedState = new int[] { android.R.attr.state_selected };
+        final int[] focusedState = new int[] { android.R.attr.state_focused };
         int[] activatedState = new int[] {};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             activatedState = new int[] { android.R.attr.state_activated };
         }
-        int cornerRadius = resources.getDimensionPixelSize(R.dimen.spacing_micro);
 
-        // init normal state drawable
-        Drawable normalDrawable = new GradientDrawable(Orientation.BOTTOM_TOP, new int[] { normal, normal });
-        normalDrawable = normalDrawable.mutate();
-        if (normal == Color.TRANSPARENT) {
-            normalDrawable.setAlpha(0);
+        // normal state drawable
+        final Drawable normalDrawable = createColoredDrawable(normal, new Rect(0, 0, DEFAULT_BOUNDS, DEFAULT_BOUNDS));
+        if (normalDrawable instanceof GradientDrawable) {
             ((GradientDrawable) normalDrawable).setCornerRadius(cornerRadius);
-        } else {
-            normalDrawable.setBounds(DEFAULT_BOUNDS, DEFAULT_BOUNDS, DEFAULT_BOUNDS, DEFAULT_BOUNDS);
+        }
+        // clicked state drawable
+        final Drawable clickedDrawable = createColoredDrawable(clicked, new Rect(0, 0, DEFAULT_BOUNDS, DEFAULT_BOUNDS));
+        if (clickedDrawable instanceof GradientDrawable) {
+            ((GradientDrawable) clickedDrawable).setCornerRadius(cornerRadius);
+        }
+        // checked state drawable
+        final Drawable checkedDrawable = createColoredDrawable(checked, new Rect(0, 0, DEFAULT_BOUNDS, DEFAULT_BOUNDS));
+        if (checkedDrawable instanceof GradientDrawable) {
+            ((GradientDrawable) checkedDrawable).setCornerRadius(cornerRadius);
+        }
+        // focused state drawable (same as normal, only lighter)
+        final Drawable focusedDrawable = createColoredDrawable(lightenColor(normal), new Rect(0, 0, DEFAULT_BOUNDS, DEFAULT_BOUNDS));
+        if (focusedDrawable instanceof GradientDrawable) {
+            ((GradientDrawable) focusedDrawable).setCornerRadius(cornerRadius);
         }
 
-        // init clicked state drawable
-        Drawable clickedDrawable = new GradientDrawable(Orientation.BOTTOM_TOP, new int[] { clicked, clicked });
-        ((GradientDrawable) clickedDrawable).setCornerRadius(cornerRadius);
-        clickedDrawable = clickedDrawable.mutate();
-        if (clicked == Color.TRANSPARENT) {
-            clickedDrawable.setAlpha(0);
-        } else {
-            clickedDrawable.setBounds(DEFAULT_BOUNDS, DEFAULT_BOUNDS, DEFAULT_BOUNDS, DEFAULT_BOUNDS);
-        }
+        // prepare the state list (order of the states is extremely important!)
+        final StateListDrawable states = new StateListDrawable();
 
-        // init checked state drawable
-        Drawable checkedDrawable = new GradientDrawable(Orientation.BOTTOM_TOP, new int[] { checked, checked });
-        ((GradientDrawable) checkedDrawable).setCornerRadius(cornerRadius);
-        checkedDrawable = checkedDrawable.mutate();
-        if (checked == Color.TRANSPARENT) {
-            checkedDrawable.setAlpha(0);
-        } else {
-            checkedDrawable.setBounds(DEFAULT_BOUNDS, DEFAULT_BOUNDS, DEFAULT_BOUNDS, DEFAULT_BOUNDS);
-        }
-
-        // init focused state drawable (use normal color)
-        Drawable focusedDrawable = new GradientDrawable(Orientation.BOTTOM_TOP, new int[] { normal, normal });
-        ((GradientDrawable) focusedDrawable).setCornerRadius(cornerRadius);
-        focusedDrawable = focusedDrawable.mutate();
-        if (normal == Color.TRANSPARENT) {
-            focusedDrawable.setAlpha(0);
-        } else {
-            focusedDrawable.setBounds(DEFAULT_BOUNDS, DEFAULT_BOUNDS, DEFAULT_BOUNDS, DEFAULT_BOUNDS);
-        }
-
-        // prepare state list (order of adding states is important!)
-        StateListDrawable states = new StateListDrawable();
-        states.addState(pressedState, clickedDrawable);
         if (!shouldFade) {
-            states.addState(selectedState, clickedDrawable);
+            // no fading, add all applicable states
+            states.addState(clickedState, clickedDrawable); // !
+            states.addState(selectedState, focusedDrawable); // reuse the focused drawable
             states.addState(focusedState, focusedDrawable);
             states.addState(checkedState, checkedDrawable);
-        }
-
-        // add fade effect if applicable
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if (shouldFade) {
-                states.addState(new int[] {}, normalDrawable);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                states.addState(activatedState, focusedDrawable);
+            }
+            states.addState(normalState, normalDrawable); // !
+            return states;
+        } else {
+            // fade enabled, add only normal and pressed states (Honeycomb bug..)
+            states.addState(clickedState, clickedDrawable); // !
+            states.addState(normalState, normalDrawable); // !
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                // fading only works on Honeycomb and later..
                 states.setEnterFadeDuration(0);
                 states.setExitFadeDuration(DEFAULT_FADE_DURATION);
-            } else {
-                states.addState(activatedState, clickedDrawable);
-                states.addState(new int[] {}, normalDrawable);
             }
-        } else {
-            states.addState(new int[] {}, normalDrawable);
+            return states;
         }
-
-        return states;
     }
 
     /**
@@ -510,21 +585,22 @@ public final class Coloring {
      * @param shouldFade Set to true to enable the fading effect, false otherwise
      * @return A {@link StateListDrawable} drawable object ready for use
      */
-    public static Drawable createBackgroundDrawable(Resources resources, int normal, int clicked, int checked, boolean shouldFade) {
-        return createBackgroundDrawable(resources, normal, clicked, checked, shouldFade, null);
+    public static Drawable createBackgroundDrawable(Resources resources, int normal, int clicked, int checked, boolean shouldFade, int cornerRadius) {
+        return createBackgroundDrawable(resources, normal, clicked, checked, shouldFade, cornerRadius, null);
     }
 
     /**
-     * Very similar to {@link #createBackgroundDrawable(Resources, int, int, int, boolean)}, adding only one more parameter.
+     * Very similar to {@link #createBackgroundDrawable(Resources, int, int, int, boolean, int)}, adding only one more parameter.
      *
      * @param bounds Clip/mask drawable to these rectangle bounds
      * @return Clipped/masked drawable instance
      */
-    public static Drawable createBackgroundDrawable(Resources resources, int normal, int clicked, int checked, boolean shouldFade, Rect bounds) {
+    public static Drawable createBackgroundDrawable(Resources resources, int normal, int clicked, int checked, boolean shouldFade, int cornerRadius, Rect
+            bounds) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return createRippleDrawable(normal, clicked, bounds);
         } else {
-            return createStateDrawable(resources, normal, clicked, checked, shouldFade);
+            return createStateList(resources, normal, clicked, checked, shouldFade, cornerRadius);
         }
     }
 
@@ -626,7 +702,7 @@ public final class Coloring {
     }
 
     /**
-     * Similar to {@link #createBackgroundDrawable(Resources, int, int, int, boolean)} but with additional {@code original} drawable parameter.
+     * Similar to {@link #createBackgroundDrawable(Resources, int, int, int, boolean, int)} but with additional {@code original} drawable parameter.
      *
      * @param normal            Color normal state of the drawable to this color
      * @param clickedBackground Background color of the View that will show when view is clicked
@@ -686,7 +762,8 @@ public final class Coloring {
     }
 
     /**
-     * Very similar to {@link #createContrastStateDrawable(Resources, int, int, boolean, android.graphics.drawable.Drawable)} but creates a Ripple drawable available in
+     * Very similar to {@link #createContrastStateDrawable(Resources, int, int, boolean, android.graphics.drawable.Drawable)} but creates a Ripple drawable
+     * available in
      * Lollipop.
      *
      * @param normal            Color normal state of the drawable to this color
@@ -711,7 +788,8 @@ public final class Coloring {
      * @param normal            Color normal state of the drawable to this color
      * @param clickedBackground Background color of the View that will show when view is clicked
      * @param shouldFade        Set to true if the state list (pre-API 21) should have a fading effect
-     * @param original          This drawable will be contrasted to the {@code clickedBackground} color on press (pre-API 21) or used for masking in ripples on post-API
+     * @param original          This drawable will be contrasted to the {@code clickedBackground} color on press (pre-API 21) or used for masking in ripples
+     *                          on post-API
      *                          21
      * @return The state list drawable (< API21) or a ripple drawable (>= API21) that is in contrast with the on-click background color
      */
