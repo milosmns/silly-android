@@ -14,8 +14,8 @@ plugins {
 }
 
 ext {
-    VERSION_CODE = 8
-    VERSION_NAME = "0.5"
+    VERSION_CODE = 9
+    VERSION_NAME = "0.6"
 }
 
 allprojects {
