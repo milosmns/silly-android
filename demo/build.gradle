@@ -27,8 +27,8 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
-    // compile "me.angrybyte.sillyandroid:sillyandroid:$VERSION_NAME" // global
-    compile project(':sillyandroid') // local
+    compile "me.angrybyte.sillyandroid:sillyandroid:$VERSION_NAME" // global
+    // compile project(':sillyandroid') // local
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
