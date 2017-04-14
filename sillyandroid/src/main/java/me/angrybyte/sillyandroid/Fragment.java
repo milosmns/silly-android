@@ -1,5 +1,6 @@
 package me.angrybyte.sillyandroid;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
+import android.support.annotation.RequiresPermission;
 import android.support.annotation.UiThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
@@ -35,7 +37,7 @@ public class Fragment extends android.support.v4.app.Fragment {
      * @return A Context instance, or {@link null} if this fragment is not attached to a context yet
      */
     @Nullable
-    public final Context getContextCompat() {
+    public final Context getCurrentContext() {
         return getActivity() == null ? getContext() : getActivity();
     }
 
@@ -44,7 +46,7 @@ public class Fragment extends android.support.v4.app.Fragment {
      */
     @IntRange(from = 0)
     public int countIntentHandlers(@Nullable final Intent intent) {
-        final Context context = getContextCompat();
+        final Context context = getCurrentContext();
         return context == null ? 0 : SillyAndroid.countIntentHandlers(context, intent);
     }
 
@@ -52,7 +54,7 @@ public class Fragment extends android.support.v4.app.Fragment {
      * Returns the result from {@link SillyAndroid#canHandleIntent(Context, Intent)}.
      */
     public boolean canHandleIntent(@Nullable final Intent intent) {
-        final Context context = getContextCompat();
+        final Context context = getCurrentContext();
         return context != null && SillyAndroid.canHandleIntent(context, intent);
     }
 
@@ -126,6 +128,23 @@ public class Fragment extends android.support.v4.app.Fragment {
      */
     public void setPadding(@NonNull final View view, @Px final int padding) {
         SillyAndroid.setPadding(view, padding);
+    }
+
+    /**
+     * Returns the result from {@link SillyAndroid#isNetworkConnected(Context)}.
+     */
+    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    public boolean isNetworkConnected() {
+        final Context context = getCurrentContext();
+        return context != null && SillyAndroid.isNetworkConnected(context);
+    }
+
+    /**
+     * Returns the result from {@link SillyAndroid#isVoiceInputAvailable(Context)}.
+     */
+    public boolean isVoiceInputAvailable() {
+        final Context context = getCurrentContext();
+        return context != null && SillyAndroid.isVoiceInputAvailable(context);
     }
 
 }

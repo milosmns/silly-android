@@ -122,15 +122,15 @@ public class Activity extends AppCompatActivity {
      * Returns the result from {@link SillyAndroid#isNetworkConnected(Context)}.
      */
     @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
-    public boolean isNetworkConnected(@NonNull final Context context) {
-        return SillyAndroid.isNetworkConnected(context);
+    public boolean isNetworkConnected() {
+        return SillyAndroid.isNetworkConnected(this);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#isVoiceInputAvailable(Context)}.
      */
-    public boolean isVoiceInputAvailable(@NonNull final Context context) {
-        return SillyAndroid.isVoiceInputAvailable(context);
+    public boolean isVoiceInputAvailable() {
+        return SillyAndroid.isVoiceInputAvailable(this);
     }
 
 }
