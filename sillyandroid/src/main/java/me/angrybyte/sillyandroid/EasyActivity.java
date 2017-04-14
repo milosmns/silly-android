@@ -2,12 +2,15 @@ package me.angrybyte.sillyandroid;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.IntRange;
@@ -18,48 +21,50 @@ import android.support.annotation.RequiresPermission;
 import android.support.annotation.UiThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.View;
 
 import java.io.Closeable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import me.angrbyte.sillyandroid.BuildConfig;
 
 /**
- * An extension of {@link android.support.v4.app.Fragment} with applied extensions from {@link SillyAndroid} extension set.
+ * An extension of {@link AppCompatActivity} with applied extensions from {@link SillyAndroid} extension set.
  */
 @UiThread
 @SuppressWarnings("unused")
-public class Fragment extends android.support.v4.app.Fragment {
-
-    /**
-     * Finds the proper Context from either {@link #getContext()} or {@link #getActivity()}.
-     * Activity comes first if both are not {@code null}.
-     *
-     * @return A Context instance, or {@link null} if this fragment is not attached to a context yet
-     */
-    @Nullable
-    public final Context getCurrentContext() {
-        return getActivity() == null ? getContext() : getActivity();
-    }
+public class EasyActivity extends AppCompatActivity {
 
     /**
      * Returns the result from {@link SillyAndroid#countIntentHandlers(Context, Intent)}.
      */
     @IntRange(from = 0)
     public int countIntentHandlers(@Nullable final Intent intent) {
-        final Context context = getCurrentContext();
-        return context == null ? 0 : SillyAndroid.countIntentHandlers(context, intent);
+        return SillyAndroid.countIntentHandlers(this, intent);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#canHandleIntent(Context, Intent)}.
      */
     public boolean canHandleIntent(@Nullable final Intent intent) {
-        final Context context = getCurrentContext();
-        return context != null && SillyAndroid.canHandleIntent(context, intent);
+        return SillyAndroid.canHandleIntent(this, intent);
     }
 
     /**
-     * Returns the result from {@link SillyAndroid#findViewById(android.support.v4.app.Fragment, int)}.
+     * Returns the result from {@link SillyAndroid#getContentView(Activity)}.
+     */
+    public <ViewType extends View> ViewType getContentView() {
+        return SillyAndroid.getContentView(this);
+    }
+
+    /**
+     * Returns the result from {@link SillyAndroid#findViewById(Activity, int)}.
      */
     public <ViewType extends View> ViewType findView(@IdRes final int viewId) {
         return SillyAndroid.findViewById(this, viewId);
@@ -106,7 +111,7 @@ public class Fragment extends android.support.v4.app.Fragment {
      */
     @Nullable
     public Drawable getDrawableCompat(@DrawableRes final int drawableId) {
-        return ContextCompat.getDrawable(getContext(), drawableId);
+        return ContextCompat.getDrawable(this, drawableId);
     }
 
     /**
@@ -135,16 +140,66 @@ public class Fragment extends android.support.v4.app.Fragment {
      */
     @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
     public boolean isNetworkConnected() {
-        final Context context = getCurrentContext();
-        return context != null && SillyAndroid.isNetworkConnected(context);
+        return SillyAndroid.isNetworkConnected(this);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#isVoiceInputAvailable(Context)}.
      */
     public boolean isVoiceInputAvailable() {
-        final Context context = getCurrentContext();
-        return context != null && SillyAndroid.isVoiceInputAvailable(context);
+        return SillyAndroid.isVoiceInputAvailable(this);
+    }
+
+    /* Permissions */
+
+    /**
+     * Checks if given permission was granted by the user.
+     *
+     * @param permission Which permission to check
+     * @return {@code True} if permission check {@link ContextCompat#checkSelfPermission(Context, String)} returns {@link PackageManager#PERMISSION_GRANTED}
+     * for the given permission, {@code false} if it is {@code null} or not granted
+     */
+    protected boolean hasPermission(@Nullable String permission) {
+        return permission != null && ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * Forwards results from {@link #onRequestPermissionsResult(int, String[], int[])}, only in a much prettier and easier to use format.
+     */
+    @CallSuper
+    protected void onPermissionsResult(final int requestCode, @NonNull Set<String> granted, @NonNull Set<String> denied) {
+        if (BuildConfig.DEBUG) {
+            // log results for debug purposes
+            final String grantedText = Arrays.toString(granted.toArray());
+            final String deniedText = Arrays.toString(denied.toArray());
+            final String format = "Permissions request %d = [granted: %s; permissions denied: %s]";
+            Log.d(getClass().getSimpleName(), String.format(format, requestCode, grantedText, deniedText));
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // invalid case?
+        if (permissions.length == 0 || grantResults.length == 0) {
+            onPermissionsResult(requestCode, Collections.<String>emptySet(), Collections.<String>emptySet());
+            return;
+        }
+
+        // divide into two piles, it's much cleaner
+        final Set<String> granted = new HashSet<>();
+        final Set<String> denied = new HashSet<>();
+        for (int i = 0; i < permissions.length; i++) {
+            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                granted.add(permissions[i]);
+            } else {
+                denied.add(permissions[i]);
+            }
+        }
+
+        // invoke the proper callback
+        onPermissionsResult(requestCode, granted, denied);
     }
 
 }

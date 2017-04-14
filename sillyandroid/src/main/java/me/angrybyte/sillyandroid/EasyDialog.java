@@ -15,41 +15,86 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.RequiresPermission;
+import android.support.annotation.StyleRes;
 import android.support.annotation.UiThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.view.View;
 
 import java.io.Closeable;
 
 /**
- * An extension of {@link AppCompatActivity} with applied extensions from {@link SillyAndroid} extension set.
+ * An extension of {@link android.app.Dialog} with applied extensions from {@link SillyAndroid} extension set.
  */
 @UiThread
-@SuppressWarnings("unused")
-public class Activity extends AppCompatActivity {
+@SuppressWarnings({ "unused", "WeakerAccess" })
+public class EasyDialog extends Dialog {
+
+    /**
+     * Creates a dialog window that uses the default dialog theme.
+     * <p>
+     * The supplied {@code context} is used to obtain the window manager and
+     * base theme used to present the dialog.
+     *
+     * @param context The context in which the dialog should run
+     */
+    public EasyDialog(@NonNull final Context context) {
+        super(context);
+    }
+
+    /**
+     * Creates a dialog window that uses a custom dialog style.
+     * <p>
+     * The supplied {@code context} is used to obtain the window manager and
+     * base theme used to present the dialog.
+     * <p>
+     * The supplied {@code theme} is applied on top of the context's theme. See
+     * <a href="{@docRoot}guide/topics/resources/available-resources.html#stylesandthemes">
+     * Style and Theme Resources</a> for more information about defining and
+     * using styles.
+     *
+     * @param context    The context in which the dialog should run
+     * @param themeResId A style resource describing the theme to use for the
+     *                   window, or {@code 0} to use the default dialog theme
+     */
+    public EasyDialog(@NonNull final Context context, @StyleRes final int themeResId) {
+        super(context, themeResId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected EasyDialog(@NonNull final Context context, final boolean cancelable, @Nullable final OnCancelListener cancelListener) {
+        super(context, cancelable, cancelListener);
+    }
 
     /**
      * Returns the result from {@link SillyAndroid#countIntentHandlers(Context, Intent)}.
      */
     @IntRange(from = 0)
     public int countIntentHandlers(@Nullable final Intent intent) {
-        return SillyAndroid.countIntentHandlers(this, intent);
+        return SillyAndroid.countIntentHandlers(getContext(), intent);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#canHandleIntent(Context, Intent)}.
      */
     public boolean canHandleIntent(@Nullable final Intent intent) {
-        return SillyAndroid.canHandleIntent(this, intent);
+        return SillyAndroid.canHandleIntent(getContext(), intent);
     }
 
     /**
-     * Returns the result from {@link SillyAndroid#findViewById(android.app.Activity, int)}.
+     * Returns the result from {@link SillyAndroid#getContentView(android.app.Activity)}.
      */
-    public <ViewType extends View> ViewType findView(@IdRes final int viewId) {
+    public <ViewType extends android.view.View> ViewType getContentView() {
+        return SillyAndroid.getContentView(this);
+    }
+
+    /**
+     * Returns the result from {@link SillyAndroid#findViewById(android.support.v4.app.Fragment, int)}.
+     */
+    public <ViewType extends EasyView> ViewType findView(@IdRes final int viewId) {
         return SillyAndroid.findViewById(this, viewId);
     }
 
@@ -68,9 +113,9 @@ public class Activity extends AppCompatActivity {
     }
 
     /**
-     * Returns the result from {@link SillyAndroid#dismiss(Dialog)}.
+     * Returns the result from {@link SillyAndroid#dismiss(android.app.Dialog)}.
      */
-    public boolean dismiss(@Nullable final Dialog dialog) {
+    public boolean dismiss(@Nullable final EasyDialog dialog) {
         return SillyAndroid.dismiss(dialog);
     }
 
@@ -94,27 +139,27 @@ public class Activity extends AppCompatActivity {
      */
     @Nullable
     public Drawable getDrawableCompat(@DrawableRes final int drawableId) {
-        return ContextCompat.getDrawable(this, drawableId);
+        return ContextCompat.getDrawable(getContext(), drawableId);
     }
 
     /**
      * Invokes {@link ViewCompat#setBackground(View, Drawable)} with the same arguments.
      */
-    public void setBackgroundCompat(@NonNull final View view, @Nullable final Drawable drawable) {
+    public void setBackgroundCompat(@NonNull final EasyView view, @Nullable final Drawable drawable) {
         ViewCompat.setBackground(view, drawable);
     }
 
     /**
      * Invokes {@link SillyAndroid#setPadding(View, int, int, int, int)} with the same arguments.
      */
-    public void setPadding(@NonNull final View view, @Px final int start, @Px final int top, @Px final int end, @Px final int bottom) {
+    public void setPadding(@NonNull final EasyView view, @Px final int start, @Px final int top, @Px final int end, @Px final int bottom) {
         SillyAndroid.setPadding(view, start, top, end, bottom);
     }
 
     /**
      * Invokes {@link SillyAndroid#setPadding(View, int)} with the same arguments.
      */
-    public void setPadding(@NonNull final View view, @Px final int padding) {
+    public void setPadding(@NonNull final EasyView view, @Px final int padding) {
         SillyAndroid.setPadding(view, padding);
     }
 
@@ -123,14 +168,14 @@ public class Activity extends AppCompatActivity {
      */
     @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
     public boolean isNetworkConnected() {
-        return SillyAndroid.isNetworkConnected(this);
+        return SillyAndroid.isNetworkConnected(getContext());
     }
 
     /**
      * Returns the result from {@link SillyAndroid#isVoiceInputAvailable(Context)}.
      */
     public boolean isVoiceInputAvailable() {
-        return SillyAndroid.isVoiceInputAvailable(this);
+        return SillyAndroid.isVoiceInputAvailable(getContext());
     }
 
 }

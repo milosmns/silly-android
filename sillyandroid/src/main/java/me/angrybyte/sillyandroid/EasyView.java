@@ -19,14 +19,14 @@ import android.util.AttributeSet;
  */
 @UiThread
 @SuppressWarnings("unused")
-public class View extends android.view.View {
+public class EasyView extends android.view.View {
 
     /**
      * Simple constructor to use when creating a view from code.
      *
      * @param context The Context the view is running in, through which it can access the current theme, resources, etc.
      */
-    public View(@NonNull final Context context) {
+    public EasyView(@NonNull final Context context) {
         super(context);
     }
 
@@ -40,9 +40,9 @@ public class View extends android.view.View {
      *
      * @param context The Context the view is running in, through which it can access the current theme, resources, etc.
      * @param attrs   The attributes of the XML tag that is inflating the view.
-     * @see #View(Context, AttributeSet, int)
+     * @see #EasyView(Context, AttributeSet, int)
      */
-    public View(@NonNull final Context context, @Nullable final AttributeSet attrs) {
+    public EasyView(@NonNull final Context context, @Nullable final AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -56,9 +56,9 @@ public class View extends android.view.View {
      * @param attrs        The attributes of the XML tag that is inflating the view.
      * @param defStyleAttr An attribute in the current theme that contains a reference to a style resource that supplies default values for
      *                     the view. Can be 0 to not look for defaults.
-     * @see #View(Context, AttributeSet)
+     * @see #EasyView(Context, AttributeSet)
      */
-    public View(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
+    public EasyView(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -85,10 +85,10 @@ public class View extends android.view.View {
      *                     the view. Can be 0 to not look for defaults.
      * @param defStyleRes  A resource identifier of a style resource that supplies default values for the view, used only if defStyleAttr is
      *                     0 or can not be found in the theme. Can be 0 to not look for defaults.
-     * @see #View(Context, AttributeSet, int)
+     * @see #EasyView(Context, AttributeSet, int)
      */
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    public View(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
+    public EasyView(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 

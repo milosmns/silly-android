@@ -229,6 +229,30 @@ public final class SillyAndroid {
     }
 
     /**
+     * Returns the root, content view of the given Activity.
+     *
+     * @param activity   Which activity to look at
+     * @param <ViewType> Type of the View you are expecting here
+     * @return A View instance, or {@code null} if there is no content view set
+     */
+    public static <ViewType extends View> ViewType getContentView(@NonNull final Activity activity) {
+        // noinspection unchecked
+        return (ViewType) activity.findViewById(android.R.id.content);
+    }
+
+    /**
+     * Returns the root, content view of the given Dialog.
+     *
+     * @param dialog     Which dialog to look at
+     * @param <ViewType> Type of the View you are expecting here
+     * @return A View instance, or {@code null} if there is no content view set
+     */
+    public static <ViewType extends View> ViewType getContentView(@NonNull final Dialog dialog) {
+        // noinspection unchecked
+        return (ViewType) dialog.findViewById(android.R.id.content);
+    }
+
+    /**
      * Does exactly the same thing as calling {@link View#findViewById(int)}, but casts the result to the appropriate View sub-class.
      */
     @Nullable
@@ -254,6 +278,15 @@ public final class SillyAndroid {
     public static <ViewType extends View> ViewType findViewById(@NonNull final Fragment fragment, @IdRes final int viewId) {
         // noinspection unchecked
         return fragment.getView() == null ? null : (ViewType) fragment.getView().findViewById(viewId);
+    }
+
+    /**
+     * Does exactly the same thing as calling {@link Dialog#findViewById(int)}, but casts the result to the appropriate View sub-class.
+     */
+    @Nullable
+    public static <ViewType extends View> ViewType findViewById(@NonNull final Dialog dialog, @IdRes final int viewId) {
+        // noinspection unchecked
+        return (ViewType) dialog.findViewById(viewId);
     }
 
     /**

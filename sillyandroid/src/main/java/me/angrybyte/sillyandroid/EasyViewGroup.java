@@ -19,26 +19,26 @@ import android.util.AttributeSet;
  */
 @UiThread
 @SuppressWarnings("unused")
-public abstract class ViewGroup extends android.view.ViewGroup {
+public abstract class EasyViewGroup extends android.view.ViewGroup {
 
     /**
      * @inheritDoc
      */
-    public ViewGroup(@NonNull final Context context) {
+    public EasyViewGroup(@NonNull final Context context) {
         super(context);
     }
 
     /**
      * @inheritDoc
      */
-    public ViewGroup(@NonNull final Context context, @NonNull final AttributeSet attrs) {
+    public EasyViewGroup(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
     }
 
     /**
      * @inheritDoc
      */
-    public ViewGroup(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyleAttr) {
+    public EasyViewGroup(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -46,7 +46,7 @@ public abstract class ViewGroup extends android.view.ViewGroup {
      * @inheritDoc
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public ViewGroup(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
+    public EasyViewGroup(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
