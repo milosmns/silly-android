@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.1'
@@ -11,11 +12,13 @@ plugins {
     // used for uploading to jCenter and mavenCentral
     id "com.github.dcendents.android-maven" version "1.5"
     id "com.jfrog.bintray" version "1.7.3"
+    // allowing Lambdas on Java8-
+    id "me.tatarka.retrolambda" version "3.6.0"
 }
 
 ext {
-    VERSION_CODE = 11
-    VERSION_NAME = "0.8"
+    VERSION_CODE = 12
+    VERSION_NAME = "0.9"
 }
 
 allprojects {

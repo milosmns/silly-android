@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'checkstyle'
 
 android {
@@ -6,7 +7,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId 'me.angrbyte.sillyandroid.demo'
+        applicationId 'me.angrybyte.sillyandroid.demo'
         minSdkVersion 9
         targetSdkVersion 25
         versionCode VERSION_CODE
@@ -19,6 +20,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 
     productFlavors {}

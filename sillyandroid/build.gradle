@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'checkstyle'
 
 /*
@@ -6,7 +7,7 @@ apply plugin: 'checkstyle'
  * .\gradlew sillyandroid:clean sillyandroid:install
  * .\gradlew sillyandroid:bintrayUpload
  * More information on http://inthecheesefactory.com/blog/how-to-upload-library-to-jcenter-maven-central-as-dependency/en
- * Configuration is in gradle.properties, secures are in local.properties.
+ * Configuration is in gradle.properties, secures are in local.properties
  */
 
 android {
@@ -26,6 +27,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
