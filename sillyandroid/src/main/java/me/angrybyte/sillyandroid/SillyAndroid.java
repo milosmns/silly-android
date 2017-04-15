@@ -29,12 +29,14 @@ import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.RawRes;
 import android.support.annotation.RequiresPermission;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.Closeable;
 import java.io.InputStream;
@@ -58,7 +60,7 @@ public final class SillyAndroid {
     @SuppressWarnings("unused")
     public static final class UI {
 
-        @IntDef({ PHONE_PORT, PHONE_LAND, TAB_PORT, TAB_LAND, TABLET_PORT, TABLET_LAND, WATCH, TV })
+        @IntDef({PHONE_PORT, PHONE_LAND, TAB_PORT, TAB_LAND, TABLET_PORT, TABLET_LAND, WATCH, TV})
         @Retention(RetentionPolicy.SOURCE)
         public @interface DeviceType {}
 
@@ -560,7 +562,7 @@ public final class SillyAndroid {
      * @param context Which context to use to check
      * @return {@code True} if there is a non-WiFi network connected, {@code false} if not
      */
-    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
     public static boolean isNonWifiNetworkConnected(@NonNull final Context context) {
         final ConnectivityManager connectivityManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo networkInfo = connectivityManager == null ? null : connectivityManager.getActiveNetworkInfo();
@@ -578,7 +580,7 @@ public final class SillyAndroid {
      * @param context Which context to use to check
      * @return {@code True} if there is any network connected, {@code false} if not
      */
-    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
     public static boolean isNetworkConnected(@NonNull final Context context) {
         return isWifiConnected(context) || isNonWifiNetworkConnected(context);
     }
@@ -619,6 +621,46 @@ public final class SillyAndroid {
      */
     public static boolean isVoiceInputAvailable(@NonNull final Context context) {
         return canHandleIntent(context, new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH));
+    }
+
+    /**
+     * Shows a {@link android.widget.Toast} message with its length set to {@link android.widget.Toast#LENGTH_SHORT}.
+     *
+     * @param context  Which context to use
+     * @param stringId The message to show
+     */
+    public static void toastShort(@NonNull final Context context, @StringRes final int stringId) {
+        Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Shows a {@link android.widget.Toast} message with its length set to {@link android.widget.Toast#LENGTH_SHORT}.
+     *
+     * @param context Which context to use
+     * @param string  The message to show
+     */
+    public static void toastShort(@NonNull final Context context, @NonNull final String string) {
+        Toast.makeText(context, string, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Shows a {@link android.widget.Toast} message with its length set to {@link android.widget.Toast#LENGTH_LONG}.
+     *
+     * @param context  Which context to use
+     * @param stringId The message to show
+     */
+    public static void toastLong(@NonNull final Context context, @StringRes final int stringId) {
+        Toast.makeText(context, stringId, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Shows a {@link android.widget.Toast} message with its length set to {@link android.widget.Toast#LENGTH_LONG}.
+     *
+     * @param context Which context to use
+     * @param string  The message to show
+     */
+    public static void toastLong(@NonNull final Context context, @NonNull final String string) {
+        Toast.makeText(context, string, Toast.LENGTH_LONG).show();
     }
 
 }

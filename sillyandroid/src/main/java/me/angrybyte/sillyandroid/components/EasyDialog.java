@@ -1,4 +1,4 @@
-package me.angrybyte.sillyandroid;
+package me.angrybyte.sillyandroid.components;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -15,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.RequiresPermission;
+import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.annotation.UiThread;
 import android.support.v4.content.ContextCompat;
@@ -24,12 +25,15 @@ import android.view.View;
 
 import java.io.Closeable;
 
+import me.angrybyte.sillyandroid.SillyAndroid;
+import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
+
 /**
  * An extension of {@link android.app.Dialog} with applied extensions from {@link SillyAndroid} extension set.
  */
 @UiThread
-@SuppressWarnings({ "unused", "WeakerAccess" })
-public class EasyDialog extends Dialog {
+@SuppressWarnings({"unused", "WeakerAccess"})
+public class EasyDialog extends Dialog implements LayoutWrapper {
 
     /**
      * Creates a dialog window that uses the default dialog theme.
@@ -87,14 +91,14 @@ public class EasyDialog extends Dialog {
     /**
      * Returns the result from {@link SillyAndroid#getContentView(android.app.Activity)}.
      */
-    public <ViewType extends android.view.View> ViewType getContentView() {
+    public <ViewType extends View> ViewType getContentView() {
         return SillyAndroid.getContentView(this);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#findViewById(android.support.v4.app.Fragment, int)}.
      */
-    public <ViewType extends EasyView> ViewType findView(@IdRes final int viewId) {
+    public <ViewType extends View> ViewType findView(@IdRes final int viewId) {
         return SillyAndroid.findViewById(this, viewId);
     }
 
@@ -166,7 +170,7 @@ public class EasyDialog extends Dialog {
     /**
      * Returns the result from {@link SillyAndroid#isNetworkConnected(Context)}.
      */
-    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
     public boolean isNetworkConnected() {
         return SillyAndroid.isNetworkConnected(getContext());
     }
@@ -176,6 +180,34 @@ public class EasyDialog extends Dialog {
      */
     public boolean isVoiceInputAvailable() {
         return SillyAndroid.isVoiceInputAvailable(getContext());
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastShort(Context, int)}.
+     */
+    public void toastShort(@StringRes final int stringId) {
+        SillyAndroid.toastShort(getContext(), stringId);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastShort(Context, String)}.
+     */
+    public void toastShort(@NonNull final String string) {
+        SillyAndroid.toastShort(getContext(), string);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastLong(Context, int)}.
+     */
+    public void toastLong(@StringRes final int stringId) {
+        SillyAndroid.toastLong(getContext(), stringId);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastLong(Context, String)}.
+     */
+    public void toastLong(@NonNull final String string) {
+        SillyAndroid.toastLong(getContext(), string);
     }
 
 }

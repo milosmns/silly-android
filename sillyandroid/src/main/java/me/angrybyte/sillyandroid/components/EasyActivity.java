@@ -1,7 +1,8 @@
-package me.angrybyte.sillyandroid;
+package me.angrybyte.sillyandroid.components;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -17,10 +18,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.RequiresPermission;
+import android.support.annotation.StringRes;
 import android.support.annotation.UiThread;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.View;
@@ -32,44 +34,40 @@ import java.util.HashSet;
 import java.util.Set;
 
 import me.angrbyte.sillyandroid.BuildConfig;
+import me.angrybyte.sillyandroid.SillyAndroid;
+import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 
 /**
- * An extension of {@link Fragment} with applied extensions from {@link SillyAndroid} extension set.
+ * An extension of {@link AppCompatActivity} with applied extensions from {@link SillyAndroid} extension set.
  */
 @UiThread
 @SuppressWarnings("unused")
-public class EasyFragment extends Fragment {
-
-    /**
-     * Finds the proper Context from either {@link Fragment#getContext()} or {@link #getActivity()}.
-     * Activity comes first if both are not {@code null}.
-     *
-     * @return A Context instance, or {@code null} if this fragment is not attached to a context yet
-     */
-    @Nullable
-    public final Context getContext() {
-        return getActivity() == null ? super.getContext() : getActivity();
-    }
+public class EasyActivity extends AppCompatActivity implements LayoutWrapper {
 
     /**
      * Returns the result from {@link SillyAndroid#countIntentHandlers(Context, Intent)}.
      */
     @IntRange(from = 0)
     public int countIntentHandlers(@Nullable final Intent intent) {
-        final Context context = getContext();
-        return context == null ? 0 : SillyAndroid.countIntentHandlers(context, intent);
+        return SillyAndroid.countIntentHandlers(this, intent);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#canHandleIntent(Context, Intent)}.
      */
     public boolean canHandleIntent(@Nullable final Intent intent) {
-        final Context context = getContext();
-        return context != null && SillyAndroid.canHandleIntent(context, intent);
+        return SillyAndroid.canHandleIntent(this, intent);
     }
 
     /**
-     * Returns the result from {@link SillyAndroid#findViewById(Fragment, int)}.
+     * Returns the result from {@link SillyAndroid#getContentView(Activity)}.
+     */
+    public <ViewType extends View> ViewType getContentView() {
+        return SillyAndroid.getContentView(this);
+    }
+
+    /**
+     * Returns the result from {@link SillyAndroid#findViewById(Activity, int)}.
      */
     public <ViewType extends View> ViewType findView(@IdRes final int viewId) {
         return SillyAndroid.findViewById(this, viewId);
@@ -116,8 +114,7 @@ public class EasyFragment extends Fragment {
      */
     @Nullable
     public Drawable getDrawableCompat(@DrawableRes final int drawableId) {
-        final Context context = getContext();
-        return context == null ? null : ContextCompat.getDrawable(context, drawableId);
+        return ContextCompat.getDrawable(this, drawableId);
     }
 
     /**
@@ -144,18 +141,44 @@ public class EasyFragment extends Fragment {
     /**
      * Returns the result from {@link SillyAndroid#isNetworkConnected(Context)}.
      */
-    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
     public boolean isNetworkConnected() {
-        final Context context = getContext();
-        return context != null && SillyAndroid.isNetworkConnected(context);
+        return SillyAndroid.isNetworkConnected(this);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#isVoiceInputAvailable(Context)}.
      */
     public boolean isVoiceInputAvailable() {
-        final Context context = getContext();
-        return context != null && SillyAndroid.isVoiceInputAvailable(context);
+        return SillyAndroid.isVoiceInputAvailable(this);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastShort(Context, int)}.
+     */
+    public void toastShort(@StringRes final int stringId) {
+        SillyAndroid.toastShort(this, stringId);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastShort(Context, String)}.
+     */
+    public void toastShort(@NonNull final String string) {
+        SillyAndroid.toastShort(this, string);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastLong(Context, int)}.
+     */
+    public void toastLong(@StringRes final int stringId) {
+        SillyAndroid.toastLong(this, stringId);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastLong(Context, String)}.
+     */
+    public void toastLong(@NonNull final String string) {
+        SillyAndroid.toastLong(this, string);
     }
 
     /* Permissions */
@@ -168,8 +191,7 @@ public class EasyFragment extends Fragment {
      * for the given permission, {@code false} if it is {@code null} or not granted
      */
     protected boolean hasPermission(@Nullable String permission) {
-        final Context context = getContext();
-        return context != null && permission != null && ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
+        return permission != null && ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     /**

@@ -1,4 +1,4 @@
-package me.angrybyte.sillyandroid;
+package me.angrybyte.sillyandroid.components;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -9,17 +9,22 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.RequiresApi;
+import android.support.annotation.StringRes;
 import android.support.annotation.UiThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.view.View;
+
+import me.angrybyte.sillyandroid.SillyAndroid;
+import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 
 /**
  * An extension of {@link android.view.View} with applied extensions from {@link SillyAndroid} extension set.
  */
 @UiThread
 @SuppressWarnings("unused")
-public class EasyView extends android.view.View {
+public class EasyView extends View implements LayoutWrapper {
 
     /**
      * Simple constructor to use when creating a view from code.
@@ -126,6 +131,34 @@ public class EasyView extends android.view.View {
      */
     public void setPadding(@Px final int padding) {
         SillyAndroid.setPadding(this, padding);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastShort(Context, int)}.
+     */
+    public void toastShort(@StringRes final int stringId) {
+        SillyAndroid.toastShort(getContext(), stringId);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastShort(Context, String)}.
+     */
+    public void toastShort(@NonNull final String string) {
+        SillyAndroid.toastShort(getContext(), string);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastLong(Context, int)}.
+     */
+    public void toastLong(@StringRes final int stringId) {
+        SillyAndroid.toastLong(getContext(), stringId);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastLong(Context, String)}.
+     */
+    public void toastLong(@NonNull final String string) {
+        SillyAndroid.toastLong(getContext(), string);
     }
 
 }

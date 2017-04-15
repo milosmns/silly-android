@@ -1,8 +1,7 @@
-package me.angrybyte.sillyandroid;
+package me.angrybyte.sillyandroid.components;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -18,10 +17,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.RequiresPermission;
+import android.support.annotation.StringRes;
 import android.support.annotation.UiThread;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.View;
@@ -33,38 +33,46 @@ import java.util.HashSet;
 import java.util.Set;
 
 import me.angrbyte.sillyandroid.BuildConfig;
+import me.angrybyte.sillyandroid.SillyAndroid;
+import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 
 /**
- * An extension of {@link AppCompatActivity} with applied extensions from {@link SillyAndroid} extension set.
+ * An extension of {@link Fragment} with applied extensions from {@link SillyAndroid} extension set.
  */
 @UiThread
 @SuppressWarnings("unused")
-public class EasyActivity extends AppCompatActivity {
+public class EasyFragment extends Fragment implements LayoutWrapper {
+
+    /**
+     * Finds the proper Context from either {@link Fragment#getContext()} or {@link #getActivity()}.
+     * Activity comes first if both are not {@code null}.
+     *
+     * @return A Context instance, or {@code null} if this fragment is not attached to a context yet
+     */
+    @Nullable
+    public final Context getContext() {
+        return getActivity() == null ? super.getContext() : getActivity();
+    }
 
     /**
      * Returns the result from {@link SillyAndroid#countIntentHandlers(Context, Intent)}.
      */
     @IntRange(from = 0)
     public int countIntentHandlers(@Nullable final Intent intent) {
-        return SillyAndroid.countIntentHandlers(this, intent);
+        final Context context = getContext();
+        return context == null ? 0 : SillyAndroid.countIntentHandlers(context, intent);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#canHandleIntent(Context, Intent)}.
      */
     public boolean canHandleIntent(@Nullable final Intent intent) {
-        return SillyAndroid.canHandleIntent(this, intent);
+        final Context context = getContext();
+        return context != null && SillyAndroid.canHandleIntent(context, intent);
     }
 
     /**
-     * Returns the result from {@link SillyAndroid#getContentView(Activity)}.
-     */
-    public <ViewType extends View> ViewType getContentView() {
-        return SillyAndroid.getContentView(this);
-    }
-
-    /**
-     * Returns the result from {@link SillyAndroid#findViewById(Activity, int)}.
+     * Returns the result from {@link SillyAndroid#findViewById(Fragment, int)}.
      */
     public <ViewType extends View> ViewType findView(@IdRes final int viewId) {
         return SillyAndroid.findViewById(this, viewId);
@@ -111,7 +119,8 @@ public class EasyActivity extends AppCompatActivity {
      */
     @Nullable
     public Drawable getDrawableCompat(@DrawableRes final int drawableId) {
-        return ContextCompat.getDrawable(this, drawableId);
+        final Context context = getContext();
+        return context == null ? null : ContextCompat.getDrawable(context, drawableId);
     }
 
     /**
@@ -138,16 +147,58 @@ public class EasyActivity extends AppCompatActivity {
     /**
      * Returns the result from {@link SillyAndroid#isNetworkConnected(Context)}.
      */
-    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
     public boolean isNetworkConnected() {
-        return SillyAndroid.isNetworkConnected(this);
+        final Context context = getContext();
+        return context != null && SillyAndroid.isNetworkConnected(context);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#isVoiceInputAvailable(Context)}.
      */
     public boolean isVoiceInputAvailable() {
-        return SillyAndroid.isVoiceInputAvailable(this);
+        final Context context = getContext();
+        return context != null && SillyAndroid.isVoiceInputAvailable(context);
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastShort(Context, int)}.
+     */
+    public void toastShort(@StringRes final int stringId) {
+        final Context context = getContext();
+        if (context != null) {
+            SillyAndroid.toastShort(getContext(), stringId);
+        }
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastShort(Context, String)}.
+     */
+    public void toastShort(@NonNull final String string) {
+        final Context context = getContext();
+        if (context != null) {
+            SillyAndroid.toastShort(getContext(), string);
+        }
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastLong(Context, int)}.
+     */
+    public void toastLong(@StringRes final int stringId) {
+        final Context context = getContext();
+        if (context != null) {
+            SillyAndroid.toastLong(getContext(), stringId);
+        }
+    }
+
+    /**
+     * Invokes {@link SillyAndroid#toastLong(Context, String)}.
+     */
+    public void toastLong(@NonNull final String string) {
+        final Context context = getContext();
+        if (context != null) {
+            SillyAndroid.toastLong(getContext(), string);
+        }
     }
 
     /* Permissions */
@@ -160,7 +211,8 @@ public class EasyActivity extends AppCompatActivity {
      * for the given permission, {@code false} if it is {@code null} or not granted
      */
     protected boolean hasPermission(@Nullable String permission) {
-        return permission != null && ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+        final Context context = getContext();
+        return context != null && permission != null && ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
