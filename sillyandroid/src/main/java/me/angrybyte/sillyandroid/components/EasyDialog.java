@@ -32,7 +32,7 @@ import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
  * An extension of {@link android.app.Dialog} with applied extensions from {@link SillyAndroid} extension set.
  */
 @UiThread
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({ "unused", "WeakerAccess" })
 public class EasyDialog extends Dialog implements LayoutWrapper {
 
     /**
@@ -170,7 +170,7 @@ public class EasyDialog extends Dialog implements LayoutWrapper {
     /**
      * Returns the result from {@link SillyAndroid#isNetworkConnected(Context)}.
      */
-    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
+    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
     public boolean isNetworkConnected() {
         return SillyAndroid.isNetworkConnected(getContext());
     }

@@ -2,11 +2,14 @@
 package me.angrybyte.sillyandroid.parsable;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -15,6 +18,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A runtime annotation processor for annotations like {@link Annotations.FindView}, {@link Annotations.Layout}, {@link Annotations.Clickable} and similar.
+ * Note that using this parser slows down your initialization due to JVM reflection cost, but it gets quicker as the parser uses its {@link #FIELD_CACHE}
+ * more and more.
+ * <br>
+ * To parse annotations like {@link Annotations.Layout} you need to use {@link #parseType(Context, Object)}, and to parse annotations like
+ * {@link Annotations.FindView} you need to use {@link #parseFields(Context, Object, LayoutWrapper)}.
+ *
+ * @see me.angrybyte.sillyandroid.parsable.Annotations
+ */
 @SuppressWarnings("WeakerAccess")
 public final class AnnotationParser {
 
@@ -25,16 +38,17 @@ public final class AnnotationParser {
 
     /**
      * Checks for usable annotations on the given Object, and sets the corresponding properties on the instance.
+     * For example, the 'menu' annotation will set the {@code mMenuId} field, while the 'layout' annotation sets the {@code mLayoutId} field.
      *
      * @param context  Which context to use
      * @param instance A non-{@code null} Object that was instantiated from the type being parsed
      */
     public static void parseType(@NonNull final Context context, @NonNull final Object instance) {
-        Class<?> currentClass = instance.getClass();
+        final Class<?> parsedClass = instance.getClass();
 
         // look for the @Menu annotation
-        if (currentClass.isAnnotationPresent(Annotations.Menu.class)) {
-            Annotations.Menu annotation = currentClass.getAnnotation(Annotations.Menu.class);
+        if (parsedClass.isAnnotationPresent(Annotations.Menu.class)) {
+            Annotations.Menu annotation = parsedClass.getAnnotation(Annotations.Menu.class);
             int menuId = annotation.value();
             if (menuId == -1) {
                 // ID not provided, check the name
@@ -49,8 +63,8 @@ public final class AnnotationParser {
         }
 
         // look for the @Layout annotation
-        if (currentClass.isAnnotationPresent(Annotations.Layout.class)) {
-            Annotations.Layout annotation = currentClass.getAnnotation(Annotations.Layout.class);
+        if (parsedClass.isAnnotationPresent(Annotations.Layout.class)) {
+            Annotations.Layout annotation = parsedClass.getAnnotation(Annotations.Layout.class);
             int layoutId = annotation.value();
             if (layoutId == -1) {
                 // ID not provided, check the name
@@ -68,6 +82,20 @@ public final class AnnotationParser {
     /**
      * Tries to parse the given Object, looking for Views with usable annotations such as {@link Annotations.FindView}, {@link Annotations.Clickable},
      * {@link Annotations.LongClickable} and similar.
+     * For example, to find a 'title text view' and make it clickable, in your {@link LayoutWrapper} implementation (i.e. activity, fragment, etc) specify:
+     * <br>
+     * <pre>
+     *     &#64;Clickable
+     *     &#64;FindView(R.id.titleTextView)
+     *     private TextView mTitleTextView;
+     * </pre>
+     * After this, you need to call this method to properly initialize all fields. It's best to do it in
+     * your {@link android.app.Activity#onCreate(Bundle)} or {@link android.app.Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)} methods after
+     * setting up the content view. To be able to use {@link Annotations.Clickable} and {@link Annotations.LongClickable}, your {@code instance} needs to
+     * implement {@link android.view.View.OnClickListener} and {@link android.view.View.OnLongClickListener} respectively.
+     * <p>
+     * <b>Note</b>: Some library classes already implement these operation chains by default; for examples see: {@link me.angrybyte.sillyandroid.parsable}
+     * </p>
      *
      * @param context  Which context to use
      * @param instance A non-{@code null} instance that holds the annotated fields being parsed
@@ -76,19 +104,19 @@ public final class AnnotationParser {
      */
     public static SparseArray<View> parseFields(@NonNull final Context context, @NonNull final Object instance, @NonNull final LayoutWrapper wrapper) {
         // find all fields
-        SparseArray<View> parsedFields = new SparseArray<>();
-        List<Field> allFields = getAllFields(instance.getClass());
+        final SparseArray<View> parsedFields = new SparseArray<>();
+        final List<Field> allFields = getAllFields(instance.getClass());
 
         // run through all fields
-        for (Field iField : allFields) {
+        for (final Field iField : allFields) {
             // check for annotations - click/long-click makes no sense when field is not parsed through this
             if (iField.isAnnotationPresent(Annotations.FindView.class)) {
-                View v = findAndSetView(context, instance, wrapper, iField);
+                final View v = findAndSetView(context, instance, wrapper, iField);
                 if (v == null) {
                     continue; // happens when 'safe' is set for @FindView and View is not found
                 }
                 parsedFields.put(v.getId(), v);
-                
+
                 // add listeners
                 if (iField.isAnnotationPresent(Annotations.Clickable.class) && (instance instanceof View.OnClickListener)) {
                     setClickListener(v, (View.OnClickListener) instance);
@@ -134,7 +162,7 @@ public final class AnnotationParser {
     private static boolean setFieldValue(@NonNull final Object instance, final int value, @NonNull final String fieldName) {
         // check the cache first (iterating is much faster than reflection)
         Field fieldReference = null;
-        for (Field iField : getAllFields(instance.getClass())) {
+        for (final Field iField : getAllFields(instance.getClass())) {
             if (iField.getName().equals(instance.getClass().getName())) {
                 // found it!
                 fieldReference = iField;
@@ -189,9 +217,9 @@ public final class AnnotationParser {
     @Nullable
     private static View findAndSetView(@NonNull final Context context, @NonNull final Object instance, @NonNull final LayoutWrapper wrapper,
                                        @NonNull final Field field) {
-        // check @FindView annotation, don't crash when 'safe' is set
-        Annotations.FindView annotation = field.getAnnotation(Annotations.FindView.class);
-        boolean safeFail = annotation.safeFail();
+        // check 'find view' annotation, don't crash when 'safe' is set
+        final Annotations.FindView annotation = field.getAnnotation(Annotations.FindView.class);
+        final boolean safeFail = annotation.safeFail();
         int viewId = annotation.value();
         if (viewId == -1) {
             // ID not provided, check the name
@@ -206,7 +234,7 @@ public final class AnnotationParser {
 
         try {
             // view ID is valid, try to find it
-            View v = wrapper.findView(viewId);
+            final View v = wrapper.findView(viewId);
             if (v == null && !safeFail) {
                 throw new RuntimeException("View not found for " + field + " in " + instance.getClass().getName());
             } else if (v == null) {

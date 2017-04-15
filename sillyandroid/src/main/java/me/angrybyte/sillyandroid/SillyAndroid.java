@@ -44,8 +44,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-import me.angrbyte.sillyandroid.R;
-
 import static android.content.ContentValues.TAG;
 
 /**
@@ -60,7 +58,7 @@ public final class SillyAndroid {
     @SuppressWarnings("unused")
     public static final class UI {
 
-        @IntDef({PHONE_PORT, PHONE_LAND, TAB_PORT, TAB_LAND, TABLET_PORT, TABLET_LAND, WATCH, TV})
+        @IntDef({ PHONE_PORT, PHONE_LAND, TAB_PORT, TAB_LAND, TABLET_PORT, TABLET_LAND, WATCH, TV })
         @Retention(RetentionPolicy.SOURCE)
         public @interface DeviceType {}
 
@@ -562,7 +560,7 @@ public final class SillyAndroid {
      * @param context Which context to use to check
      * @return {@code True} if there is a non-WiFi network connected, {@code false} if not
      */
-    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
+    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
     public static boolean isNonWifiNetworkConnected(@NonNull final Context context) {
         final ConnectivityManager connectivityManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo networkInfo = connectivityManager == null ? null : connectivityManager.getActiveNetworkInfo();
@@ -580,7 +578,7 @@ public final class SillyAndroid {
      * @param context Which context to use to check
      * @return {@code True} if there is any network connected, {@code false} if not
      */
-    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
+    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
     public static boolean isNetworkConnected(@NonNull final Context context) {
         return isWifiConnected(context) || isNonWifiNetworkConnected(context);
     }

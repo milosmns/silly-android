@@ -6,6 +6,7 @@ import android.view.View;
 /**
  * A quick and easy way to denote all wrapper classes capable of looking up Views by their IDs.
  */
+@FunctionalInterface
 public interface LayoutWrapper {
 
     /**

@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import me.angrbyte.sillyandroid.BuildConfig;
+import me.angrybyte.sillyandroid.BuildConfig;
 import me.angrybyte.sillyandroid.SillyAndroid;
 import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 
@@ -141,7 +141,7 @@ public class EasyActivity extends AppCompatActivity implements LayoutWrapper {
     /**
      * Returns the result from {@link SillyAndroid#isNetworkConnected(Context)}.
      */
-    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
+    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
     public boolean isNetworkConnected() {
         return SillyAndroid.isNetworkConnected(this);
     }
@@ -214,7 +214,7 @@ public class EasyActivity extends AppCompatActivity implements LayoutWrapper {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // invalid case?
         if (permissions.length == 0 || grantResults.length == 0) {
-            onPermissionsResult(requestCode, Collections.<String>emptySet(), Collections.<String>emptySet());
+            onPermissionsResult(requestCode, Collections.emptySet(), Collections.emptySet());
             return;
         }
 
