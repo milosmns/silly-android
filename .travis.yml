@@ -1,40 +1,54 @@
+# Basic runner configuration 
+os: linux
 language: android
-install: true
 sudo: false # Required for the new container-based infrastructure setup
 
-# Enable both JDK configurations that are supported in the project
+# Enable only JDK 8, source does not build with JDK 7
 addons:
   apt:
     packages:
       - oracle-java8-installer
-      - oracle-java7-installer
-jdk:
-  - oraclejdk8
-  - oraclejdk7
+jdk: oraclejdk8
+
+# ************************************************* #
+#                                                   #
+# Don't forget to check versions in '/build.gradle' #
+#                                                   #
+# ************************************************* #
+
+# Pre-configuration step (accept all licenses manually)
+install:
+  - echo y | android update sdk -u -a -t tools-26.0.1
+  - echo y | android update sdk -u -a -t platform-tools-25.0.4
+  - echo y | android update sdk -u -a -t build-tools-25.0.2
+  - echo y | android update sdk -u -a -t android-25
+  - echo y | android update sdk -u -a -t extra-google-m2repository
+  - echo y | android update sdk -u -a -t extra-android-m2repository
+  - echo y | android update sdk -u -a -t extra-google-android-support
+  - echo y | android update sdk -u -a -t addon-google_apis-google-25
 
 # Configure Android
 android:
   components:
-    # Build script config; don't forget to check constants in '/build.gradle'
+    # Build script config
+    - tools-26.0.1
     - build-tools-25.0.2
     - platform-tools-25.0.4
-    - tools-26.0.1
-    - add-on
-    - extra
     
     # Compile SDK
     - android-25
 
     # Additional components
-    # - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
+    - extra-google-android-support
     - addon-google_apis-google-25
     
-    # Auto-accept licenses
-    - 'android-sdk-preview-license-*'
-    - 'android-sdk-license-.+'
-    - 'google-gdk-license-.+'
+    # Auto-accept these licenses
+    licenses:
+      - 'android-sdk-preview-license-.+'
+      - 'android-sdk-license-.+'
+      - 'google-gdk-license-.+'
 
     # To run emulator(s) during tests, enable these:
     # - sys-img-armeabi-v7a-android-25
@@ -46,7 +60,7 @@ android:
 # Use Gradle's cache (unlock on start)
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
     - $HOME/.gradle/caches/
@@ -55,8 +69,6 @@ cache:
     
 # Execute the script
 script:
-  - # Use Java 8 first
-  - jdk_switcher use oraclejdk8
   - ./gradlew clean
   - ./gradlew sillyandroid:build
   - ./gradlew sillyandroid:test
@@ -64,15 +76,4 @@ script:
   - ./gradlew demo:assembleDebug # release?
   - ./gradlew demo:test
   # - ./gradlew demo:connectedCheck # need an emulator for this
-  - echo "Java 8 test done!"
   
-  - # Use Java 7 after Java 8 passes
-  - jdk_switcher use oraclejdk7
-  - ./gradlew clean
-  - ./gradlew sillyandroid:build
-  - ./gradlew sillyandroid:test
-  - ./gradlew demo:build
-  - ./gradlew demo:assembleDebug # release?
-  - ./gradlew demo:test
-  # - ./gradlew demo:connectedCheck # need an emulator for this
-  - echo "Java 7 test done!"
