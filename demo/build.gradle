@@ -3,13 +3,13 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'checkstyle'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion COMPILE_SDK
+    buildToolsVersion BUILD_TOOLS
 
     defaultConfig {
         applicationId 'me.angrybyte.sillyandroid.demo'
-        minSdkVersion 9
-        targetSdkVersion 25
+        minSdkVersion MINIMUM_SDK
+        targetSdkVersion TARGET_SDK
         versionCode VERSION_CODE
         versionName VERSION_NAME
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -36,11 +36,11 @@ dependencies {
     // compile "me.angrybyte.sillyandroid:sillyandroid:$VERSION_NAME" // global
     compile project(':sillyandroid') // local
 
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestCompile("com.android.support.test.espresso:espresso-core:$ESPRESSO", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
+    compile "com.android.support:appcompat-v7:$APPCOMPAT"
+    compile "com.android.support.constraint:constraint-layout:$CONSTRAINT"
+    testCompile "junit:junit:$JUNIT"
 }

@@ -16,13 +16,27 @@ plugins {
     id "me.tatarka.retrolambda" version "3.6.0"
 }
 
-ext {
-    VERSION_CODE = 12
-    VERSION_NAME = "0.9"
-}
-
 allprojects {
     repositories {
         jcenter()
+        mavenCentral()
     }
+}
+
+ext {
+    // app/library versions
+    VERSION_CODE = 12
+    VERSION_NAME = "0.9"
+
+    // don't forget to update CI config in: '.travis.yml'
+    BUILD_TOOLS = "25.0.2"
+    MINIMUM_SDK = 9
+    COMPILE_SDK = 25
+    TARGET_SDK = 25
+
+    // app/library module dependency versions
+    APPCOMPAT = "25.3.1"
+    ESPRESSO = "2.2.2"
+    CONSTRAINT = "1.0.2"
+    JUNIT = "4.12"
 }
