@@ -1,3 +1,8 @@
+// MM load from environment variables if properties are not there
+if (!project.rootProject.file('local.properties').exists()) {
+    println 'local.properties not found, skipping verification'
+}
+
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
