@@ -44,12 +44,6 @@ android:
     - extra-android-m2repository
     - extra-google-android-support
     - addon-google_apis-google-25
-    
-    # Auto-accept these licenses
-    licenses:
-      - 'android-sdk-preview-license-.+'
-      - 'android-sdk-license-.+'
-      - 'google-gdk-license-.+'
 
     # To run emulator(s) during tests, enable these:
     # - sys-img-armeabi-v7a-android-25
