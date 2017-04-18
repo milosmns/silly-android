@@ -1,0 +1,74 @@
+# Basic runner configuration 
+os: linux
+language: android
+sudo: false # Required for the new container-based infrastructure setup
+
+# Enable only JDK 8, source does not build with JDK 7
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+jdk: oraclejdk8
+
+# ************************************************* #
+#                                                   #
+# Don't forget to check versions in '/build.gradle' #
+#                                                   #
+# ************************************************* #
+
+# Pre-configuration step (accept all licenses manually)
+install:
+  - echo y | android update sdk -u -a -t tools
+  - echo y | android update sdk -u -a -t platform-tools-25.0.4
+  - echo y | android update sdk -u -a -t build-tools-25.0.2
+  - echo y | android update sdk -u -a -t android-25
+  - echo y | android update sdk -u -a -t extra-google-m2repository
+  - echo y | android update sdk -u -a -t extra-android-m2repository
+  - echo y | android update sdk -u -a -t extra-google-android-support
+  - echo y | android update sdk -u -a -t addon-google_apis-google-25
+
+# Configure Android
+android:
+  # Build script config
+  components:
+    - tools # Workaround part 1: Get the new `repository-*.xml`
+    - tools # Workaround part 1: Install latest Android SDK tools
+    - build-tools-25.0.2
+    - platform-tools-25.0.4
+    
+    # Compile SDK
+    - android-25
+
+    # Additional components
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - extra-google-android-support
+    - addon-google_apis-google-25
+
+    # To run emulator(s) during tests, enable these:
+    # - sys-img-armeabi-v7a-android-25
+    # - sys-img-armeabi-v7a-android-21
+    # - sys-img-armeabi-v7a-android-19
+    # - sys-img-armeabi-v7a-android-14
+    # - sys-img-armeabi-v7a-android-9
+    
+# Use Gradle's cache (unlock on start)
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
+    
+# Execute the script
+script:
+  - ./gradlew clean
+  - ./gradlew sillyandroid:build
+  - ./gradlew sillyandroid:test
+  - ./gradlew demo:build
+  - ./gradlew demo:assembleDebug # release?
+  - ./gradlew demo:test
+  # - ./gradlew demo:connectedCheck # need an emulator for this
+  
