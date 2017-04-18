@@ -29,8 +29,8 @@ install:
 
 # Configure Android
 android:
+  # Build script config
   components:
-    # Build script config
     - tools # Workaround part 1: Get the new `repository-*.xml`
     - tools # Workaround part 1: Install latest Android SDK tools
     - build-tools-25.0.2
