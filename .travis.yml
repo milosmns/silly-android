@@ -26,8 +26,9 @@ install:
   - echo y | android update sdk -u -a -t extra-android-m2repository
   - echo y | android update sdk -u -a -t extra-google-android-support
   - echo y | android update sdk -u -a -t addon-google_apis-google-25
-  - echo y | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
-  - echo y | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
+  - echo y | android update sdk -u -a -t constraint
+  - echo y | android update sdk -u -a -t constraint-layout-1.0.2
+  - echo y | android update sdk -u -a -t constraint-layout-solver-1.0.2
  
 # Configure Android
 android:
