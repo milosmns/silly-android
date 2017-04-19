@@ -1,30 +1,14 @@
 # Basic runner configuration 
 os: linux
 language: android
-sudo: true # Required for the new container-based infrastructure setup
+sudo: false # Required for the new container-based infrastructure setup
 
 # Setup environment variables
 env:
   global:
-    - GRADLE_USER_HOME=${TRAVIS_BUILD_DIR}/gradle
-    - ANDROID_HOME=${TRAVIS_BUILD_DIR}/android-sdk
-    - SDK=${TRAVIS_BUILD_DIR}/android-sdk
-    - OLD_SDK=/usr/local/android-sdk-25.0.2
-    - PATH=${GRADLE_USER_HOME}/bin/:${SDK}/:${SDK}/tools/:${SDK}/platform-tools/:${PATH}
-
-# Copy over the old SDK (create if doesn't exist). Don't fail even if nothing is copied
-before_install:
-  - mkdir -p ${SDK} || true
-  - mkdir -p ${OLD_SDK}/tools || true
-  - mkdir -p ${OLD_SDK}/platforms || true
-  - mkdir -p ${OLD_SDK}/system-images || true
-  - mkdir -p ${OLD_SDK}/platform-tools || true
-  - mkdir -p ${OLD_SDK}/licenses || true
-  - cp -u -R ${OLD_SDK}/tools ${SDK}/tools || true
-  - cp -u -R ${OLD_SDK}/platforms ${SDK}/platforms || true
-  - cp -u -R ${OLD_SDK}/system-images ${SDK}/system-images || true
-  - cp -u -R ${OLD_SDK}/platform-tools ${SDK}/platform-tools || true
-  - cp -u -R ${OLD_SDK}/licenses ${SDK}/licenses || true
+    - PLATFORM_TOOLS=25.0.4
+    - BUILD_TOOLS=25.0.2
+    - COMPILE_SDK=25
 
 # Enable only JDK 8, source does not build with JDK 7
 addons:
@@ -42,13 +26,13 @@ jdk: oraclejdk8
 # Pre-configuration step (accept all licenses manually)
 install:
   - echo y | android update sdk -u -a -t tools
-  - echo y | android update sdk -u -a -t platform-tools-25.0.4
-  - echo y | android update sdk -u -a -t build-tools-25.0.2
-  - echo y | android update sdk -u -a -t android-25
+  - echo y | android update sdk -u -a -t platform-tools-${PLATFORM_TOOLS}
+  - echo y | android update sdk -u -a -t build-tools-${BUILD_TOOLS}
+  - echo y | android update sdk -u -a -t android-${COMPILE_SDK}
   - echo y | android update sdk -u -a -t extra-google-m2repository
   - echo y | android update sdk -u -a -t extra-android-m2repository
   - echo y | android update sdk -u -a -t extra-google-android-support
-  - echo y | android update sdk -u -a -t addon-google_apis-google-25
+  - echo y | android update sdk -u -a -t addon-google_apis-google-${COMPILE_SDK}
  
 # Configure Android
 android:
@@ -63,11 +47,11 @@ android:
   components:
     - tools # Workaround part 1: Get the new `repository-*.xml`
     - tools # Workaround part 1: Install latest Android SDK tools
-    - build-tools-25.0.2
-    - platform-tools-25.0.4
+    - build-tools-${BUILD_TOOLS}
+    - platform-tools-${PLATFORM_TOOLS}
     
     # Compile SDK
-    - android-25
+    - android-${COMPILE_SDK}
 
     # Additional components
     - extra-google-m2repository
