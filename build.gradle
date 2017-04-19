@@ -37,6 +37,5 @@ ext {
     // app/library module dependency versions
     APPCOMPAT = "25.3.1"
     ESPRESSO = "2.2.2"
-    CONSTRAINT = "1.0.2"
     JUNIT = "4.12"
 }
