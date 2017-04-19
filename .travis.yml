@@ -26,9 +26,18 @@ install:
   - echo y | android update sdk -u -a -t extra-android-m2repository
   - echo y | android update sdk -u -a -t extra-google-android-support
   - echo y | android update sdk -u -a -t addon-google_apis-google-25
-
+  - echo y | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
+  - echo y | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
+ 
 # Configure Android
 android:
+  # Auto-accept these licenses
+  licenses:
+    - 'android-sdk-preview-license-.+'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
+    - '.+'
+    
   # Build script config
   components:
     - tools # Workaround part 1: Get the new `repository-*.xml`
