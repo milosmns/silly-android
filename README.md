@@ -2,6 +2,7 @@ Silly Android (WIP)
 ===================
 [![Build Status](https://travis-ci.org/milosmns/silly-android.svg?branch=master)](https://travis-ci.org/milosmns/silly-android)
 [![CodeCov](https://codecov.io/gh/milosmns/silly-android/branch/master/graph/badge.svg)](https://codecov.io/gh/milosmns/silly-android)
+[![Download](https://api.bintray.com/packages/milosmns/maven/sillyandroid/images/download.svg)](https://bintray.com/milosmns/maven/sillyandroid/_latestVersion)
 
 What is this?
 -------------
