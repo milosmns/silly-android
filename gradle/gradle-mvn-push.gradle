@@ -1,7 +1,10 @@
 // MM load from environment variables if properties are not there
+ext.projectName = project.rootProject.name
 if (!project.rootProject.file('local.properties').exists()) {
-    println 'local.properties not found, skipping verification'
+    println "# $projectName: local.properties not found, skipping file configuration"
+    return
 }
+println "# $projectName: local.properties found, using configuration from file"
 
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
@@ -88,8 +91,8 @@ if (project.getPlugins().hasPlugin('com.android.application') || project.getPlug
     task androidJavadocs(type: Javadoc) {
         source = android.sourceSets.main.java.source
         classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-        failOnError false
-        println('Configuring Android javadocs...')
+        failOnError true
+        println "# $projectName: Configured Android javadocs"
     }
 
     task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
@@ -146,9 +149,9 @@ if (project.getPlugins().hasPlugin('com.android.application') || project.getPlug
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
-        from javadoc.destinationDir
+        from javadoc.getDestinationDir()
         failOnError false
-        println('Configuring Java javadocs...')
+        println "# $projectName: Configured JAR javadocs"
     }
 }
 
