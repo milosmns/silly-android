@@ -323,7 +323,7 @@ public final class Coloring {
      */
     @NonNull
     public static Drawable colorDrawable(@NonNull final Resources resources, @NonNull final Drawable drawable, @ColorInt final int color) {
-        if (drawable instanceof VectorDrawable) {
+        if (drawable instanceof VectorDrawable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return colorVectorDrawable((VectorDrawable) drawable, color);
         }
 
@@ -460,6 +460,7 @@ public final class Coloring {
      * @return The same instance with the color filter applied
      */
     @NonNull
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     public static Drawable colorVectorDrawable(@NonNull final VectorDrawable vectorDrawable, @ColorInt final int color) {
         vectorDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
         return vectorDrawable;

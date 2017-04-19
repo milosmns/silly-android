@@ -2,7 +2,6 @@ package me.angrybyte.sillyandroid.demo;
 
 import android.os.Bundle;
 
-import me.angrbyte.sillyandroid.demo.R;
 import me.angrybyte.sillyandroid.components.EasyActivity;
 
 public final class MainActivity extends EasyActivity {
