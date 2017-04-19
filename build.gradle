@@ -5,15 +5,14 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.1'
+        classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1' // JaCoCo Android tests
     }
 }
 
 plugins {
-    // used for uploading to jCenter and mavenCentral
-    id "com.github.dcendents.android-maven" version "1.5"
-    id "com.jfrog.bintray" version "1.7.3"
-    // allowing Lambdas on Java8-
-    id "me.tatarka.retrolambda" version "3.6.0"
+    id "com.github.dcendents.android-maven" version "1.5" // used for uploading to mavenCentral
+    id "com.jfrog.bintray" version "1.7.3" // used for uploading to jCenter
+    id "me.tatarka.retrolambda" version "3.6.0" // allowing Lambdas on Java 7 and older
 }
 
 allprojects {
