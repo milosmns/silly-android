@@ -24,8 +24,8 @@ allprojects {
 
 ext {
     // app/library versions
-    VERSION_CODE = 14
-    VERSION_NAME = "0.11"
+    VERSION_CODE = 15
+    VERSION_NAME = "0.12"
 
     // don't forget to update CI config in: '.travis.yml'
     BUILD_TOOLS = "25.0.2"
