@@ -14,15 +14,15 @@ env:
 
 # Copy over the old SDK (create if doesn't exist)
 before_install:
-  - mkdir -p ${SDK}
-  - mkdir -p ${OLD_SDK}/tools
-  - mkdir -p ${OLD_SDK}/platforms
-  - mkdir -p ${OLD_SDK}/system-images
-  - mkdir -p ${OLD_SDK}/platform-tools
-  - cp -u -R ${OLD_SDK}/tools ${SDK}/tools
-  - cp -u -R ${OLD_SDK}/platforms ${SDK}/platforms
-  - cp -u -R ${OLD_SDK}/system-images ${SDK}/system-images
-  - cp -u -R ${OLD_SDK}/platform-tools ${SDK}/platform-tools
+  - mkdir -p ${SDK} || true
+  - mkdir -p ${OLD_SDK}/tools || true
+  - mkdir -p ${OLD_SDK}/platforms || true
+  - mkdir -p ${OLD_SDK}/system-images || true
+  - mkdir -p ${OLD_SDK}/platform-tools || true
+  - cp -u -R ${OLD_SDK}/tools ${SDK}/tools || true
+  - cp -u -R ${OLD_SDK}/platforms ${SDK}/platforms || true
+  - cp -u -R ${OLD_SDK}/system-images ${SDK}/system-images || true
+  - cp -u -R ${OLD_SDK}/platform-tools ${SDK}/platform-tools || true
 
 # Enable only JDK 8, source does not build with JDK 7
 addons:
