@@ -9,6 +9,8 @@ env:
     - PLATFORM_TOOLS=25.0.4
     - BUILD_TOOLS=25.0.2
     - COMPILE_SDK=25
+    # - ANDROID_TARGET=android-25 # Enable for connected checks on emulators
+    # - ANDROID_ABI=armeabi-v7a # Enable for connected checks on emulators
 
 # Enable only JDK 8, source does not build with JDK 7
 addons:
@@ -64,6 +66,7 @@ android:
     # - sys-img-armeabi-v7a-android-19
     # - sys-img-armeabi-v7a-android-14
     # - sys-img-armeabi-v7a-android-9
+    # - sys-img-${ANDROID_ABI}-${ANDROID_TARGET} # Configurable system image
     
 # Use Gradle's cache (unlock on start)
 before_cache:
@@ -89,5 +92,15 @@ script:
   - ./gradlew demo:assembleDebug # release?
   - ./gradlew demo:check 
   - ./gradlew demo:test
-  # - ./gradlew demo:connectedCheck # need an emulator for this
   
+  # To run CodeCov tests, enable these lines (requires an Android emulator)
+  # - ./gradlew build jacocoTestReport assembleAndroidTest
+  # - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+  # - emulator -avd test -no-skin -no-audio -no-window &
+  # - android-wait-for-emulator
+  # - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
+  # - ./gradlew connectedCheck # need an emulator for this
+  
+# Start CodeCov bash script when done with everything
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
