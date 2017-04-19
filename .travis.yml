@@ -3,6 +3,18 @@ os: linux
 language: android
 sudo: false # Required for the new container-based infrastructure setup
 
+# Setup environment variables
+env:
+  global:
+    - GRADLE_USER_HOME=${TRAVIS_BUILD_DIR}/gradle
+    - ANDROID_HOME=${TRAVIS_BUILD_DIR}/android-sdk
+    - SDK=${TRAVIS_BUILD_DIR}/android-sdk
+    - PATH=${GRADLE_USER_HOME}/bin/:${SDK}/:${SDK}/tools/:${SDK}/platform-tools/:${PATH}
+
+# Copy
+before_install:
+  - export OLD_SDK=/usr/local/android-sdk-25.0.2;mkdir -p ${SDK};cp -u -R ${OLD_SDK}/platforms ${SDK}/platforms;cp -u -R ${OLD_SDK}/system-images ${SDK}/system-images;cp -u -R ${OLD_SDK}/tools ${SDK}/tools
+
 # Enable only JDK 8, source does not build with JDK 7
 addons:
   apt:
@@ -63,10 +75,15 @@ before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
 cache:
+  apt: true
+  directories:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
+    - ${TRAVIS_BUILD_DIR}/gradle/caches/
+    - ${TRAVIS_BUILD_DIR}/gradle/wrapper/dists/
+    - ${TRAVIS_BUILD_DIR}/android-sdk/extras/
     
 # Execute the script
 script:
@@ -75,6 +92,7 @@ script:
   - ./gradlew sillyandroid:test
   - ./gradlew demo:build
   - ./gradlew demo:assembleDebug # release?
+  - ./gradlew demo:check 
   - ./gradlew demo:test
   # - ./gradlew demo:connectedCheck # need an emulator for this
   
