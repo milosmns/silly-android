@@ -92,6 +92,7 @@ script:
   - ./gradlew demo:assembleDebug # release?
   - ./gradlew demo:check 
   - ./gradlew demo:test
+  - ./gradlew build jacocoTestReport
   
   # To run CodeCov tests, enable these lines (requires an Android emulator)
   # - ./gradlew build jacocoTestReport assembleAndroidTest
