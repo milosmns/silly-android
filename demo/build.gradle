@@ -41,6 +41,5 @@ dependencies {
     })
 
     compile "com.android.support:appcompat-v7:$APPCOMPAT"
-    compile "com.android.support.constraint:constraint-layout:$CONSTRAINT"
     testCompile "junit:junit:$JUNIT"
 }
