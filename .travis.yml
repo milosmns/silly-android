@@ -78,10 +78,6 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
-    - ${TRAVIS_BUILD_DIR}/gradle/caches/
-    - ${TRAVIS_BUILD_DIR}/gradle/wrapper/dists/
-    - ${TRAVIS_BUILD_DIR}/android-sdk/extras/
-    - ${TRAVIS_BUILD_DIR}/android-sdk/licenses/
     
 # Execute the script
 script:
