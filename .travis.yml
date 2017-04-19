@@ -12,17 +12,19 @@ env:
     - OLD_SDK=/usr/local/android-sdk-25.0.2
     - PATH=${GRADLE_USER_HOME}/bin/:${SDK}/:${SDK}/tools/:${SDK}/platform-tools/:${PATH}
 
-# Copy over the old SDK (create if doesn't exist)
+# Copy over the old SDK (create if doesn't exist). Don't fail even if nothing is copied
 before_install:
   - mkdir -p ${SDK} || true
   - mkdir -p ${OLD_SDK}/tools || true
   - mkdir -p ${OLD_SDK}/platforms || true
   - mkdir -p ${OLD_SDK}/system-images || true
   - mkdir -p ${OLD_SDK}/platform-tools || true
+  - mkdir -p ${OLD_SDK}/licenses || true
   - cp -u -R ${OLD_SDK}/tools ${SDK}/tools || true
   - cp -u -R ${OLD_SDK}/platforms ${SDK}/platforms || true
   - cp -u -R ${OLD_SDK}/system-images ${SDK}/system-images || true
   - cp -u -R ${OLD_SDK}/platform-tools ${SDK}/platform-tools || true
+  - cp -u -R ${OLD_SDK}/licenses ${SDK}/licenses || true
 
 # Enable only JDK 8, source does not build with JDK 7
 addons:
