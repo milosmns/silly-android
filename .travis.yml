@@ -9,11 +9,20 @@ env:
     - GRADLE_USER_HOME=${TRAVIS_BUILD_DIR}/gradle
     - ANDROID_HOME=${TRAVIS_BUILD_DIR}/android-sdk
     - SDK=${TRAVIS_BUILD_DIR}/android-sdk
+    - OLD_SDK=/usr/local/android-sdk-25.0.2
     - PATH=${GRADLE_USER_HOME}/bin/:${SDK}/:${SDK}/tools/:${SDK}/platform-tools/:${PATH}
 
-# Copy
+# Copy over the old SDK (create if doesn't exist)
 before_install:
-  - export OLD_SDK=/usr/local/android-sdk-25.0.2;mkdir -p ${SDK};cp -u -R ${OLD_SDK}/platforms ${SDK}/platforms;cp -u -R ${OLD_SDK}/system-images ${SDK}/system-images;cp -u -R ${OLD_SDK}/tools ${SDK}/tools
+  - mkdir -p ${SDK}
+  - mkdir -p ${OLD_SDK}/tools
+  - mkdir -p ${OLD_SDK}/platforms
+  - mkdir -p ${OLD_SDK}/system-images
+  - mkdir -p ${OLD_SDK}/platform-tools
+  - cp -u -R ${OLD_SDK}/tools ${SDK}/tools
+  - cp -u -R ${OLD_SDK}/platforms ${SDK}/platforms
+  - cp -u -R ${OLD_SDK}/system-images ${SDK}/system-images
+  - cp -u -R ${OLD_SDK}/platform-tools ${SDK}/platform-tools
 
 # Enable only JDK 8, source does not build with JDK 7
 addons:
