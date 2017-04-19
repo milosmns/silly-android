@@ -30,7 +30,30 @@ android {
     }
 
     lintOptions {
-        disable 'UnusedResources', 'UnusedIds'
+        quiet false // turn off analysis progress reporting by lint
+        abortOnError true // stop the gradle build if errors are found
+        ignoreWarnings false // report all issues
+        absolutePaths true // emit full/absolute paths to files with errors
+        checkAllWarnings false // don't check all issues, including those that are off by default
+        warningsAsErrors true // treat all warnings as errors
+        disable 'UnusedResources', 'UnusedIds' // turn off checking for these
+        // enable 'RtlHardcoded','RtlCompat', 'RtlEnabled' # don't re-enable anything, keep default config
+        // check 'NewApi', 'InlinedApi' # don't check *only* these issues
+        noLines false // include source code lines in the error output
+        showAll true // show all locations for an error, do not truncate lists, etc.
+        // lintConfig file("default-lint.xml") # don't use fallback lint configuration (default severities, etc.)
+        textReport true // generate a text report of issues
+        textOutput 'stdout' // location to write the output; can be a file or 'stdout'
+        xmlReport false // don't generate an XML report for use by for example Jenkins
+        // xmlOutput file("lint-report.xml") # don't change the file to write report to (if not specified, defaults to lint-results.xml)
+        htmlReport true // generate an HTML report (with issue explanations, sourcecode, etc)
+        // htmlOutput file("lint-report.html") # don't change the path to report (default will be lint-results.html in the build_dir)
+
+        checkReleaseBuilds true // run lint on all release builds for issues with severity=fatal; abort the build (check 'abortOnError') if any are found
+        // fatal 'NewApi', 'InlineApi' # don't change issue severities
+        // error 'Wakelock', 'TextViewEdits' # don't change issue severities
+        // warning 'ResourceAsColor' # don't change issue severities
+        // ignore 'TypographyQuotes' # don't change issue severities
     }
 
     compileOptions {
