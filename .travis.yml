@@ -12,7 +12,7 @@ env:
     - PLATFORM_TOOLS=25.0.4
     - BUILD_TOOLS=25.0.2
     - COMPILE_SDK=25
-    - ANDROID_TARGET=android-25 # Enable for connected checks on emulators
+    - ANDROID_TARGET=android-22 # Enable for connected checks on emulators (Google doesn't support Linux ARMv7 emulation for SDK 23+)
     - ANDROID_ABI=armeabi-v7a # Enable for connected checks on emulators
 
 # Enable only JDK 8, source does not build with JDK 7
@@ -63,13 +63,13 @@ android:
     - extra-android-m2repository
     - extra-google-android-support
 
-    # To run emulator(s) during tests, enable these:
-    - sys-img-armeabi-v7a-android-25
+    # To run emulator(s) during tests, enable some of these:
+    # - sys-img-armeabi-v7a-android-25
     # - sys-img-armeabi-v7a-android-21
     # - sys-img-armeabi-v7a-android-19
     # - sys-img-armeabi-v7a-android-14
     # - sys-img-armeabi-v7a-android-9
-    # - sys-img-${ANDROID_ABI}-${ANDROID_TARGET} # Configurable system image
+    - sys-img-${ANDROID_ABI}-${ANDROID_TARGET} # Configurable system image
     
 # Use Gradle's cache (unlock on start)
 before_cache:
