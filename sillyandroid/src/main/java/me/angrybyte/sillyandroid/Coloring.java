@@ -1,7 +1,7 @@
 package me.angrybyte.sillyandroid;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -74,22 +74,26 @@ public final class Coloring {
      * </ul>
      * <i>* Plus all caps variants.</i>
      *
-     * @param colorHex Hex value
+     * @param hexValue Hex value
      * @return Integer color, or {@link Color#DKGRAY} if something goes wrong
      */
     @ColorInt
-    public static int decodeColor(@NonNull String colorHex) {
-        if (SillyAndroid.isEmpty(colorHex)) {
+    public static int decodeColor(@NonNull final String hexValue) {
+        if (SillyAndroid.isEmpty(hexValue)) {
             return Color.DKGRAY;
         }
 
+        String colorHex = hexValue.trim();
         final int length = colorHex.length();
         colorHex = colorHex.replace("#", "").replace("0x", "").replace("0X", "");
         if (length != 6 && length != 8) {
-            return Color.GRAY;
+            return Color.DKGRAY;
         }
 
-        int alpha = 255, red, green, blue;
+        int alpha = 255;
+        final int red;
+        final int green;
+        final int blue;
         try {
             if (length == 8) {
                 alpha = Integer.parseInt(colorHex.substring(0, 2), 16);
@@ -103,7 +107,7 @@ public final class Coloring {
             }
             return Color.argb(alpha, red, green, blue);
         } catch (Throwable ignored) {
-            return Color.GRAY;
+            return Color.DKGRAY;
         }
     }
 
@@ -316,13 +320,13 @@ public final class Coloring {
     /**
      * Colors the given drawable to the specified color. Uses {@link PorterDuff.Mode#SRC_ATOP}.
      *
-     * @param resources Which resources to use
-     * @param drawable  Which drawable to color
-     * @param color     Which color to use
+     * @param context  Which context to use
+     * @param drawable Which drawable to color
+     * @param color    Which color to use
      * @return A colored drawable, new instance in most cases for bitmaps, cached instance for most other cases
      */
     @NonNull
-    public static Drawable colorDrawable(@NonNull final Resources resources, @NonNull final Drawable drawable, @ColorInt final int color) {
+    public static Drawable colorDrawable(@NonNull final Context context, @NonNull final Drawable drawable, @ColorInt final int color) {
         if (drawable instanceof VectorDrawable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return colorVectorDrawable((VectorDrawable) drawable, color);
         }
@@ -343,7 +347,7 @@ public final class Coloring {
 
         if (drawable instanceof BitmapDrawable) {
             final Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-            return new BitmapDrawable(resources, colorBitmap(bitmap, color));
+            return new BitmapDrawable(context.getResources(), colorBitmap(bitmap, color));
         }
 
         // have no idea what this is..
@@ -359,12 +363,12 @@ public final class Coloring {
      * @return A colored drawable, cached instance in most cases
      */
     @NonNull
-    public static Drawable colorDrawableWrapped(@NonNull Drawable drawable, @NonNull final ColorStateList colorStates) {
-        drawable = DrawableCompat.wrap(drawable);
-        DrawableCompat.setTintList(drawable, colorStates);
-        DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_ATOP);
-        drawable = DrawableCompat.unwrap(drawable);
-        return drawable;
+    public static Drawable colorDrawableWrapped(@NonNull final Drawable drawable, @NonNull final ColorStateList colorStates) {
+        Drawable wrapped = DrawableCompat.wrap(drawable);
+        DrawableCompat.setTintList(wrapped, colorStates);
+        DrawableCompat.setTintMode(wrapped, PorterDuff.Mode.SRC_ATOP);
+        wrapped = DrawableCompat.unwrap(wrapped);
+        return wrapped;
     }
 
     /**
@@ -422,13 +426,13 @@ public final class Coloring {
      * Colors a <b>bitmap</b> drawable to the specified color. Uses {@link PorterDuff.Mode#SRC_ATOP}.
      * Automatically loads a high quality (on Nougat+) or an optimal (on Nougat-) bitmap from the given resource ID.
      *
-     * @param resources  Which resources to use
+     * @param context    Which context to use
      * @param drawableId Which drawable resource to load, must be a bitmap drawable
      * @param color      Which color to use
      * @return A colored {@link Drawable} ready for use
      */
     @NonNull
-    public static Drawable colorDrawable(@NonNull final Resources resources, @DrawableRes final int drawableId, @ColorInt final int color) {
+    public static Drawable colorDrawable(@NonNull final Context context, @DrawableRes final int drawableId, @ColorInt final int color) {
         final BitmapFactory.Options opts = new BitmapFactory.Options();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             // noinspection deprecation
@@ -447,9 +451,9 @@ public final class Coloring {
         opts.inTempStorage = new byte[32 * 1024]; // temp storage - advice is to use 16K, but..
 
         // load the resource and recolor it
-        final Bitmap resourceBitmap = BitmapFactory.decodeResource(resources, drawableId, opts);
+        final Bitmap resourceBitmap = BitmapFactory.decodeResource(context.getResources(), drawableId, opts);
         final Bitmap coloredBitmap = colorBitmap(resourceBitmap, color);
-        return new BitmapDrawable(resources, coloredBitmap);
+        return new BitmapDrawable(context.getResources(), coloredBitmap);
     }
 
     /**
@@ -486,7 +490,7 @@ public final class Coloring {
      *
      * <b>Note</b>: Use {@link Color#TRANSPARENT} to set a transparent state.
      *
-     * @param resources    Which resources to use
+     * @param context      Which context to use
      * @param normal       Color for the normal/idle state
      * @param clicked      Color for the clicked/pressed state
      * @param checked      Color for the checked/selected state (makes sense only for Honeycomb and later)
@@ -495,7 +499,7 @@ public final class Coloring {
      * @return A {@link StateListDrawable} drawable object, new instance each time
      */
     @NonNull
-    public static Drawable createStateList(@NonNull final Resources resources, @ColorInt final int normal, @ColorInt final int clicked,
+    public static Drawable createStateList(@NonNull final Context context, @ColorInt final int normal, @ColorInt final int clicked,
                                            @ColorInt final int checked, final boolean shouldFade, @IntRange(from = 0) int cornerRadius) {
         // initialize state arrays (they're in arrays because you can use different drawables for reverse transitions..)
         final int[] normalState = new int[] {};
@@ -602,10 +606,10 @@ public final class Coloring {
     }
 
     /**
-     * Overload of {@link #createResponsiveDrawable(Resources, int, int, int, boolean, int, Rect)}. This one does not have bounds, so on Lollipop it creates a
+     * Overload of {@link #createResponsiveDrawable(Context, int, int, int, boolean, int, Rect)}. This one does not have bounds, so on Lollipop it creates a
      * borderless ripple drawable each time.
      *
-     * @param resources    Which resources to use
+     * @param context      Which context to use
      * @param normal       Color for the normal/idle state
      * @param clicked      Color for the clicked/pressed state
      * @param checked      Color for the checked/selected state
@@ -614,17 +618,17 @@ public final class Coloring {
      * @return A click-responsive drawable, new instance each time
      */
     @NonNull
-    public static Drawable createResponsiveDrawable(@NonNull final Resources resources, @ColorInt final int normal, @ColorInt final int clicked,
+    public static Drawable createResponsiveDrawable(@NonNull final Context context, @ColorInt final int normal, @ColorInt final int clicked,
                                                     @ColorInt final int checked, final boolean shouldFade, @IntRange(from = 0) int cornerRadius) {
         // setting bounds to null makes a borderless ripple
-        return createResponsiveDrawable(resources, normal, clicked, checked, shouldFade, cornerRadius, null);
+        return createResponsiveDrawable(context, normal, clicked, checked, shouldFade, cornerRadius, null);
     }
 
     /**
      * Creates a new drawable that responds to touches using visual feedback. For Lollipop and later, this returns a {@link RippleDrawable}, and for older OS
      * versions it returns a {@link StateListDrawable}.
      *
-     * @param resources    Which resources to use
+     * @param context      Which context to use
      * @param normal       Color for the normal/idle state
      * @param clicked      Color for the clicked/pressed state
      * @param checked      Color for the checked/selected state
@@ -634,14 +638,14 @@ public final class Coloring {
      * @return A click-responsive drawable, new instance each time
      */
     @NonNull
-    public static Drawable createResponsiveDrawable(@NonNull final Resources resources, @ColorInt final int normal, @ColorInt final int clicked,
+    public static Drawable createResponsiveDrawable(@NonNull final Context context, @ColorInt final int normal, @ColorInt final int clicked,
                                                     @ColorInt final int checked, final boolean shouldFade, @IntRange(from = 0) int cornerRadius,
                                                     @Nullable final Rect bounds) {
         // each branch will create a new instance
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return createRippleDrawable(normal, clicked, bounds, cornerRadius);
         } else {
-            return createStateList(resources, normal, clicked, checked, shouldFade, cornerRadius);
+            return createStateList(context, normal, clicked, checked, shouldFade, cornerRadius);
         }
     }
 
@@ -695,7 +699,7 @@ public final class Coloring {
      * when pressed, making the icon visible even on a white background; the only thing you really need to provide here is the background color you used for
      * the pressed state.
      *
-     * @param resources        Which resources to use
+     * @param context          Which context to use
      * @param normalColor      Color normal/idle icon state to this color
      * @param pressedBackColor Background color of the View that shows up when the View is pressed
      * @param shouldFade       Set to {@code true} if the state transition should have a fading effect
@@ -703,11 +707,12 @@ public final class Coloring {
      * @return The color state list that takes care of contrasted colors
      */
     @NonNull
-    public static Drawable createContrastStateDrawable(@NonNull final Resources resources, @ColorInt final int normalColor,
-                                                       @ColorInt final int pressedBackColor, final boolean shouldFade, @NonNull Drawable original) {
+    public static Drawable createContrastStateDrawable(@NonNull final Context context, @ColorInt final int normalColor, @ColorInt final int pressedBackColor,
+                                                       final boolean shouldFade, @NonNull final Drawable original) {
         // migrate to a static drawable
-        if (original instanceof StateListDrawable) {
-            original = original.getCurrent();
+        Drawable originalState = original;
+        if (originalState instanceof StateListDrawable) {
+            originalState = originalState.getCurrent();
         }
 
         // initialize state arrays (they're in arrays because you can use different colors for reverse transitions..)
@@ -721,10 +726,10 @@ public final class Coloring {
             activatedState = new int[] { android.R.attr.state_activated };
         }
 
-        final Drawable normalDrawable = colorDrawable(resources, original, normalColor);
-        final Drawable clickedDrawable = colorDrawable(resources, original, contrastColor(pressedBackColor));
-        final Drawable checkedDrawable = colorDrawable(resources, original, contrastColor(pressedBackColor));
-        final Drawable focusedDrawable = colorDrawable(resources, original, contrastColor(darkenColor(pressedBackColor)));
+        final Drawable normalDrawable = colorDrawable(context, originalState, normalColor);
+        final Drawable clickedDrawable = colorDrawable(context, originalState, contrastColor(pressedBackColor));
+        final Drawable checkedDrawable = colorDrawable(context, originalState, contrastColor(pressedBackColor));
+        final Drawable focusedDrawable = colorDrawable(context, originalState, contrastColor(darkenColor(pressedBackColor)));
 
         // prepare the state list (order of the states is extremely important!)
         final StateListDrawable states = new StateListDrawable();
@@ -763,25 +768,28 @@ public final class Coloring {
      * @return A multi-state drawable consisting out of provided drawables, always a new instance
      */
     @NonNull
-    public static Drawable createMultiStateDrawable(@NonNull Drawable normalDrawable, @NonNull Drawable clickedDrawable, @NonNull Drawable checkedDrawable,
-                                                    final boolean shouldFade) {
+    public static Drawable createMultiStateDrawable(@NonNull final Drawable normalDrawable, @NonNull final Drawable clickedDrawable,
+                                                    @NonNull final Drawable checkedDrawable, final boolean shouldFade) {
         // migrate to static drawables
-        if (normalDrawable instanceof StateListDrawable) {
-            normalDrawable = normalDrawable.getCurrent();
+        Drawable normalState = normalDrawable;
+        if (normalState instanceof StateListDrawable) {
+            normalState = normalState.getCurrent();
         }
-        if (clickedDrawable instanceof StateListDrawable) {
-            clickedDrawable = clickedDrawable.getCurrent();
+        Drawable clickedState = clickedDrawable;
+        if (clickedState instanceof StateListDrawable) {
+            clickedState = clickedState.getCurrent();
         }
-        if (checkedDrawable instanceof StateListDrawable) {
-            checkedDrawable = checkedDrawable.getCurrent();
+        Drawable checkedState = checkedDrawable;
+        if (checkedState instanceof StateListDrawable) {
+            checkedState = checkedState.getCurrent();
         }
 
         // initialize state arrays (they're in arrays because you can use different colors for reverse transitions..)
-        final int[] normalState = new int[] {};
-        final int[] clickedState = new int[] { android.R.attr.state_pressed };
-        final int[] checkedState = new int[] { android.R.attr.state_checked };
-        final int[] selectedState = new int[] { android.R.attr.state_selected };
-        final int[] focusedState = new int[] { android.R.attr.state_focused };
+        final int[] normalStates = new int[] {};
+        final int[] clickedStates = new int[] { android.R.attr.state_pressed };
+        final int[] checkedStates = new int[] { android.R.attr.state_checked };
+        final int[] selectedStates = new int[] { android.R.attr.state_selected };
+        final int[] focusedStates = new int[] { android.R.attr.state_focused };
         int[] activatedState = new int[] {};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             activatedState = new int[] { android.R.attr.state_activated };
@@ -792,19 +800,19 @@ public final class Coloring {
 
         if (!shouldFade) {
             // no fading, add all applicable states
-            states.addState(clickedState, clickedDrawable); // !
-            states.addState(selectedState, checkedDrawable);
-            states.addState(focusedState, normalDrawable);
-            states.addState(checkedState, checkedDrawable);
+            states.addState(clickedStates, clickedState); // !
+            states.addState(selectedStates, checkedState);
+            states.addState(focusedStates, normalState);
+            states.addState(checkedStates, checkedState);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                states.addState(activatedState, checkedDrawable);
+                states.addState(activatedState, checkedState);
             }
-            states.addState(normalState, normalDrawable); // !
+            states.addState(normalStates, normalState); // !
             return states;
         } else {
             // fade enabled, add only normal and pressed states (Honeycomb bug..)
-            states.addState(clickedState, clickedDrawable); // !
-            states.addState(normalState, normalDrawable); // !
+            states.addState(clickedStates, clickedState); // !
+            states.addState(normalStates, normalState); // !
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 // fading only works on Honeycomb and later..
                 states.setEnterFadeDuration(0);

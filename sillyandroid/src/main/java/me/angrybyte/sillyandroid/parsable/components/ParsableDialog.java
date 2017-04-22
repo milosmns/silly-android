@@ -64,10 +64,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     }
 
     /**
-     * Set the screen content from a layout resource.  The resource will be
-     * inflated, adding all top-level views to the screen.
-     *
-     * @param layoutResID Resource ID to be inflated.
+     * @inheritDoc
      */
     @Override
     public void setContentView(@LayoutRes final int layoutResID) {
@@ -76,11 +73,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     }
 
     /**
-     * Set the screen content to an explicit view.  This view is placed
-     * directly into the screen's view hierarchy.  It can itself be a complex
-     * view hierarchy.
-     *
-     * @param view The desired content to display.
+     * @inheritDoc
      */
     @Override
     public void setContentView(@NonNull final View view) {
@@ -89,12 +82,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     }
 
     /**
-     * Set the screen content to an explicit view.  This view is placed
-     * directly into the screen's view hierarchy.  It can itself be a complex
-     * view hierarchy.
-     *
-     * @param view   The desired content to display.
-     * @param params Layout parameters for the view.
+     * @inheritDoc
      */
     @Override
     public void setContentView(@NonNull final View view, @Nullable final ViewGroup.LayoutParams params) {
@@ -102,6 +90,9 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
         AnnotationParser.parseFields(getContext(), this, this);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -112,19 +103,31 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
         return false;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onClick(final View v) {}
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public boolean onLongClick(final View v) {
         return false;
     }
 
+    /**
+     * Returns the currently assigned layout's ID. This usually comes from {@link me.angrybyte.sillyandroid.parsable.Annotations.Layout}.
+     */
     @LayoutRes
     protected final int getLayoutId() {
         return mLayoutId;
     }
 
+    /**
+     * Returns the currently assigned menu's ID. This usually comes from {@link me.angrybyte.sillyandroid.parsable.Annotations.Menu}.
+     */
     @MenuRes
     protected final int getMenuId() {
         return mMenuId;

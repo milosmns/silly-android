@@ -35,6 +35,9 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
 
     private boolean mParsedType;
 
+    /**
+     * @inheritDoc
+     */
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -46,6 +49,9 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     @CallSuper
     public void onAttach(@NonNull final Context context) {
@@ -56,6 +62,9 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Nullable
     @Override
     @CallSuper
@@ -82,6 +91,9 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
         return null; // nothing worked, die.
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -90,19 +102,31 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onClick(final View v) {}
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public boolean onLongClick(final View v) {
         return false;
     }
 
+    /**
+     * Returns the currently assigned layout's ID. This usually comes from {@link me.angrybyte.sillyandroid.parsable.Annotations.Layout}.
+     */
     @LayoutRes
     protected final int getLayoutId() {
         return mLayoutId;
     }
 
+    /**
+     * Returns the currently assigned menu's ID. This usually comes from {@link me.angrybyte.sillyandroid.parsable.Annotations.Menu}.
+     */
     @MenuRes
     protected final int getMenuId() {
         return mMenuId;

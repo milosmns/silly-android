@@ -26,6 +26,9 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
     @SuppressWarnings("unused")
     private int mMenuId;
 
+    /**
+     * @inheritDoc
+     */
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -36,24 +39,36 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void setContentView(@LayoutRes final int layoutResID) {
         super.setContentView(layoutResID);
         AnnotationParser.parseFields(this, this, this);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void setContentView(@NonNull final View view) {
         super.setContentView(view);
         AnnotationParser.parseFields(this, this, this);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void setContentView(@NonNull final View view, @Nullable final ViewGroup.LayoutParams params) {
         super.setContentView(view, params);
         AnnotationParser.parseFields(this, this, this);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -64,19 +79,31 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
         return false;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void onClick(final View v) {}
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public boolean onLongClick(final View v) {
         return false;
     }
 
+    /**
+     * Returns the currently assigned layout's ID. This usually comes from {@link me.angrybyte.sillyandroid.parsable.Annotations.Layout}.
+     */
     @LayoutRes
     protected final int getLayoutId() {
         return mLayoutId;
     }
 
+    /**
+     * Returns the currently assigned menu's ID. This usually comes from {@link me.angrybyte.sillyandroid.parsable.Annotations.Menu}.
+     */
     @MenuRes
     protected final int getMenuId() {
         return mMenuId;

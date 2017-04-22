@@ -58,10 +58,6 @@ public final class SillyAndroid {
     @SuppressWarnings("unused")
     public static final class UI {
 
-        @IntDef({ PHONE_PORT, PHONE_LAND, TAB_PORT, TAB_LAND, TABLET_PORT, TABLET_LAND, WATCH, TV })
-        @Retention(RetentionPolicy.SOURCE)
-        public @interface DeviceType {}
-
         public static final int PHONE_PORT = 1;
         public static final int PHONE_LAND = 2;
         public static final int TAB_PORT = 3;
@@ -70,6 +66,10 @@ public final class SillyAndroid {
         public static final int TABLET_LAND = 6;
         public static final int WATCH = 7;
         public static final int TV = 8;
+
+        @IntDef({ PHONE_PORT, PHONE_LAND, TAB_PORT, TAB_LAND, TABLET_PORT, TABLET_LAND, WATCH, TV })
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface DeviceType {}
 
         /**
          * Checks if current configuration is detected as a phone.

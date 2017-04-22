@@ -20,7 +20,7 @@ import me.angrybyte.sillyandroid.SillyAndroid;
 import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 
 /**
- * An extension of {@link android.view.View} with applied extensions from {@link SillyAndroid} extension set.
+ * An extension of {@link View} with applied extensions from {@link SillyAndroid} extension set.
  */
 @UiThread
 @SuppressWarnings("unused")
@@ -98,9 +98,9 @@ public class EasyView extends View implements LayoutWrapper {
     }
 
     /**
-     * Returns the result from {@link SillyAndroid#findViewById(android.view.View, int)}.
+     * Returns the result from {@link SillyAndroid#findViewById(View, int)}.
      */
-    public final <ViewType extends android.view.View> ViewType findView(@IdRes final int viewId) {
+    public final <ViewType extends View> ViewType findView(@IdRes final int viewId) {
         return SillyAndroid.findViewById(this, viewId);
     }
 
@@ -113,21 +113,21 @@ public class EasyView extends View implements LayoutWrapper {
     }
 
     /**
-     * Invokes {@link ViewCompat#setBackground(android.view.View, Drawable)} with the same arguments.
+     * Invokes {@link ViewCompat#setBackground(View, Drawable)} with the same arguments.
      */
     public void setBackgroundCompat(@Nullable final Drawable drawable) {
         ViewCompat.setBackground(this, drawable);
     }
 
     /**
-     * Invokes {@link SillyAndroid#setPadding(android.view.View, int, int, int, int)} with the same arguments.
+     * Invokes {@link SillyAndroid#setPadding(View, int, int, int, int)} with the same arguments.
      */
     public void setPadding(@Px final int start, @Px final int top, @Px final int end, @Px final int bottom) {
         SillyAndroid.setPadding(this, start, top, end, bottom);
     }
 
     /**
-     * Invokes {@link SillyAndroid#setPadding(android.view.View, int)} with the same arguments.
+     * Invokes {@link SillyAndroid#setPadding(View, int)} with the same arguments.
      */
     public void setPadding(@Px final int padding) {
         SillyAndroid.setPadding(this, padding);
