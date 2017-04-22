@@ -57,14 +57,16 @@ android:
     
     # Compile SDK
     - android-${COMPILE_SDK}
+    # Emulator SDK
+    - ${ANDROID_TARGET}
 
     # Additional components
     - extra-google-m2repository
     - extra-android-m2repository
     - extra-google-android-support
 
-    # To run emulator(s) during tests, enable some of these:
-    # - sys-img-armeabi-v7a-android-25
+    # To run emulator(s) during tests, enable some of these: (Linux ARMv7 goes up to 22 only)
+    # - sys-img-armeabi-v7a-android-22
     # - sys-img-armeabi-v7a-android-21
     # - sys-img-armeabi-v7a-android-19
     # - sys-img-armeabi-v7a-android-14
