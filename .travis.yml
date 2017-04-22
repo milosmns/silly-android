@@ -86,11 +86,11 @@ cache:
 
 # Start up the emulator
 before_script:
-  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-  - adb shell input keyevent 82 & # Unlock emulator if locked
+  # - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+  # - emulator -avd test -no-skin -no-audio -no-window &
+  # - android-wait-for-emulator
+  # - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
+  # - adb shell input keyevent 82 & # Unlock emulator if locked
 # Execute the script
 script:
   # Build and prepare
@@ -101,8 +101,8 @@ script:
   - ./gradlew jacocoTestReport
 
   # To run device CodeCov tests, enable these lines (requires an Android emulator)
-  - ./gradlew assembleAndroidTest
-  - ./gradlew connectedCheck
+  # - ./gradlew assembleAndroidTest
+  # - ./gradlew connectedCheck
 
 # Setup the deployment step (only on release branches)
 before_deploy:
