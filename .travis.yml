@@ -97,23 +97,29 @@ script:
   - ./gradlew clean
   - ./gradlew sillyandroid:build sillyandroid:test sillyandroid:check
   - ./gradlew demo:build demo:test demo:check
-  - ./gradlew demo:assembleRelease
+  - ./gradlew assemble
   - ./gradlew jacocoTestReport
 
   # To run device CodeCov tests, enable these lines (requires an Android emulator)
   # - ./gradlew assembleAndroidTest
   # - ./gradlew connectedCheck
 
-# Setup the deployment step (only on release branches)
-before_deploy:
- - ./gradlew bintrayUpload
-deploy:
-  skip_cleanup: true
-  on:
-      branch: release
-after_deploy:
- - echo "Deployment finished."
-  
 # Start CodeCov bash script when done with everything
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+
+# Setup the deployment step (only on release branches) - upload to GitHub Releases and Bintray
+before_deploy:
+  - ./gradlew bintrayUpload
+deploy:
+  provider: releases
+  api_key: ${GITHUB_OAUTH_TOKEN}
+  file_glob: true
+  file: demo/build/outputs/apk/*
+  skip_cleanup: true
+  overwrite: true
+  on:
+    tag: true
+    branch: release
+after_deploy:
+  - echo "Deployment finished."
