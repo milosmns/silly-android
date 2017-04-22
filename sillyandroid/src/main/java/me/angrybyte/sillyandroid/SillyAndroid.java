@@ -67,6 +67,10 @@ public final class SillyAndroid {
         public static final int WATCH = 7;
         public static final int TV = 8;
 
+        /**
+         * A device type constant set, one of {@link #PHONE_PORT}, {@link #PHONE_LAND}, {@link #TAB_PORT}, {@link #TAB_LAND}, {@link #TABLET_PORT},
+         * {@link #TABLET_LAND}, {@link #WATCH}, {@link #TV}.
+         */
         @IntDef({ PHONE_PORT, PHONE_LAND, TAB_PORT, TAB_LAND, TABLET_PORT, TABLET_LAND, WATCH, TV })
         @Retention(RetentionPolicy.SOURCE)
         public @interface DeviceType {}
@@ -201,6 +205,11 @@ public final class SillyAndroid {
     }
 
     /**
+     * Making sure that this class' default constructor is private.
+     */
+    private SillyAndroid() {}
+
+    /**
      * Counts the available intent handlers in the OS for the given intent.
      *
      * @param context Which context to use
@@ -254,6 +263,8 @@ public final class SillyAndroid {
 
     /**
      * Does exactly the same thing as calling {@link View#findViewById(int)}, but casts the result to the appropriate View sub-class.
+     *
+     * @param <ViewType> Which View type to cast the result to
      */
     @Nullable
     public static <ViewType extends View> ViewType findViewById(@NonNull final View container, @IdRes final int viewId) {
@@ -263,6 +274,8 @@ public final class SillyAndroid {
 
     /**
      * Does exactly the same thing as calling {@link Activity#findViewById(int)}, but casts the result to the appropriate View sub-class.
+     *
+     * @param <ViewType> Which View type to cast the result to
      */
     @Nullable
     public static <ViewType extends View> ViewType findViewById(@NonNull final Activity activity, @IdRes final int viewId) {
@@ -271,8 +284,10 @@ public final class SillyAndroid {
     }
 
     /**
-     * Does exactly the same thing as calling {@link Fragment#getView()}.{@link #findViewById(View, int)}, but casts the result to the
-     * appropriate View sub-class.
+     * Does exactly the same thing as calling {@link Fragment#getView()}.{@link #findViewById(View, int)}, but casts the result to the appropriate View
+     * sub-class.
+     *
+     * @param <ViewType> Which View type to cast the result to
      */
     @Nullable
     public static <ViewType extends View> ViewType findViewById(@NonNull final Fragment fragment, @IdRes final int viewId) {
@@ -282,6 +297,8 @@ public final class SillyAndroid {
 
     /**
      * Does exactly the same thing as calling {@link Dialog#findViewById(int)}, but casts the result to the appropriate View sub-class.
+     *
+     * @param <ViewType> Which View type to cast the result to
      */
     @Nullable
     public static <ViewType extends View> ViewType findViewById(@NonNull final Dialog dialog, @IdRes final int viewId) {

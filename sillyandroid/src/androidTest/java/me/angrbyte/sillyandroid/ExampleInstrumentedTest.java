@@ -17,6 +17,11 @@ import static org.junit.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
 
+    /**
+     * Checks the app context on the device.
+     *
+     * @throws Exception If we made a spelling error
+     */
     @Test
     public void useAppContext() throws Exception {
         // Context of the app under test.
