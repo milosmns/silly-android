@@ -2,14 +2,11 @@
 package me.angrybyte.sillyandroid.parsable;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -90,9 +87,10 @@ public final class AnnotationParser {
      *     private TextView mTitleTextView;
      * </pre>
      * After this, you need to call this method to properly initialize all fields. It's best to do it in
-     * your {@link android.app.Activity#onCreate(Bundle)} or {@link android.app.Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)} methods after
-     * setting up the content view. To be able to use {@link Annotations.Clickable} and {@link Annotations.LongClickable}, your {@code instance} needs to
-     * implement {@link android.view.View.OnClickListener} and {@link android.view.View.OnLongClickListener} respectively.
+     * your {@link android.app.Activity#onCreate(android.os.Bundle)} or
+     * {@link android.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)} methods after setting up the content
+     * view. To be able to use {@link Annotations.Clickable} and {@link Annotations.LongClickable}, your {@code instance} needs to implement
+     * {@link android.view.View.OnClickListener} and {@link android.view.View.OnLongClickListener} respectively.
      * <p>
      * <b>Note</b>: Some library classes already implement these operation chains by default; for examples see: {@link me.angrybyte.sillyandroid.parsable}
      * </p>
@@ -133,11 +131,12 @@ public final class AnnotationParser {
      * Returns all fields from the given class, including its superclass fields. If cached fields are available, they will be used; instead, a new list will
      * be saved to the cache.
      *
-     * @param parsedClass Which class to look into
+     * @param classInstance Which class to look into
      * @return A list of declared class' fields. Do not modify this instance
      */
     @NonNull
-    public static List<Field> getAllFields(@NonNull Class<?> parsedClass) {
+    public static List<Field> getAllFields(@NonNull final Class<?> classInstance) {
+        Class<?> parsedClass = classInstance;
         final String name = parsedClass.getName();
         List<Field> allFields = FIELD_CACHE.get(name);
         if (allFields == null || allFields.isEmpty()) {
@@ -196,7 +195,7 @@ public final class AnnotationParser {
         if (view != null && listener != null) {
             view.setOnClickListener(listener);
         } else {
-            throw new RuntimeException("Cannot set a click listener " + listener + " to " + view);
+            throw new IllegalArgumentException("Cannot set a click listener " + listener + " to " + view);
         }
     }
 
@@ -210,7 +209,7 @@ public final class AnnotationParser {
         if (view != null && listener != null) {
             view.setOnLongClickListener(listener);
         } else {
-            throw new RuntimeException("Cannot set a long-click listener " + listener + " to " + view);
+            throw new IllegalArgumentException("Cannot set a long-click listener " + listener + " to " + view);
         }
     }
 
@@ -236,7 +235,7 @@ public final class AnnotationParser {
             // view ID is valid, try to find it
             final View v = wrapper.findView(viewId);
             if (v == null && !safeFail) {
-                throw new RuntimeException("View not found for " + field + " in " + instance.getClass().getName());
+                throw new IllegalStateException("View not found for " + field + " in " + instance.getClass().getName());
             } else if (v == null) {
                 Log.e(TAG, "View not found for " + field + " in " + instance.getClass().getName());
                 return null;
@@ -247,7 +246,7 @@ public final class AnnotationParser {
             field.set(instance, v);
             return v;
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

@@ -36,8 +36,6 @@ import me.angrybyte.sillyandroid.BuildConfig;
 import me.angrybyte.sillyandroid.SillyAndroid;
 import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 
-import static java.util.Collections.emptySet;
-
 /**
  * An extension of {@link Fragment} with applied extensions from {@link SillyAndroid} extension set.
  */
@@ -237,7 +235,7 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // invalid case?
         if (permissions.length == 0 || grantResults.length == 0) {
-            onPermissionsResult(requestCode, emptySet(), Collections.emptySet());
+            onPermissionsResult(requestCode, Collections.emptySet(), Collections.emptySet());
             return;
         }
 
