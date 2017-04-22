@@ -12,6 +12,11 @@ import static org.junit.Assert.assertEquals;
  */
 public class ExampleUnitTest {
 
+    /**
+     * Checks if 2 plus 2 equals 4.
+     *
+     * @throws Exception If universe blows up
+     */
     @Test
     public void additionTest() throws Exception {
         assertEquals(4, 2 + 2);

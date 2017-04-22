@@ -34,6 +34,11 @@ public final class AnnotationParser {
     private static final Map<String, List<Field>> FIELD_CACHE = new HashMap<>();
 
     /**
+     * Making sure that this class's default constructor is private.
+     */
+    private AnnotationParser() {}
+
+    /**
      * Checks for usable annotations on the given Object, and sets the corresponding properties on the instance.
      * For example, the 'menu' annotation will set the {@code mMenuId} field, while the 'layout' annotation sets the {@code mLayoutId} field.
      *
@@ -213,6 +218,15 @@ public final class AnnotationParser {
         }
     }
 
+    /**
+     * Tries to find the View declared through the {@link Annotations.FindView} annotation and set it to the given instance field.
+     *
+     * @param context  Which context to use
+     * @param instance A non-{@code null} instance that holds the field
+     * @param wrapper  A non-{@code null} {@link LayoutWrapper}, used to find the Views
+     * @param field    The field to assign the View instance to
+     * @return The View that was set to the field, or {@code null} if nothing was set
+     */
     @Nullable
     private static View findAndSetView(@NonNull final Context context, @NonNull final Object instance, @NonNull final LayoutWrapper wrapper,
                                        @NonNull final Field field) {

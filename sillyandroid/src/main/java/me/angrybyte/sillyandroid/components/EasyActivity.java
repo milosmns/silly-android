@@ -196,6 +196,10 @@ public class EasyActivity extends AppCompatActivity implements LayoutWrapper {
 
     /**
      * Forwards results from {@link #onRequestPermissionsResult(int, String[], int[])}, only in a much prettier and easier to use format.
+     *
+     * @param requestCode The original requestCode
+     * @param granted     The set of granted permissions
+     * @param denied      The set of denied permissions
      */
     @CallSuper
     protected void onPermissionsResult(final int requestCode, @NonNull Set<String> granted, @NonNull Set<String> denied) {
