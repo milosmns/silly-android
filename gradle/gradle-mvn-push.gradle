@@ -1,24 +1,46 @@
-// MM load from environment variables if properties are not there
-ext.projectName = project.rootProject.name
-if (!project.rootProject.file('local.properties').exists()) {
-    println "# $projectName: local.properties not found, skipping file configuration"
-    return
-}
-println "# $projectName: local.properties found, using configuration from file"
-
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
+// sets the project version
 version = VERSION_NAME
 group = GROUP
 
-// Bintray private config
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+// Bintray deployment config
+def projectName = project.rootProject.name
+def localPropertiesName = 'local.properties'
+def isLocalBuild = project.rootProject.file(localPropertiesName).exists()
+def uploadConfig = [
+        user       : '',
+        apiKey     : '',
+        gpgPassword: '',
+        ossUser    : '',
+        ossPassword: ''
+]
+if (!isLocalBuild) {
+    // load from environment variables
+    println "# $projectName: '$localPropertiesName' not found, loading deployment config from environment variables"
+
+    uploadConfig.user = System.env.BINTRAY_USER
+    uploadConfig.apiKey = System.env.BINTRAY_API_KEY
+    uploadConfig.gpgPassword = System.env.BINTRAY_GPG_PASSWORD
+    uploadConfig.ossUser = System.env.BINTRAY_OSS_USER
+    uploadConfig.ossPassword = System.env.BINTRAY_OSS_PASSWORD
+} else {
+    // load from local properties
+    println "# $projectName: '$localPropertiesName' found, loading deployment config from file"
+    Properties fileProperties = new Properties()
+    fileProperties.load(project.rootProject.file(localPropertiesName).newDataInputStream())
+
+    uploadConfig.user = fileProperties.getProperty('bintray.user')
+    uploadConfig.apiKey = fileProperties.getProperty('bintray.apikey')
+    uploadConfig.gpgPassword = fileProperties.getProperty('bintray.gpg.password')
+    uploadConfig.ossUser = fileProperties.getProperty('bintray.oss.user')
+    uploadConfig.ossPassword = fileProperties.getProperty('bintray.oss.password')
+}
 
 bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
+    user = uploadConfig.user
+    key = uploadConfig.apiKey
 
     configurations = ['archives']
     pkg {
@@ -36,13 +58,13 @@ bintray {
             desc = POM_DESCRIPTION
             gpg {
                 sign = true // Determines whether to GPG sign the files. The default is false
-                passphrase = properties.getProperty("bintray.gpg.password") // Optional. The passphrase for GPG signing
+                passphrase = uploadConfig.gpgPassword // Optional. The passphrase for GPG signing
             }
 
             mavenCentralSync {
                 sync = true
-                user = properties.getProperty("bintray.oss.user")
-                password = properties.getProperty("bintray.oss.password")
+                user = uploadConfig.ossUser
+                password = uploadConfig.ossPassword
                 close = '1'
             }
         }
