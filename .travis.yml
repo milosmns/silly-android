@@ -109,6 +109,8 @@ before_deploy:
  - ./gradlew bintrayUpload
 deploy:
   skip_cleanup: true
+  on:
+      branch: release
 after_deploy:
  - echo "Deployment finished."
   
