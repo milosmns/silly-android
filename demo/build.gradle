@@ -16,6 +16,16 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
+    // this is a demo app, don't worry about signing :)
+    signingConfigs {
+        release {
+            keyAlias 'sillyandroid'
+            keyPassword 'sillyandroid'
+            storeFile file('../signing/keystore.jks')
+            storePassword 'sillyandroid'
+        }
+    }
+
     buildTypes {
         debug {
             testCoverageEnabled true
@@ -24,6 +34,7 @@ android {
             minifyEnabled false
             testCoverageEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 

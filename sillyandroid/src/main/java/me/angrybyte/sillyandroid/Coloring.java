@@ -30,7 +30,7 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.graphics.drawable.DrawableWrapper;
 
 /**
- * Enhanced color and drawable manipulation helpers.
+ * Enhanced color, tinting and drawable manipulation helpers.
  */
 @SuppressWarnings({ "WeakerAccess", "unused" })
 public final class Coloring {
@@ -49,7 +49,7 @@ public final class Coloring {
     public static final int BRIGHTNESS_THRESHOLD = 180;
 
     /**
-     * Invokes {@link SillyAndroid#clamp(int, int, int)} with the given component (R,G,B) and 0 - 255 range.
+     * Invokes {@link SillyAndroid#clamp(int, int, int)} with the given component (R,G,B) and [0, 255] range.
      *
      * @param component R, G or B component of a color; potentially out of the [0, 255] range due to modifications
      * @return The component clamped to range [0, 255]
@@ -75,12 +75,12 @@ public final class Coloring {
      * <i>* Plus all caps variants.</i>
      *
      * @param colorHex Hex value
-     * @return Integer color, or plain gray if something goes wrong
+     * @return Integer color, or {@link Color#DKGRAY} if something goes wrong
      */
     @ColorInt
     public static int decodeColor(@NonNull String colorHex) {
         if (SillyAndroid.isEmpty(colorHex)) {
-            return Color.GRAY;
+            return Color.DKGRAY;
         }
 
         final int length = colorHex.length();
