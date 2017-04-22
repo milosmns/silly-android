@@ -83,22 +83,26 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
-    
+
+# Start up the emulator
+before_script:
+  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
+  - adb shell input keyevent 82 & # Unlock emulator if locked
 # Execute the script
 script:
+  # Build and prepare
   - ./gradlew clean
   - ./gradlew sillyandroid:build sillyandroid:test sillyandroid:check
   - ./gradlew demo:build demo:test demo:check
   - ./gradlew demo:assembleRelease
   - ./gradlew jacocoTestReport
 
-  # To run CodeCov tests, enable these lines (requires an Android emulator)
+  # To run device CodeCov tests, enable these lines (requires an Android emulator)
   - ./gradlew assembleAndroidTest
-  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-  - ./gradlew connectedCheck # need an emulator for this
+  - ./gradlew connectedCheck
 
 # Setup the deployment step (only on release branches)
 before_deploy:
