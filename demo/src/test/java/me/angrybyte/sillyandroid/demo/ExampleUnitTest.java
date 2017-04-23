@@ -1,5 +1,5 @@
 
-package me.angrbyte.sillyandroid.demo;
+package me.angrybyte.sillyandroid.demo;
 
 import org.junit.Test;
 

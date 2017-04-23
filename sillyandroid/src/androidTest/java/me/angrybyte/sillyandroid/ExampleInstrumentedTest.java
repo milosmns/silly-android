@@ -1,4 +1,4 @@
-package me.angrbyte.sillyandroid;
+package me.angrybyte.sillyandroid;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
