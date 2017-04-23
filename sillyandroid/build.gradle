@@ -93,6 +93,7 @@ dependencies {
     })
 
     testCompile "junit:junit:$JUNIT"
+    testCompile "org.robolectric:robolectric:$ROBOLECTRIC"
 }
 
 // Maven push plugin

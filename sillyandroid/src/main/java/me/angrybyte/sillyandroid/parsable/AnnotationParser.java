@@ -4,6 +4,7 @@ package me.angrybyte.sillyandroid.parsable;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
@@ -140,7 +141,8 @@ public final class AnnotationParser {
      * @return A list of declared class' fields. Do not modify this instance
      */
     @NonNull
-    public static List<Field> getAllFields(@NonNull final Class<?> classInstance) {
+    @VisibleForTesting
+    static List<Field> getAllFields(@NonNull final Class<?> classInstance) {
         Class<?> parsedClass = classInstance;
         final String name = parsedClass.getName();
         List<Field> allFields = FIELD_CACHE.get(name);
@@ -163,7 +165,8 @@ public final class AnnotationParser {
      * @param fieldName The name of the field being modified
      * @return {@code True} if the value was successfully assigned, {@code false} otherwise
      */
-    private static boolean setFieldValue(@NonNull final Object instance, final int value, @NonNull final String fieldName) {
+    @VisibleForTesting
+    static boolean setFieldValue(@NonNull final Object instance, final int value, @NonNull final String fieldName) {
         // check the cache first (iterating is much faster than reflection)
         Field fieldReference = null;
         for (final Field iField : getAllFields(instance.getClass())) {
@@ -196,7 +199,8 @@ public final class AnnotationParser {
      * @param view     The View to set the listener to
      * @param listener The listener
      */
-    private static void setClickListener(@Nullable final View view, @Nullable final View.OnClickListener listener) {
+    @VisibleForTesting
+    static void setClickListener(@Nullable final View view, @Nullable final View.OnClickListener listener) {
         if (view != null && listener != null) {
             view.setOnClickListener(listener);
         } else {
@@ -210,7 +214,8 @@ public final class AnnotationParser {
      * @param view     The View to set the listener to
      * @param listener The listener
      */
-    private static void setLongClickListener(@Nullable final View view, @Nullable final View.OnLongClickListener listener) {
+    @VisibleForTesting
+    static void setLongClickListener(@Nullable final View view, @Nullable final View.OnLongClickListener listener) {
         if (view != null && listener != null) {
             view.setOnLongClickListener(listener);
         } else {
@@ -228,8 +233,9 @@ public final class AnnotationParser {
      * @return The View that was set to the field, or {@code null} if nothing was set
      */
     @Nullable
-    private static View findAndSetView(@NonNull final Context context, @NonNull final Object instance, @NonNull final LayoutWrapper wrapper,
-                                       @NonNull final Field field) {
+    @VisibleForTesting
+    static View findAndSetView(@NonNull final Context context, @NonNull final Object instance, @NonNull final LayoutWrapper wrapper,
+                               @NonNull final Field field) {
         // check 'find view' annotation, don't crash when 'safe' is set
         final Annotations.FindView annotation = field.getAnnotation(Annotations.FindView.class);
         final boolean safeFail = annotation.safeFail();

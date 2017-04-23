@@ -37,4 +37,5 @@ ext {
     APPCOMPAT = "25.3.1"
     ESPRESSO = "2.2.2"
     JUNIT = "4.12"
+    ROBOLECTRIC = "3.3.2"
 }
