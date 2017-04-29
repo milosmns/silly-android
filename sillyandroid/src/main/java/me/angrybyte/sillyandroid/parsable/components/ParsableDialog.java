@@ -28,7 +28,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     private int mMenuId;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public ParsableDialog(@NonNull final Context context) {
         super(context);
@@ -36,7 +36,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public ParsableDialog(@NonNull final Context context, @StyleRes final int themeResId) {
         super(context, themeResId);
@@ -44,7 +44,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected ParsableDialog(@NonNull final Context context, final boolean cancelable, @Nullable final OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
@@ -64,7 +64,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void setContentView(@LayoutRes final int layoutResID) {
@@ -73,7 +73,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void setContentView(@NonNull final View view) {
@@ -82,7 +82,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void setContentView(@NonNull final View view, @Nullable final ViewGroup.LayoutParams params) {
@@ -91,7 +91,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
@@ -104,13 +104,13 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void onClick(final View v) {}
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean onLongClick(final View v) {

@@ -27,28 +27,28 @@ import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 public abstract class EasyViewGroup extends ViewGroup implements LayoutWrapper {
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public EasyViewGroup(@NonNull final Context context) {
         super(context);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public EasyViewGroup(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public EasyViewGroup(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public EasyViewGroup(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {

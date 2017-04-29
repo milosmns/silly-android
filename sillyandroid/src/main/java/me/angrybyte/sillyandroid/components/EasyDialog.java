@@ -67,7 +67,7 @@ public class EasyDialog extends Dialog implements LayoutWrapper {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected EasyDialog(@NonNull final Context context, final boolean cancelable, @Nullable final OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
