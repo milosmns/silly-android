@@ -27,7 +27,7 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
     private int mMenuId;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
@@ -40,7 +40,7 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void setContentView(@LayoutRes final int layoutResID) {
@@ -49,7 +49,7 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void setContentView(@NonNull final View view) {
@@ -58,7 +58,7 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void setContentView(@NonNull final View view, @Nullable final ViewGroup.LayoutParams params) {
@@ -67,7 +67,7 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
@@ -80,13 +80,13 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void onClick(final View v) {}
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean onLongClick(final View v) {

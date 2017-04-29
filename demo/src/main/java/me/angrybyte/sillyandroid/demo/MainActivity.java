@@ -10,7 +10,7 @@ import me.angrybyte.sillyandroid.components.EasyActivity;
 public final class MainActivity extends EasyActivity {
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {

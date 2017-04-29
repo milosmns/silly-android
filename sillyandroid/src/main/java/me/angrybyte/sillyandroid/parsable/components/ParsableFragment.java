@@ -36,7 +36,7 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     private boolean mParsedType;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
@@ -50,7 +50,7 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
@@ -63,7 +63,7 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Nullable
     @Override
@@ -92,7 +92,7 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
@@ -103,13 +103,13 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void onClick(final View v) {}
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean onLongClick(final View v) {
