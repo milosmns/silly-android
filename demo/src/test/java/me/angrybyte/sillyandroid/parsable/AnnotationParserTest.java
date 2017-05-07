@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import org.junit.After;
@@ -108,7 +107,7 @@ public class AnnotationParserTest {
     @Annotations.Menu(1)
     @Annotations.Layout(2)
     @SuppressWarnings("ResourceType")
-    private static final class TestMenuLayoutActivity extends AppCompatActivity {
+    private static final class TestMenuLayoutActivity extends Activity {
 
         @SuppressWarnings("unused")
         private int mMenuId;

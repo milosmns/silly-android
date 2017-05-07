@@ -169,8 +169,10 @@ public final class AnnotationParser {
     static boolean setFieldValue(@NonNull final Object instance, final int value, @NonNull final String fieldName) {
         // check the cache first (iterating is much faster than reflection)
         Field fieldReference = null;
-        for (final Field iField : getAllFields(instance.getClass())) {
-            if (iField.getName().equals(instance.getClass().getName())) {
+
+        List<Field> classFields = getAllFields(instance.getClass());
+        for (final Field iField : classFields) {
+            if (iField.getName().equals(fieldName)) {
                 // found it!
                 fieldReference = iField;
                 break;
