@@ -1,5 +1,6 @@
 Silly Android (WIP)
 ===================
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://travis-ci.org/milosmns/silly-android.svg?branch=master)](https://travis-ci.org/milosmns/silly-android)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1efe7dca11024c14811e6012f0d3ae0a)](https://www.codacy.com/app/milosmns/silly-android)
 [![CodeCov](https://codecov.io/gh/milosmns/silly-android/branch/master/graph/badge.svg)](https://codecov.io/gh/milosmns/silly-android)
