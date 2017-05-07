@@ -75,12 +75,8 @@ cache:
 # Execute the script
 script:
   - ./gradlew clean
-  - ./gradlew sillyandroid:build
-  - ./gradlew sillyandroid:test
-  - ./gradlew demo:build
-  - ./gradlew demo:assemble
-  - ./gradlew demo:check 
-  - ./gradlew demo:test
+  - ./gradlew assemble
+  - ./gradlew demo:check
   - ./gradlew build jacocoTestReport
   
 # Start CodeCov bash script when done with everything
