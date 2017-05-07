@@ -92,10 +92,12 @@ public class AnnotationParserTest {
          * {@inheritDoc}
          */
         @Override
-        @SuppressWarnings({ "ResourceType", "unchecked" })
+        @SuppressWarnings({"ResourceType", "unchecked"})
         public <ViewType extends View> ViewType findView(@IdRes final int viewId) {
             if (viewId == 1) {
-                return (ViewType) new View(mContextRef.get());
+                final View view = new View(mContextRef.get());
+                view.setId(1);
+                return (ViewType) view;
             }
             return null;
         }
@@ -107,13 +109,30 @@ public class AnnotationParserTest {
     @Annotations.Menu(1)
     @Annotations.Layout(2)
     @SuppressWarnings("ResourceType")
-    private static final class TestMenuLayoutActivity extends Activity {
+    private static final class TestMenuLayoutActivity extends Activity implements LayoutWrapper, View.OnClickListener, View.OnLongClickListener {
+
+        @Annotations.FindView(1)
+        @Annotations.Clickable
+        @Annotations.LongClickable
+        @SuppressWarnings("unused")
+        private View mInjected;
 
         @SuppressWarnings("unused")
         private int mMenuId;
 
         @SuppressWarnings("unused")
         private int mLayoutId;
+
+        private boolean mIsViewClicked;
+        private boolean mIsViewLongClicked;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public <ViewType extends View> ViewType findView(@IdRes final int viewId) {
+            return new MockLayoutWrapper(this).findView(viewId);
+        }
 
         /**
          * Gets the menu ID value passed through the annotation.
@@ -131,6 +150,50 @@ public class AnnotationParserTest {
          */
         public int getLayoutId() {
             return mLayoutId;
+        }
+
+        /**
+         * Gets the injected View value passed through the annotation.
+         *
+         * @return A View
+         */
+        public View getInjectedView() {
+            return mInjected;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void onClick(final View v) {
+            mIsViewClicked = true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean onLongClick(final View v) {
+            mIsViewLongClicked = true;
+            return true;
+        }
+
+        /**
+         * Checks if injected view was clicked.
+         *
+         * @return {@code True} if clicked, {@code false} if not yet clicked
+         */
+        public boolean isViewClicked() {
+            return mIsViewClicked;
+        }
+
+        /**
+         * Checks if injected view was long clicked.
+         *
+         * @return {@code True} if long clicked, {@code false} if not yet long clicked
+         */
+        public boolean isViewLongClicked() {
+            return mIsViewLongClicked;
         }
     }
     // </editor-fold>
@@ -201,6 +264,21 @@ public class AnnotationParserTest {
         AnnotationParser.parseType(mActivity, activity);
         assertEquals("Menu ID not injected properly", activity.getMenuId(), 1);
         assertEquals("Layout ID not injected properly", activity.getLayoutId(), 2);
+    }
+
+    /**
+     * Tests the {@link AnnotationParser#parseFields(Context, Object, LayoutWrapper)} method.
+     */
+    @Test
+    public void testParseViews() {
+        final TestMenuLayoutActivity activity = (TestMenuLayoutActivity) mActivity;
+        AnnotationParser.parseFields(mActivity, activity, activity);
+        final View injected = activity.getInjectedView();
+        assertEquals("View not injected properly", injected.getId(), 1);
+        injected.performClick();
+        assertTrue("View click not performed", activity.isViewClicked());
+        injected.performLongClick();
+        assertTrue("View long click not performed", activity.isViewLongClicked());
     }
 
 }
