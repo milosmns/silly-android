@@ -34,12 +34,8 @@ android {
     }
 
     buildTypes {
-        debug {
-            testCoverageEnabled true
-        }
         release {
             minifyEnabled false
-            testCoverageEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -87,13 +83,6 @@ jacocoAndroidUnitTestReport {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided "com.android.support:appcompat-v7:$APPCOMPAT"
-
-    androidTestCompile("com.android.support.test.espresso:espresso-core:$ESPRESSO", {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-
-    testCompile "junit:junit:$JUNIT"
-    testCompile "org.robolectric:robolectric:$ROBOLECTRIC"
 }
 
 // Maven push plugin

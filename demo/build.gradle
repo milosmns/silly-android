@@ -27,12 +27,8 @@ android {
     }
 
     buildTypes {
-        debug {
-            testCoverageEnabled true
-        }
         release {
             minifyEnabled false
-            testCoverageEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -81,14 +77,17 @@ jacocoAndroidUnitTestReport {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile "com.android.support:appcompat-v7:$APPCOMPAT"
 
     // compile "me.angrybyte.sillyandroid:sillyandroid:$VERSION_NAME" // global
-    compile project(':sillyandroid') // local
+    compile project(':sillyandroid') // local all
 
     androidTestCompile("com.android.support.test.espresso:espresso-core:$ESPRESSO", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile "com.android.support:appcompat-v7:$APPCOMPAT"
     testCompile "junit:junit:$JUNIT"
+    testCompile "org.robolectric:robolectric:$ROBOLECTRIC"
+    testCompile "com.android.support:appcompat-v7:$APPCOMPAT"
+    testCompile "org.robolectric:shadows-support-v4:$ROBOLECTRIC"
 }
