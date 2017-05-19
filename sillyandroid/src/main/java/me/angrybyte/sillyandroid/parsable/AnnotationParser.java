@@ -60,7 +60,7 @@ public final class AnnotationParser {
             if (menuId < 1) {
                 throw new IllegalArgumentException("Menu ID must be provided in the @Menu annotation");
             }
-            if (!setFieldValue(instance, menuId, MENU_ID_FIELD_NAME)) {
+            if (!setIntFieldValue(instance, menuId, MENU_ID_FIELD_NAME)) {
                 throw new IllegalArgumentException("Failed to set the menu ID");
             }
         }
@@ -76,7 +76,7 @@ public final class AnnotationParser {
             if (layoutId < 1) {
                 throw new IllegalArgumentException("Layout ID must be provided in the @Layout annotation");
             }
-            if (!setFieldValue(instance, layoutId, LAYOUT_ID_FIELD_NAME)) {
+            if (!setIntFieldValue(instance, layoutId, LAYOUT_ID_FIELD_NAME)) {
                 throw new IllegalArgumentException("Failed to set the layout ID");
             }
         }
@@ -159,74 +159,6 @@ public final class AnnotationParser {
     }
 
     /**
-     * Assigns an integer to the given field.
-     *
-     * @param instance  A non-{@code null} instance that holds the field
-     * @param value     The value being set
-     * @param fieldName The name of the field being modified
-     * @return {@code True} if the value was successfully assigned, {@code false} otherwise
-     */
-    @VisibleForTesting
-    static boolean setFieldValue(@NonNull final Object instance, final int value, @NonNull final String fieldName) {
-        // check the cache first (iterating is much faster than reflection)
-        Field fieldReference = null;
-
-        List<Field> classFields = getAllFields(instance.getClass());
-        for (final Field iField : classFields) {
-            if (iField.getName().equals(fieldName)) {
-                // found it!
-                fieldReference = iField;
-                break;
-            }
-        }
-
-        // if not found, die.
-        if (fieldReference == null) {
-            throw new IllegalArgumentException("Class '" + instance.getClass().getName() + "' needs to have a '" + fieldName + "' field");
-        }
-
-        // finally, set the value
-        try {
-            fieldReference.setAccessible(true);
-            fieldReference.setInt(instance, value);
-            return true;
-        } catch (IllegalAccessException e) {
-            Log.w(TAG, "Failed to set " + value + " to " + fieldName, e);
-        }
-        return false;
-    }
-
-    /**
-     * Sets the click listener to the given {@link View}.
-     *
-     * @param view     The View to set the listener to
-     * @param listener The listener
-     */
-    @VisibleForTesting
-    static void setClickListener(@Nullable final View view, @Nullable final View.OnClickListener listener) {
-        if (view != null && listener != null) {
-            view.setOnClickListener(listener);
-        } else {
-            throw new IllegalArgumentException("Cannot set a click listener " + listener + " to " + view);
-        }
-    }
-
-    /**
-     * Sets the long-click listener to the given {@link View}.
-     *
-     * @param view     The View to set the listener to
-     * @param listener The listener
-     */
-    @VisibleForTesting
-    static void setLongClickListener(@Nullable final View view, @Nullable final View.OnLongClickListener listener) {
-        if (view != null && listener != null) {
-            view.setOnLongClickListener(listener);
-        } else {
-            throw new IllegalArgumentException("Cannot set a long-click listener " + listener + " to " + view);
-        }
-    }
-
-    /**
      * Verifies that the given field is a {@link View} or crashes.
      *
      * @param field  The field you are checking
@@ -291,5 +223,73 @@ public final class AnnotationParser {
             throw new IllegalStateException(e);
         }
     }
+
+    // <editor-fold desc="Private helpers">
+
+    /**
+     * Assigns an integer to the given field.
+     *
+     * @param instance  A non-{@code null} instance that holds the field
+     * @param value     The value being set
+     * @param fieldName The name of the field being modified
+     * @return {@code True} if the value was successfully assigned, {@code false} otherwise
+     */
+    private static boolean setIntFieldValue(@NonNull final Object instance, final int value, @NonNull final String fieldName) {
+        // check the cache first (iterating is much faster than reflection)
+        Field fieldReference = null;
+
+        List<Field> classFields = getAllFields(instance.getClass());
+        for (final Field iField : classFields) {
+            if (iField.getName().equals(fieldName)) {
+                // found it!
+                fieldReference = iField;
+                break;
+            }
+        }
+
+        // if not found, die.
+        if (fieldReference == null) {
+            throw new IllegalArgumentException("Class '" + instance.getClass().getName() + "' needs to have a '" + fieldName + "' field");
+        }
+
+        // finally, set the value
+        try {
+            fieldReference.setAccessible(true);
+            fieldReference.setInt(instance, value);
+            return true;
+        } catch (IllegalAccessException e) {
+            Log.w(TAG, "Failed to set " + value + " to " + fieldName, e);
+        }
+        return false;
+    }
+
+    /**
+     * Sets the click listener to the given {@link View}.
+     *
+     * @param view     The View to set the listener to
+     * @param listener The listener
+     */
+    private static void setClickListener(@Nullable final View view, @Nullable final View.OnClickListener listener) {
+        if (view != null && listener != null) {
+            view.setOnClickListener(listener);
+        } else {
+            throw new IllegalArgumentException("Cannot set a click listener " + listener + " to " + view);
+        }
+    }
+
+    /**
+     * Sets the long-click listener to the given {@link View}.
+     *
+     * @param view     The View to set the listener to
+     * @param listener The listener
+     */
+    private static void setLongClickListener(@Nullable final View view, @Nullable final View.OnLongClickListener listener) {
+        if (view != null && listener != null) {
+            view.setOnLongClickListener(listener);
+        } else {
+            throw new IllegalArgumentException("Cannot set a long-click listener " + listener + " to " + view);
+        }
+    }
+    // </editor-fold>
 
 }
