@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.Objects;
 
 import static android.content.ContentValues.TAG;
 
@@ -511,6 +512,23 @@ public final class SillyAndroid {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return result;
+    }
+
+    /**
+     * Compares the two {@code null}able objects. For {@link Build.VERSION_CODES#KITKAT} and newer APIs this gets the result from
+     * {@link Objects#equals(Object, Object)}; for older APIs this does the same comparison as {@link Objects#equals(Object, Object)}.
+     *
+     * @param first  The first object to compare, can be {@code null}
+     * @param second The second object to compare, can be {@code null}
+     * @return {@code True} if objects are equal using {@link Object#equals(Object)}, {@code false} otherwise
+     */
+    @SuppressWarnings("unused")
+    public static boolean equal(@Nullable final Object first, @Nullable final Object second) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            return Objects.equals(first, second);
+        } else {
+            return (first == second) || (first != null && first.equals(second));
+        }
     }
 
     /**
