@@ -33,7 +33,14 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     @SuppressWarnings("unused")
     private int mMenuId;
 
-    private boolean mParsedType;
+    private boolean mIsParsed;
+
+    /**
+     * The public, default, empty constructor which should have been included by default.
+     */
+    public ParsableFragment() {
+        super();
+    }
 
     /**
      * {@inheritDoc}
@@ -45,7 +52,7 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
         final Context context = getContext();
         if (context != null) {
             AnnotationParser.parseType(context, this);
-            mParsedType = true;
+            mIsParsed = true;
         }
     }
 
@@ -56,9 +63,9 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        if (!mParsedType) {
+        if (!mIsParsed) {
             AnnotationParser.parseType(context, this);
-            mParsedType = true;
+            mIsParsed = true;
         }
     }
 
@@ -71,9 +78,9 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         // it's barely possible to go in here, but it's Android, so.. check if not parsed by now
         final Context context = getContext() == null ? inflater.getContext() : getContext();
-        if (!mParsedType && context != null) {
+        if (!mIsParsed && context != null) {
             AnnotationParser.parseType(context, this);
-            mParsedType = true;
+            mIsParsed = true;
         }
 
         // inflate and parse views now
