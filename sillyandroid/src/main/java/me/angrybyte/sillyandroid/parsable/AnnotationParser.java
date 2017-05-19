@@ -115,6 +115,7 @@ public final class AnnotationParser {
         for (final Field iField : allFields) {
             // check for annotations - click/long-click makes no sense when field is not parsed through this
             if (iField.isAnnotationPresent(Annotations.FindView.class)) {
+                verifyTypeOfView(iField, instance);
                 final View v = findAndSetView(context, instance, wrapper, iField);
                 if (v == null) {
                     continue; // happens when 'safe' is set for @FindView and View is not found
@@ -223,6 +224,25 @@ public final class AnnotationParser {
         } else {
             throw new IllegalArgumentException("Cannot set a long-click listener " + listener + " to " + view);
         }
+    }
+
+    /**
+     * Verifies that the given field is a {@link View} or crashes.
+     *
+     * @param field  The field you are checking
+     * @param object The object instance holding the field
+     * @throws IllegalArgumentException When field is not a {@link View}
+     */
+    @VisibleForTesting
+    static void verifyTypeOfView(@NonNull final Field field, @NonNull final Object object) {
+        try {
+            field.setAccessible(true);
+            Object value = field.get(object);
+            if (value instanceof View || View.class.isAssignableFrom(field.getType())) {
+                return;
+            }
+        } catch (IllegalAccessException ignored) {}
+        throw new IllegalArgumentException("Field \n\t'" + String.valueOf(field) + "\n is not a View, instead it is a " + field.getType().getSimpleName());
     }
 
     /**
