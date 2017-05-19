@@ -26,6 +26,8 @@ import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 @SuppressWarnings("unused")
 public class EasyView extends View implements LayoutWrapper {
 
+    // <editor-fold desc="Constructors">
+
     /**
      * Simple constructor to use when creating a view from code.
      *
@@ -96,6 +98,9 @@ public class EasyView extends View implements LayoutWrapper {
     public EasyView(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr, final int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
+    // </editor-fold>
+
+    // <editor-fold desc="Public API">
 
     /**
      * Returns the result from {@link SillyAndroid#findViewById(View, int)}.
@@ -105,60 +110,74 @@ public class EasyView extends View implements LayoutWrapper {
     }
 
     /**
-     * Returns the result from {@link ContextCompat#getDrawable(Context, int)}.
-     */
-    @Nullable
-    public Drawable getDrawableCompat(@DrawableRes final int drawableId) {
-        return ContextCompat.getDrawable(getContext(), drawableId);
-    }
-
-    /**
      * Invokes {@link ViewCompat#setBackground(View, Drawable)} with the same arguments.
      */
-    public void setBackgroundCompat(@Nullable final Drawable drawable) {
+    public final void setBackgroundCompat(@Nullable final Drawable drawable) {
         ViewCompat.setBackground(this, drawable);
     }
 
     /**
      * Invokes {@link SillyAndroid#setPadding(View, int, int, int, int)} with the same arguments.
      */
-    public void setPadding(@Px final int start, @Px final int top, @Px final int end, @Px final int bottom) {
+    public final void setPaddingR(@Px final int start, @Px final int top, @Px final int end, @Px final int bottom) {
         SillyAndroid.setPadding(this, start, top, end, bottom);
     }
 
     /**
      * Invokes {@link SillyAndroid#setPadding(View, int)} with the same arguments.
      */
-    public void setPadding(@Px final int padding) {
+    public final void setPaddingR(@Px final int padding) {
         SillyAndroid.setPadding(this, padding);
     }
+    // </editor-fold>
+
+    // <editor-fold desc="Internal methods">
+
+    /**
+     * Returns the result from {@link SillyAndroid#equal(Object, Object)}.
+     */
+    protected final boolean equal(@Nullable final Object first, @Nullable final Object second) {
+        return SillyAndroid.equal(first, second);
+    }
+
+    /**
+     * Returns the result from {@link ContextCompat#getDrawable(Context, int)}.
+     */
+    @Nullable
+    protected final Drawable getDrawableCompat(@DrawableRes final int drawableId) {
+        return ContextCompat.getDrawable(getContext(), drawableId);
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Toasts">
 
     /**
      * Invokes {@link SillyAndroid#toastShort(Context, int)}.
      */
-    public void toastShort(@StringRes final int stringId) {
+    protected final void toastShort(@StringRes final int stringId) {
         SillyAndroid.toastShort(getContext(), stringId);
     }
 
     /**
      * Invokes {@link SillyAndroid#toastShort(Context, String)}.
      */
-    public void toastShort(@NonNull final String string) {
+    protected final void toastShort(@NonNull final String string) {
         SillyAndroid.toastShort(getContext(), string);
     }
 
     /**
      * Invokes {@link SillyAndroid#toastLong(Context, int)}.
      */
-    public void toastLong(@StringRes final int stringId) {
+    protected final void toastLong(@StringRes final int stringId) {
         SillyAndroid.toastLong(getContext(), stringId);
     }
 
     /**
      * Invokes {@link SillyAndroid#toastLong(Context, String)}.
      */
-    public void toastLong(@NonNull final String string) {
+    protected final void toastLong(@NonNull final String string) {
         SillyAndroid.toastLong(getContext(), string);
     }
+    // </editor-fold>
 
 }

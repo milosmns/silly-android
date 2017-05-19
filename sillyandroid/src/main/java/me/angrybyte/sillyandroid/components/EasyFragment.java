@@ -43,6 +43,8 @@ import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 @SuppressWarnings("unused")
 public class EasyFragment extends Fragment implements LayoutWrapper {
 
+    // <editor-fold desc="Public API">
+
     /**
      * Finds the proper Context from either {@link Fragment#getContext()} or {@link #getActivity()}.
      * Activity comes first if both are not {@code null}.
@@ -55,10 +57,27 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
     }
 
     /**
+     * Returns the result from {@link SillyAndroid#findViewById(Fragment, int)}.
+     */
+    public final <ViewType extends View> ViewType findView(@IdRes final int viewId) {
+        return SillyAndroid.findViewById(this, viewId);
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Internal methods">
+
+    /**
+     * Returns the result from {@link SillyAndroid#equal(Object, Object)}.
+     */
+    protected final boolean equal(@Nullable final Object first, @Nullable final Object second) {
+        return SillyAndroid.equal(first, second);
+    }
+
+    /**
      * Returns the result from {@link SillyAndroid#countIntentHandlers(Context, Intent)}.
      */
     @IntRange(from = 0)
-    public int countIntentHandlers(@Nullable final Intent intent) {
+    protected final int countIntentHandlers(@Nullable final Intent intent) {
         final Context context = getContext();
         return context == null ? 0 : SillyAndroid.countIntentHandlers(context, intent);
     }
@@ -66,43 +85,36 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
     /**
      * Returns the result from {@link SillyAndroid#canHandleIntent(Context, Intent)}.
      */
-    public boolean canHandleIntent(@Nullable final Intent intent) {
+    protected final boolean canHandleIntent(@Nullable final Intent intent) {
         final Context context = getContext();
         return context != null && SillyAndroid.canHandleIntent(context, intent);
     }
 
     /**
-     * Returns the result from {@link SillyAndroid#findViewById(Fragment, int)}.
-     */
-    public <ViewType extends View> ViewType findView(@IdRes final int viewId) {
-        return SillyAndroid.findViewById(this, viewId);
-    }
-
-    /**
      * Returns the result from {@link SillyAndroid#isEmpty(String)}.
      */
-    public boolean isEmpty(@Nullable final String text) {
+    protected final boolean isEmpty(@Nullable final String text) {
         return SillyAndroid.isEmpty(text);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#dismiss(PopupMenu)}.
      */
-    public boolean dismiss(@Nullable final PopupMenu menu) {
+    protected final boolean dismiss(@Nullable final PopupMenu menu) {
         return SillyAndroid.dismiss(menu);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#dismiss(Dialog)}.
      */
-    public boolean dismiss(@Nullable final Dialog dialog) {
+    protected final boolean dismiss(@Nullable final Dialog dialog) {
         return SillyAndroid.dismiss(dialog);
     }
 
     /**
      * Returns the result from {@link SillyAndroid#close(Closeable)}.
      */
-    public boolean close(@Nullable final Closeable closeable) {
+    protected final boolean close(@Nullable final Closeable closeable) {
         return SillyAndroid.close(closeable);
     }
 
@@ -110,7 +122,7 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
      * Returns the result from {@link SillyAndroid#close(Cursor)}.
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public boolean close(@Nullable final Cursor cursor) {
+    protected final boolean close(@Nullable final Cursor cursor) {
         return SillyAndroid.close(cursor);
     }
 
@@ -118,7 +130,7 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
      * Returns the result from {@link ContextCompat#getDrawable(Context, int)}.
      */
     @Nullable
-    public Drawable getDrawableCompat(@DrawableRes final int drawableId) {
+    protected final Drawable getDrawableCompat(@DrawableRes final int drawableId) {
         final Context context = getContext();
         return context == null ? null : ContextCompat.getDrawable(context, drawableId);
     }
@@ -126,21 +138,21 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
     /**
      * Invokes {@link ViewCompat#setBackground(View, Drawable)} with the same arguments.
      */
-    public void setBackgroundCompat(@NonNull final View view, @Nullable final Drawable drawable) {
+    protected final void setBackgroundCompat(@NonNull final View view, @Nullable final Drawable drawable) {
         ViewCompat.setBackground(view, drawable);
     }
 
     /**
      * Invokes {@link SillyAndroid#setPadding(View, int, int, int, int)} with the same arguments.
      */
-    public void setPadding(@NonNull final View view, @Px final int start, @Px final int top, @Px final int end, @Px final int bottom) {
+    protected final void setPadding(@NonNull final View view, @Px final int start, @Px final int top, @Px final int end, @Px final int bottom) {
         SillyAndroid.setPadding(view, start, top, end, bottom);
     }
 
     /**
      * Invokes {@link SillyAndroid#setPadding(View, int)} with the same arguments.
      */
-    public void setPadding(@NonNull final View view, @Px final int padding) {
+    protected final void setPadding(@NonNull final View view, @Px final int padding) {
         SillyAndroid.setPadding(view, padding);
     }
 
@@ -148,7 +160,7 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
      * Returns the result from {@link SillyAndroid#isNetworkConnected(Context)}.
      */
     @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
-    public boolean isNetworkConnected() {
+    protected final boolean isNetworkConnected() {
         final Context context = getContext();
         return context != null && SillyAndroid.isNetworkConnected(context);
     }
@@ -156,15 +168,18 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
     /**
      * Returns the result from {@link SillyAndroid#isVoiceInputAvailable(Context)}.
      */
-    public boolean isVoiceInputAvailable() {
+    protected final boolean isVoiceInputAvailable() {
         final Context context = getContext();
         return context != null && SillyAndroid.isVoiceInputAvailable(context);
     }
+    // </editor-fold>
+
+    // <editor-fold desc="Toasts">
 
     /**
      * Invokes {@link SillyAndroid#toastShort(Context, int)}.
      */
-    public void toastShort(@StringRes final int stringId) {
+    protected final void toastShort(@StringRes final int stringId) {
         final Context context = getContext();
         if (context != null) {
             SillyAndroid.toastShort(getContext(), stringId);
@@ -174,7 +189,7 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
     /**
      * Invokes {@link SillyAndroid#toastShort(Context, String)}.
      */
-    public void toastShort(@NonNull final String string) {
+    protected final void toastShort(@NonNull final String string) {
         final Context context = getContext();
         if (context != null) {
             SillyAndroid.toastShort(getContext(), string);
@@ -184,7 +199,7 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
     /**
      * Invokes {@link SillyAndroid#toastLong(Context, int)}.
      */
-    public void toastLong(@StringRes final int stringId) {
+    protected final void toastLong(@StringRes final int stringId) {
         final Context context = getContext();
         if (context != null) {
             SillyAndroid.toastLong(getContext(), stringId);
@@ -194,14 +209,15 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
     /**
      * Invokes {@link SillyAndroid#toastLong(Context, String)}.
      */
-    public void toastLong(@NonNull final String string) {
+    protected final void toastLong(@NonNull final String string) {
         final Context context = getContext();
         if (context != null) {
             SillyAndroid.toastLong(getContext(), string);
         }
     }
+    // </editor-fold>
 
-    /* Permissions */
+    // <editor-fold desc="Permissions">
 
     /**
      * Checks if given permission was granted by the user.
@@ -257,5 +273,6 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
         // invoke the proper callback
         onPermissionsResult(requestCode, granted, denied);
     }
+    // </editor-fold>
 
 }
