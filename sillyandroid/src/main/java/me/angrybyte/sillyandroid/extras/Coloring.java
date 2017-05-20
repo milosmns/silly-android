@@ -62,7 +62,7 @@ public final class Coloring {
     }
 
     /**
-     * Converts a hex color String value to an Android Integer color value.
+     * Converts an ARGB hex color String value to an Android Integer color value.
      * <br>
      * Supported formats:
      * <br>
@@ -86,8 +86,8 @@ public final class Coloring {
         }
 
         String colorHex = hexValue.trim();
-        final int length = colorHex.length();
         colorHex = colorHex.replace("#", "").replace("0x", "").replace("0X", "");
+        final int length = colorHex.length();
         if (length != 6 && length != 8) {
             return Color.DKGRAY;
         }
