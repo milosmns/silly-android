@@ -29,7 +29,7 @@ import me.angrybyte.sillyandroid.SillyAndroid;
 import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 
 /**
- * An extension of {@link android.app.Dialog} with applied extensions from {@link SillyAndroid} extension set.
+ * An extension of the {@link android.app.Dialog} with applied extensions from the {@link SillyAndroid} extension set.
  */
 @UiThread
 @SuppressWarnings({ "unused", "WeakerAccess" })
