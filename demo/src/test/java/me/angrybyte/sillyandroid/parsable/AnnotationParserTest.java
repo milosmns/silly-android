@@ -210,7 +210,7 @@ public class AnnotationParserTest {
     private Activity mActivityContext;
 
     /**
-     * {@inheritDoc}
+     * Sets up the testing environment.
      */
     @Before
     public void setUp() {
@@ -218,7 +218,7 @@ public class AnnotationParserTest {
     }
 
     /**
-     * {@inheritDoc}
+     * Destroys the testing environment.
      */
     @After
     public void tearDown() {
@@ -339,6 +339,8 @@ public class AnnotationParserTest {
     /**
      * Checks if given fields list contain the given field name.
      *
+     * @param fieldList All of the class' fields
+     * @param fieldName The field name to search for in the list
      * @return {@code True} if the given list contains the field, {@code false} if not
      */
     private boolean containsField(@NonNull final List<Field> fieldList, @NonNull final String fieldName) {
