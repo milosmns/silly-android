@@ -1,4 +1,4 @@
-package me.angrybyte.sillyandroid;
+package me.angrybyte.sillyandroid.extras;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -28,6 +28,8 @@ import android.support.annotation.RequiresApi;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.graphics.drawable.DrawableWrapper;
+
+import me.angrybyte.sillyandroid.SillyAndroid;
 
 /**
  * Enhanced color, tinting and drawable manipulation helpers.
