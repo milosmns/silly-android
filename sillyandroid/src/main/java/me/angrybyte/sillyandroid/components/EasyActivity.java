@@ -22,7 +22,6 @@ import android.support.annotation.StringRes;
 import android.support.annotation.UiThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.View;
@@ -35,14 +34,15 @@ import java.util.Set;
 
 import me.angrybyte.sillyandroid.BuildConfig;
 import me.angrybyte.sillyandroid.SillyAndroid;
+import me.angrybyte.sillyandroid.extras.BlockingLifecycleActivity;
 import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 
 /**
- * An extension of {@link AppCompatActivity} with applied extensions from {@link SillyAndroid} extension set.
+ * An extension of the {@link BlockingLifecycleActivity} with applied extensions from the {@link SillyAndroid} extension set.
  */
 @UiThread
 @SuppressWarnings("unused")
-public class EasyActivity extends AppCompatActivity implements LayoutWrapper {
+public class EasyActivity extends BlockingLifecycleActivity implements LayoutWrapper {
 
     // <editor-fold desc="Public API">
 
