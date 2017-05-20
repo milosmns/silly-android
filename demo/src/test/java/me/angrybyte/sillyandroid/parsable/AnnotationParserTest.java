@@ -38,7 +38,7 @@ import static me.angrybyte.sillyandroid.parsable.Annotations.Menu;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
-public class AnnotationParserTest {
+public final class AnnotationParserTest {
 
     // <editor-fold desc="Inner classes">
 
@@ -213,7 +213,7 @@ public class AnnotationParserTest {
      * Sets up the testing environment.
      */
     @Before
-    public void setUp() {
+    public final void setUp() {
         mActivityContext = Robolectric.setupActivity(TestMenuLayoutActivity.class);
     }
 
@@ -221,7 +221,7 @@ public class AnnotationParserTest {
      * Destroys the testing environment.
      */
     @After
-    public void tearDown() {
+    public final void tearDown() {
         mActivityContext = null;
     }
     // </editor-fold>
@@ -230,7 +230,7 @@ public class AnnotationParserTest {
      * Tests the {@link AnnotationParser#getAllFields(Class)} method using {@link TestParsableClass}.
      */
     @Test
-    public void testGetAllFieldsBase() {
+    public final void testGetAllFieldsBase() {
         final List<Field> baseFields = AnnotationParser.getAllFields(TestParsableClass.class);
         final String baseString = Arrays.toString(baseFields.toArray());
         assertNotNull("Fields list is null", baseFields);
@@ -242,7 +242,7 @@ public class AnnotationParserTest {
      * Tests the {@link AnnotationParser#getAllFields(Class)} method using {@link TestFinalParsableClass}.
      */
     @Test
-    public void testGetAllFieldsExtended() {
+    public final void testGetAllFieldsExtended() {
         final List<Field> extFields = AnnotationParser.getAllFields(TestFinalParsableClass.class);
         final String extString = Arrays.toString(extFields.toArray());
         assertNotNull("Fields list is null", extFields);
@@ -255,7 +255,7 @@ public class AnnotationParserTest {
      * Tests the {@link AnnotationParser#parseType(Context, Object)} method.
      */
     @Test
-    public void testParseType() {
+    public final void testParseType() {
         final TestMenuLayoutActivity activity = (TestMenuLayoutActivity) mActivityContext;
         AnnotationParser.parseType(mActivityContext, activity);
         assertEquals("Menu ID not injected properly", activity.getMenuId(), 1);
@@ -266,7 +266,7 @@ public class AnnotationParserTest {
      * Tests the {@link AnnotationParser#verifyTypeOfView(Field, Object)} method using a non-View and a View.
      */
     @Test
-    public void testVerifyTypeOfView() {
+    public final void testVerifyTypeOfView() {
         // check a non-View first (it should fail the verification)
         Field objectField = null;
         final TestFinalParsableClass objectHolder = new TestFinalParsableClass();
@@ -301,7 +301,7 @@ public class AnnotationParserTest {
      * Tests the {@link AnnotationParser#parseFields(Context, Object, LayoutWrapper)} method.
      */
     @Test
-    public void testParseFields() {
+    public final void testParseFields() {
         final TestMenuLayoutActivity activity = (TestMenuLayoutActivity) mActivityContext;
         final LayoutWrapper layoutWrapper = (LayoutWrapper) mActivityContext;
         AnnotationParser.parseFields(mActivityContext, activity, layoutWrapper);
@@ -314,7 +314,7 @@ public class AnnotationParserTest {
      * Tests the usage of {@link Clickable} annotation with {@link AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
      */
     @Test
-    public void testParseClickableView() {
+    public final void testParseClickableView() {
         final TestMenuLayoutActivity activity = (TestMenuLayoutActivity) mActivityContext;
         final LayoutWrapper layoutWrapper = (LayoutWrapper) mActivityContext;
         AnnotationParser.parseFields(mActivityContext, activity, layoutWrapper);
@@ -326,7 +326,7 @@ public class AnnotationParserTest {
      * Tests the usage of {@link LongClickable} annotation with {@link AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
      */
     @Test
-    public void testParseLongClickableView() {
+    public final void testParseLongClickableView() {
         final TestMenuLayoutActivity activity = (TestMenuLayoutActivity) mActivityContext;
         final LayoutWrapper layoutWrapper = (LayoutWrapper) mActivityContext;
         AnnotationParser.parseFields(mActivityContext, activity, layoutWrapper);
