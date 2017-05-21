@@ -34,7 +34,7 @@ import me.angrybyte.sillyandroid.SillyAndroid;
 /**
  * Enhanced color, tinting and drawable manipulation helpers.
  */
-@SuppressWarnings({ "WeakerAccess", "unused" })
+@SuppressWarnings({"WeakerAccess", "unused"})
 public final class Coloring {
 
     /**
@@ -150,7 +150,8 @@ public final class Coloring {
         final int topR = Color.red(topColor);
         final int topG = Color.green(topColor);
         final int topB = Color.blue(topColor);
-        final float topA = Color.alpha(topColor) / 255f;
+        final double topAlpha = (double) Color.alpha(topColor);
+        final double topA = topAlpha == 255d ? 1.0d : topAlpha / 256d; // special: divide by 256 to get 0.5 instead of 0.51 for 0x80 alpha
 
         // extract bottom color's components
         final int botR = Color.red(bottomColor);
@@ -158,9 +159,9 @@ public final class Coloring {
         final int botB = Color.blue(bottomColor);
 
         // rule: outputComponent = (foregroundComponent * foregroundAlpha) + (backgroundComponent * (1.0 - foregroundAlpha))
-        int r = clampRGB((int) ((topR * topA) + (botR * (1.0 - topA))));
-        int g = clampRGB((int) ((topG * topA) + (botG * (1.0 - topA))));
-        int b = clampRGB((int) ((topB * topA) + (botB * (1.0 - topA))));
+        int r = clampRGB((int) Math.round((topR * topA) + (botR * (1.0d - topA))));
+        int g = clampRGB((int) Math.round((topG * topA) + (botG * (1.0d - topA))));
+        int b = clampRGB((int) Math.round((topB * topA) + (botB * (1.0d - topA))));
 
         return Color.argb(255, r, g, b);
     }
@@ -212,7 +213,7 @@ public final class Coloring {
      */
     @ColorInt
     public static int dimColor(@ColorInt final int color) {
-        final int amount = -(Math.round((float) Color.alpha(color) * 0.25f));
+        final int amount = (int) -(Math.round((double) Color.alpha(color) * 0.25d));
         return shiftAlpha(color, amount);
     }
 
@@ -225,7 +226,7 @@ public final class Coloring {
      */
     @ColorInt
     public static int opacifyColor(@ColorInt final int color) {
-        final int amount = Math.round((float) Color.alpha(color) * 0.25f);
+        final int amount = (int) Math.round((double) Color.alpha(color) * 0.25d);
         return shiftAlpha(color, amount);
     }
 
@@ -304,7 +305,7 @@ public final class Coloring {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             drawable = new ColorDrawable(color).mutate();
         } else {
-            drawable = new GradientDrawable(Orientation.BOTTOM_TOP, new int[] { color, color }).mutate();
+            drawable = new GradientDrawable(Orientation.BOTTOM_TOP, new int[]{color, color}).mutate();
         }
 
         // set the alpha value
@@ -504,14 +505,14 @@ public final class Coloring {
     public static Drawable createStateList(@NonNull final Context context, @ColorInt final int normal, @ColorInt final int clicked,
                                            @ColorInt final int checked, final boolean shouldFade, @IntRange(from = 0) int cornerRadius) {
         // initialize state arrays (they're in arrays because you can use different drawables for reverse transitions..)
-        final int[] normalState = new int[] {};
-        final int[] clickedState = new int[] { android.R.attr.state_pressed };
-        final int[] checkedState = new int[] { android.R.attr.state_checked };
-        final int[] selectedState = new int[] { android.R.attr.state_selected };
-        final int[] focusedState = new int[] { android.R.attr.state_focused };
-        int[] activatedState = new int[] {};
+        final int[] normalState = new int[]{};
+        final int[] clickedState = new int[]{android.R.attr.state_pressed};
+        final int[] checkedState = new int[]{android.R.attr.state_checked};
+        final int[] selectedState = new int[]{android.R.attr.state_selected};
+        final int[] focusedState = new int[]{android.R.attr.state_focused};
+        int[] activatedState = new int[]{};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            activatedState = new int[] { android.R.attr.state_activated };
+            activatedState = new int[]{android.R.attr.state_activated};
         }
 
         // normal state drawable
@@ -666,14 +667,14 @@ public final class Coloring {
     @NonNull
     public static ColorStateList createContrastTextColors(@ColorInt final int normalColor, @ColorInt final int pressedBackColor) {
         // initialize state arrays (they're in arrays because you can use different colors for reverse transitions..)
-        final int[] normalState = new int[] {};
-        final int[] clickedState = new int[] { android.R.attr.state_pressed };
-        final int[] checkedState = new int[] { android.R.attr.state_checked };
-        final int[] selectedState = new int[] { android.R.attr.state_selected };
-        final int[] focusedState = new int[] { android.R.attr.state_focused };
-        int[] activatedState = new int[] {};
+        final int[] normalState = new int[]{};
+        final int[] clickedState = new int[]{android.R.attr.state_pressed};
+        final int[] checkedState = new int[]{android.R.attr.state_checked};
+        final int[] selectedState = new int[]{android.R.attr.state_selected};
+        final int[] focusedState = new int[]{android.R.attr.state_focused};
+        int[] activatedState = new int[]{};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            activatedState = new int[] { android.R.attr.state_activated };
+            activatedState = new int[]{android.R.attr.state_activated};
         }
 
         // initialize identifiers
@@ -682,11 +683,11 @@ public final class Coloring {
         int contrastColor = contrastColor(pressedBackColor);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            stateIdentifiers = new int[][] { selectedState, focusedState, clickedState, checkedState, activatedState, normalState };
-            stateColors = new int[] { contrastColor, contrastColor, contrastColor, contrastColor, contrastColor, normalColor };
+            stateIdentifiers = new int[][]{selectedState, focusedState, clickedState, checkedState, activatedState, normalState};
+            stateColors = new int[]{contrastColor, contrastColor, contrastColor, contrastColor, contrastColor, normalColor};
         } else {
-            stateIdentifiers = new int[][] { selectedState, focusedState, clickedState, checkedState, normalState };
-            stateColors = new int[] { contrastColor, contrastColor, contrastColor, contrastColor, normalColor };
+            stateIdentifiers = new int[][]{selectedState, focusedState, clickedState, checkedState, normalState};
+            stateColors = new int[]{contrastColor, contrastColor, contrastColor, contrastColor, normalColor};
         }
 
         return new ColorStateList(stateIdentifiers, stateColors);
@@ -718,14 +719,14 @@ public final class Coloring {
         }
 
         // initialize state arrays (they're in arrays because you can use different colors for reverse transitions..)
-        final int[] normalState = new int[] {};
-        final int[] clickedState = new int[] { android.R.attr.state_pressed };
-        final int[] checkedState = new int[] { android.R.attr.state_checked };
-        final int[] selectedState = new int[] { android.R.attr.state_selected };
-        final int[] focusedState = new int[] { android.R.attr.state_focused };
-        int[] activatedState = new int[] {};
+        final int[] normalState = new int[]{};
+        final int[] clickedState = new int[]{android.R.attr.state_pressed};
+        final int[] checkedState = new int[]{android.R.attr.state_checked};
+        final int[] selectedState = new int[]{android.R.attr.state_selected};
+        final int[] focusedState = new int[]{android.R.attr.state_focused};
+        int[] activatedState = new int[]{};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            activatedState = new int[] { android.R.attr.state_activated };
+            activatedState = new int[]{android.R.attr.state_activated};
         }
 
         final Drawable normalDrawable = colorDrawable(context, originalState, normalColor);
@@ -787,14 +788,14 @@ public final class Coloring {
         }
 
         // initialize state arrays (they're in arrays because you can use different colors for reverse transitions..)
-        final int[] normalStates = new int[] {};
-        final int[] clickedStates = new int[] { android.R.attr.state_pressed };
-        final int[] checkedStates = new int[] { android.R.attr.state_checked };
-        final int[] selectedStates = new int[] { android.R.attr.state_selected };
-        final int[] focusedStates = new int[] { android.R.attr.state_focused };
-        int[] activatedState = new int[] {};
+        final int[] normalStates = new int[]{};
+        final int[] clickedStates = new int[]{android.R.attr.state_pressed};
+        final int[] checkedStates = new int[]{android.R.attr.state_checked};
+        final int[] selectedStates = new int[]{android.R.attr.state_selected};
+        final int[] focusedStates = new int[]{android.R.attr.state_focused};
+        int[] activatedState = new int[]{};
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            activatedState = new int[] { android.R.attr.state_activated };
+            activatedState = new int[]{android.R.attr.state_activated};
         }
 
         // prepare the state list (order of the states is extremely important!)
