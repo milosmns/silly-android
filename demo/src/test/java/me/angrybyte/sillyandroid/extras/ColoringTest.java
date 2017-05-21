@@ -3,6 +3,7 @@ package me.angrybyte.sillyandroid.extras;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.util.Pair;
 
 import org.junit.After;
@@ -29,6 +30,7 @@ import static junit.framework.Assert.assertEquals;
 public final class ColoringTest {
 
     // <editor-fold desc="Tests setup">
+
     private Activity mActivityContext;
 
     /**
@@ -64,7 +66,8 @@ public final class ColoringTest {
         // test with those cases
         final String errorText = "Error in clampRGB(%d)";
         for (final int[] testCase : testCases) {
-            assertEquals(String.format(errorText, testCase[0]), Coloring.clampRGB(testCase[0]), testCase[1]);
+            final String error = String.format(errorText, testCase[0]);
+            assertEquals(error, testCase[1], Coloring.clampRGB(testCase[0]));
         }
     }
 
@@ -98,23 +101,65 @@ public final class ColoringTest {
         // test with those cases
         final String errorText = "Error in decodeColor(%s)";
         for (final Pair<String, Integer> testCase : testCases) {
-            assertEquals(String.format(errorText, testCase.first), Coloring.decodeColor(testCase.first), (int) testCase.second);
+            final String error = String.format(errorText, testCase.first);
+            assertEquals(error, (int) testCase.second, Coloring.decodeColor(testCase.first));
         }
     }
 
+    /**
+     * Tests the {@link Coloring#alphaBlendWithWhite(int)} method.
+     */
+    @Test
+    public final void testAlphaBlendWithWhite() {
+        // input and output/expected list
+        final List<int[]> testCases = new LinkedList<>();
+        testCases.add(new int[]{Color.WHITE, Color.WHITE});
+        testCases.add(new int[]{Color.BLACK, Color.BLACK});
+        testCases.add(new int[]{Color.TRANSPARENT, Color.WHITE});
+        testCases.add(new int[]{0x80FFED00, 0xFFFFF680});
+        testCases.add(new int[]{0x80FF0000, 0xFFFF8080});
+        testCases.add(new int[]{0x800047AB, 0xFF80A3D5});
+        testCases.add(new int[]{0x8000B500, 0xFF80DA80});
+
+        // test with those cases
+        final String errorText = "Error in alphaBlendWithWhite(%s)";
+        for (final int[] testCase : testCases) {
+            final String error = String.format(errorText, hex(testCase[0]));
+            assertEquals(error, hex(testCase[1]), hex(Coloring.alphaBlendWithWhite(testCase[0])));
+        }
+    }
+
+    /**
+     * Tests the {@link Coloring#alphaBlendWithBlack(int)} method.
+     */
+    @Test
+    public final void testAlphaBlendWithBlack() {
+        // input and output/expected list
+        final List<int[]> testCases = new LinkedList<>();
+        testCases.add(new int[]{Color.WHITE, Color.WHITE});
+        testCases.add(new int[]{Color.BLACK, Color.BLACK});
+        testCases.add(new int[]{Color.TRANSPARENT, Color.BLACK});
+        testCases.add(new int[]{0x80FFED00, 0xFF807700});
+        testCases.add(new int[]{0x80FF0000, 0xFF800000});
+        testCases.add(new int[]{0x800047AB, 0xFF002456});
+        testCases.add(new int[]{0x8000B500, 0xFF005B00});
+
+        // test with those cases
+        final String errorText = "Error in alphaBlendWithBlack(%s)";
+        for (final int[] testCase : testCases) {
+            final String error = String.format(errorText, hex(testCase[0]));
+            assertEquals(error, hex(testCase[1]), hex(Coloring.alphaBlendWithBlack(testCase[0])));
+        }
+    }
+
+//    /**
+//     * Tests the {@link Coloring#alphaBlendColors(int, int)} method.
+//     */
+//    @Test
+//    public final void testAlphaBlendColors() {
+//    }
+
     // FIXME Untested:
-    //
-    // public final void testAlphaBlendWithWhite() {
-    //
-    // }
-    //
-    // public final void testAlphaBlendWithBlack() {
-    //
-    // }
-    //
-    // public final void testAlphaBlendColors() {
-    //
-    // }
     //
     // public final void testDarkenColor() {
     //
@@ -211,5 +256,19 @@ public final class ColoringTest {
     // public final void testCreateMultiStateDrawable() {
     //
     // }
+
+    // <editor-fold desc="Private helpers">
+
+    /**
+     * Gets the hex value of an integer. This is just a shorthand for {@link Integer#toHexString(int)}.
+     *
+     * @param decimal The number to convert
+     * @return The string representation of the unsigned integer value represented by the argument in hexadecimal (base 16)
+     */
+    @NonNull
+    private String hex(final int decimal) {
+        return Integer.toHexString(decimal);
+    }
+    // </editor-fold>
 
 }
