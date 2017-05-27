@@ -27,6 +27,8 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
     @SuppressWarnings("unused")
     private int mMenuId;
 
+    // <editor-fold desc="Constructors">
+
     /**
      * {@inheritDoc}
      */
@@ -50,6 +52,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
         super(context, cancelable, cancelListener);
         initializeParsedProperties(context);
     }
+    // </editor-fold>
 
     /**
      * Parses the type and all its fields using the {@link AnnotationParser}.
@@ -62,6 +65,8 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
             setContentView(getLayoutId());
         }
     }
+
+    // <editor-fold desc="Content View setters">
 
     /**
      * {@inheritDoc}
@@ -89,6 +94,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
         super.setContentView(view, params);
         AnnotationParser.parseFields(getContext(), this, this);
     }
+    // </editor-fold>
 
     /**
      * {@inheritDoc}
