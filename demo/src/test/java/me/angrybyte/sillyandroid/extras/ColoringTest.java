@@ -152,12 +152,29 @@ public final class ColoringTest {
         }
     }
 
-//    /**
-//     * Tests the {@link Coloring#alphaBlendColors(int, int)} method.
-//     */
-//    @Test
-//    public final void testAlphaBlendColors() {
-//    }
+    /**
+     * Tests the {@link Coloring#alphaBlendColors(int, int)} method.
+     */
+    @Test
+    public final void testAlphaBlendColors() {
+        // input and output/expected list
+        final List<int[]> testCases = new LinkedList<>();
+        testCases.add(new int[]{Color.WHITE, Color.WHITE, Color.WHITE});
+        testCases.add(new int[]{Color.BLACK, Color.BLACK, Color.BLACK});
+        testCases.add(new int[]{Color.TRANSPARENT, Color.BLACK, Color.BLACK});
+        testCases.add(new int[]{Color.BLACK, Color.TRANSPARENT, Color.BLACK});
+        testCases.add(new int[]{Color.RED & 0x80FFFFFF, Color.YELLOW, 0xFFFF8000});
+        testCases.add(new int[]{Color.GREEN & 0x80FFFFFF, Color.BLUE, 0xFF008080});
+        testCases.add(new int[]{Color.BLUE & 0x80FFFFFF, Color.RED, 0xFF800080});
+        testCases.add(new int[]{Color.YELLOW & 0x80FFFFFF, Color.BLUE, 0xFF808080});
+
+        // test with those cases
+        final String errorText = "Error in alphaBlendColors(%s, %s)";
+        for (final int[] testCase : testCases) {
+            final String error = String.format(errorText, hex(testCase[0]), hex(testCase[1]));
+            assertEquals(error, hex(testCase[2]), hex(Coloring.alphaBlendColors(testCase[0], testCase[1])));
+        }
+    }
 
     // FIXME Untested:
     //
