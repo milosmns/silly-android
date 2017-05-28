@@ -57,17 +57,17 @@ public final class ColoringTest {
     public final void testClampRGB() {
         // input and output/expected list
         final List<int[]> testCases = new LinkedList<>();
-        testCases.add(new int[]{-1, 0});
-        testCases.add(new int[]{0, 0});
-        testCases.add(new int[]{130, 130});
-        testCases.add(new int[]{255, 255});
-        testCases.add(new int[]{256, 255});
+        testCases.add(new int[] { -1, 0 });
+        testCases.add(new int[] { 0, 0 });
+        testCases.add(new int[] { 130, 130 });
+        testCases.add(new int[] { 255, 255 });
+        testCases.add(new int[] { 256, 255 });
 
         // test with those cases
-        final String errorText = "Error in clampRGB(%d)";
+        final String errorText = "Error in clampRGB(%s)";
         for (final int[] testCase : testCases) {
-            final String error = String.format(errorText, testCase[0]);
-            assertEquals(error, testCase[1], Coloring.clampRGB(testCase[0]));
+            final String error = String.format(errorText, hex(testCase[0]));
+            assertEquals(error, hex(testCase[1]), hex(Coloring.clampRGB(testCase[0])));
         }
     }
 
@@ -76,7 +76,7 @@ public final class ColoringTest {
      */
     @Test
     public final void testDecodeColor() {
-        final String[] realColors = new String[]{
+        final String[] realColors = new String[] {
                 "0x40AA6070",
                 "0x506070",
                 "0X5060AA80",
@@ -113,13 +113,13 @@ public final class ColoringTest {
     public final void testAlphaBlendWithWhite() {
         // input and output/expected list
         final List<int[]> testCases = new LinkedList<>();
-        testCases.add(new int[]{Color.WHITE, Color.WHITE});
-        testCases.add(new int[]{Color.BLACK, Color.BLACK});
-        testCases.add(new int[]{Color.TRANSPARENT, Color.WHITE});
-        testCases.add(new int[]{0x80FFED00, 0xFFFFF680});
-        testCases.add(new int[]{0x80FF0000, 0xFFFF8080});
-        testCases.add(new int[]{0x800047AB, 0xFF80A3D5});
-        testCases.add(new int[]{0x8000B500, 0xFF80DA80});
+        testCases.add(new int[] { Color.WHITE, Color.WHITE });
+        testCases.add(new int[] { Color.BLACK, Color.BLACK });
+        testCases.add(new int[] { Color.TRANSPARENT, Color.WHITE });
+        testCases.add(new int[] { 0x80FFED00, 0xFFFFF680 });
+        testCases.add(new int[] { 0x80FF0000, 0xFFFF8080 });
+        testCases.add(new int[] { 0x800047AB, 0xFF80A3D5 });
+        testCases.add(new int[] { 0x8000B500, 0xFF80DA80 });
 
         // test with those cases
         final String errorText = "Error in alphaBlendWithWhite(%s)";
@@ -136,13 +136,13 @@ public final class ColoringTest {
     public final void testAlphaBlendWithBlack() {
         // input and output/expected list
         final List<int[]> testCases = new LinkedList<>();
-        testCases.add(new int[]{Color.WHITE, Color.WHITE});
-        testCases.add(new int[]{Color.BLACK, Color.BLACK});
-        testCases.add(new int[]{Color.TRANSPARENT, Color.BLACK});
-        testCases.add(new int[]{0x80FFED00, 0xFF807700});
-        testCases.add(new int[]{0x80FF0000, 0xFF800000});
-        testCases.add(new int[]{0x800047AB, 0xFF002456});
-        testCases.add(new int[]{0x8000B500, 0xFF005B00});
+        testCases.add(new int[] { Color.WHITE, Color.WHITE });
+        testCases.add(new int[] { Color.BLACK, Color.BLACK });
+        testCases.add(new int[] { Color.TRANSPARENT, Color.BLACK });
+        testCases.add(new int[] { 0x80FFED00, 0xFF807700 });
+        testCases.add(new int[] { 0x80FF0000, 0xFF800000 });
+        testCases.add(new int[] { 0x800047AB, 0xFF002456 });
+        testCases.add(new int[] { 0x8000B500, 0xFF005B00 });
 
         // test with those cases
         final String errorText = "Error in alphaBlendWithBlack(%s)";
@@ -159,14 +159,14 @@ public final class ColoringTest {
     public final void testAlphaBlendColors() {
         // input and output/expected list
         final List<int[]> testCases = new LinkedList<>();
-        testCases.add(new int[]{Color.WHITE, Color.WHITE, Color.WHITE});
-        testCases.add(new int[]{Color.BLACK, Color.BLACK, Color.BLACK});
-        testCases.add(new int[]{Color.TRANSPARENT, Color.BLACK, Color.BLACK});
-        testCases.add(new int[]{Color.BLACK, Color.TRANSPARENT, Color.BLACK});
-        testCases.add(new int[]{Color.RED & 0x80FFFFFF, Color.YELLOW, 0xFFFF8000});
-        testCases.add(new int[]{Color.GREEN & 0x80FFFFFF, Color.BLUE, 0xFF008080});
-        testCases.add(new int[]{Color.BLUE & 0x80FFFFFF, Color.RED, 0xFF800080});
-        testCases.add(new int[]{Color.YELLOW & 0x80FFFFFF, Color.BLUE, 0xFF808080});
+        testCases.add(new int[] { Color.WHITE, Color.WHITE, Color.WHITE });
+        testCases.add(new int[] { Color.BLACK, Color.BLACK, Color.BLACK });
+        testCases.add(new int[] { Color.TRANSPARENT, Color.BLACK, Color.BLACK });
+        testCases.add(new int[] { Color.BLACK, Color.TRANSPARENT, Color.BLACK });
+        testCases.add(new int[] { Color.RED & 0x80FFFFFF, Color.YELLOW, 0xFFFF8000 });
+        testCases.add(new int[] { Color.GREEN & 0x80FFFFFF, Color.BLUE, 0xFF008080 });
+        testCases.add(new int[] { Color.BLUE & 0x80FFFFFF, Color.RED, 0xFF800080 });
+        testCases.add(new int[] { Color.YELLOW & 0x80FFFFFF, Color.BLUE, 0xFF808080 });
 
         // test with those cases
         final String errorText = "Error in alphaBlendColors(%s, %s)";
@@ -176,31 +176,87 @@ public final class ColoringTest {
         }
     }
 
+    /**
+     * Tests the {@link Coloring#darkenColor(int)} method.
+     */
+    @Test
+    public final void testDarkenColor() {
+        // input and output/expected list
+        final List<int[]> testCases = new LinkedList<>();
+        testCases.add(new int[] { Color.WHITE, 0xFFD2D2D2 });
+        testCases.add(new int[] { Color.BLACK, Color.BLACK });
+        testCases.add(new int[] { Color.TRANSPARENT, Color.TRANSPARENT });
+        testCases.add(new int[] { Color.RED, 0xFFA50000 });
+        testCases.add(new int[] { Color.GREEN, 0xFF00A500 });
+        testCases.add(new int[] { Color.BLUE, 0xFF0000A5 });
+        testCases.add(new int[] { 0x30D2D2D2, 0x30A5A5A5 });
+        testCases.add(new int[] { 0x80A5A5A5, 0x80787878 });
+        testCases.add(new int[] { 0xAA787878, 0xAA4B4B4B });
+        testCases.add(new int[] { 0xCC4B4B4B, 0xCC1E1E1E });
+        testCases.add(new int[] { 0xFF1E1E1E, Color.BLACK });
+        testCases.add(new int[] { 0xFF00FF62, 0xFF00A540 });
+
+        // test with those cases
+        final String errorText = "Error in darkenColor(%s)";
+        for (final int[] testCase : testCases) {
+            final String error = String.format(errorText, hex(testCase[0]));
+            assertEquals(error, hex(testCase[1]), hex(Coloring.darkenColor(testCase[0])));
+        }
+    }
+
+    /**
+     * Tests the {@link Coloring#lightenColor(int)} method.
+     */
+    @Test
+    public final void testLightenColor() {
+        // input and output/expected list
+        final List<int[]> testCases = new LinkedList<>();
+        testCases.add(new int[] { Color.WHITE, Color.WHITE });
+        testCases.add(new int[] { Color.BLACK, 0xFF2D2D2D });
+        testCases.add(new int[] { Color.TRANSPARENT, 0x002D2D2D });
+        testCases.add(new int[] { Color.RED, 0xFFFF5A5A });
+        testCases.add(new int[] { Color.GREEN, 0xFF5AFF5A });
+        testCases.add(new int[] { Color.BLUE, 0xFF5A5AFF });
+        testCases.add(new int[] { 0x302D2D2D, 0x305A5A5A });
+        testCases.add(new int[] { 0x80A5A5A5, 0x80D2D2D2 });
+        testCases.add(new int[] { 0xAA787878, 0xAAA5A5A5 });
+        testCases.add(new int[] { 0xCC4B4B4B, 0xCC787878 });
+        testCases.add(new int[] { 0xFF1E1E1E, 0xFF4B4B4B });
+        testCases.add(new int[] { 0xFF00A540, 0xFF00FF63 });
+
+        // test with those cases
+        final String errorText = "Error in lightenColor(%s)";
+        for (final int[] testCase : testCases) {
+            final String error = String.format(errorText, hex(testCase[0]));
+            assertEquals(error, hex(testCase[1]), hex(Coloring.lightenColor(testCase[0])));
+        }
+    }
+
+    // /**
+    //  * Tests the {@link Coloring#shiftBrightness(int, int)} method.
+    //  */
+    // @Test
+    // public final void testShiftBrightness() {}
+    //
+    // /**
+    //  * Tests the {@link Coloring#dimColor(int)} method.
+    //  */
+    // @Test
+    // public final void testDimColor() {}
+    //
+    // /**
+    //  * Tests the {@link Coloring#opacifyColor(int)} method.
+    //  */
+    // @Test
+    // public final void testOpacifyColor() {}
+    //
+    // /**
+    //  * Tests the {@link Coloring#shiftAlpha(int, int)} method.
+    //  */
+    // @Test
+    // public final void testShiftAlpha() {}
+
     // FIXME Untested:
-    //
-    // public final void testDarkenColor() {
-    //
-    // }
-    //
-    // public final void testLightenColor() {
-    //
-    // }
-    //
-    // public final void testShiftBrightness() {
-    //
-    // }
-    //
-    // public final void testDimColor() {
-    //
-    // }
-    //
-    // public final void testOpacifyColor() {
-    //
-    // }
-    //
-    // public final void testShiftAlpha() {
-    //
-    // }
     //
     // public final void testContrastColor() {
     //
