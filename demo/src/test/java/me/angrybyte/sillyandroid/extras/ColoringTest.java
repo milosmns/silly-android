@@ -189,12 +189,12 @@ public final class ColoringTest {
         testCases.add(new int[] { Color.RED, 0xFFA50000 });
         testCases.add(new int[] { Color.GREEN, 0xFF00A500 });
         testCases.add(new int[] { Color.BLUE, 0xFF0000A5 });
-        testCases.add(new int[] { 0x30D2D2D2, 0x30A5A5A5 });
-        testCases.add(new int[] { 0x80A5A5A5, 0x80787878 });
-        testCases.add(new int[] { 0xAA787878, 0xAA4B4B4B });
-        testCases.add(new int[] { 0xCC4B4B4B, 0xCC1E1E1E });
+        testCases.add(new int[] { 0xAAD2D2D2, 0xAAA5A5A5 });
+        testCases.add(new int[] { 0xBBA5A5A5, 0xBB787878 });
+        testCases.add(new int[] { 0xCC787878, 0xCC4B4B4B });
+        testCases.add(new int[] { 0xDD4B4B4B, 0xDD1E1E1E });
+        testCases.add(new int[] { 0xEE00FF62, 0xEE00A540 });
         testCases.add(new int[] { 0xFF1E1E1E, Color.BLACK });
-        testCases.add(new int[] { 0xFF00FF62, 0xFF00A540 });
 
         // test with those cases
         final String errorText = "Error in darkenColor(%s)";
@@ -217,11 +217,11 @@ public final class ColoringTest {
         testCases.add(new int[] { Color.RED, 0xFFFF5A5A });
         testCases.add(new int[] { Color.GREEN, 0xFF5AFF5A });
         testCases.add(new int[] { Color.BLUE, 0xFF5A5AFF });
-        testCases.add(new int[] { 0x302D2D2D, 0x305A5A5A });
-        testCases.add(new int[] { 0x80A5A5A5, 0x80D2D2D2 });
-        testCases.add(new int[] { 0xAA787878, 0xAAA5A5A5 });
-        testCases.add(new int[] { 0xCC4B4B4B, 0xCC787878 });
-        testCases.add(new int[] { 0xFF1E1E1E, 0xFF4B4B4B });
+        testCases.add(new int[] { 0xAA2D2D2D, 0xAA5A5A5A });
+        testCases.add(new int[] { 0xBBA5A5A5, 0xBBD2D2D2 });
+        testCases.add(new int[] { 0xCC787878, 0xCCA5A5A5 });
+        testCases.add(new int[] { 0xDD4B4B4B, 0xDD787878 });
+        testCases.add(new int[] { 0xEE1E1E1E, 0xEE4B4B4B });
         testCases.add(new int[] { 0xFF00A540, 0xFF00FF63 });
 
         // test with those cases
@@ -232,12 +232,35 @@ public final class ColoringTest {
         }
     }
 
-    // /**
-    //  * Tests the {@link Coloring#shiftBrightness(int, int)} method.
-    //  */
-    // @Test
-    // public final void testShiftBrightness() {}
-    //
+    /**
+     * Tests the {@link Coloring#shiftBrightness(int, int)} method.
+     */
+    @Test
+    public final void testShiftBrightness() {
+        // input and output/expected list
+        final List<int[]> testCases = new LinkedList<>();
+        testCases.add(new int[] { Color.WHITE, 255, Color.WHITE });
+        testCases.add(new int[] { Color.WHITE, -255, Color.BLACK });
+        testCases.add(new int[] { Color.BLACK, 255, Color.WHITE });
+        testCases.add(new int[] { Color.BLACK, -255, Color.BLACK });
+        testCases.add(new int[] { Color.YELLOW, 0, Color.YELLOW });
+        testCases.add(new int[] { Color.TRANSPARENT, 255, 0x00FFFFFF });
+        testCases.add(new int[] { Color.TRANSPARENT, -255, Color.TRANSPARENT });
+        testCases.add(new int[] { 0xAAFF3050, 30, 0xAAFF6C83 });
+        testCases.add(new int[] { 0xBBFF3050, -30, 0xBBF30026 });
+        testCases.add(new int[] { 0xCC30FF50, 50, 0xCC94FFA4 });
+        testCases.add(new int[] { 0xDD30FF50, -50, 0xDD00CB1F });
+        testCases.add(new int[] { 0xEEFFFF30, 120, 0xEEFFFFFF });
+        testCases.add(new int[] { 0xFFFFFF30, -120, 0xFF404000 });
+
+        // test with those cases
+        final String errorText = "Error in shiftBrightness(%s, %s)";
+        for (final int[] testCase : testCases) {
+            final String error = String.format(errorText, hex(testCase[0]), hex(testCase[1]));
+            assertEquals(error, hex(testCase[2]), hex(Coloring.shiftBrightness(testCase[0], testCase[1])));
+        }
+    }
+
     // /**
     //  * Tests the {@link Coloring#dimColor(int)} method.
     //  */
@@ -340,7 +363,7 @@ public final class ColoringTest {
      */
     @NonNull
     private String hex(final int decimal) {
-        return Integer.toHexString(decimal);
+        return Integer.toHexString(decimal).toUpperCase();
     }
     // </editor-fold>
 
