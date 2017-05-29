@@ -83,6 +83,7 @@ jacocoAndroidUnitTestReport {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided "com.android.support:appcompat-v7:$APPCOMPAT"
+    testCompile "com.android.support:appcompat-v7:$APPCOMPAT"
 }
 
 // Maven push plugin
