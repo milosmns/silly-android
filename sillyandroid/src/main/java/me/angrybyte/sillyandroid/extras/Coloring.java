@@ -198,7 +198,18 @@ public final class Coloring {
      */
     @ColorInt
     public static int shiftBrightness(@ColorInt final int color, @IntRange(from = -255, to = 255) final int amount) {
-        float fractionalAmount = amount == 255f ? 1.0f : amount / 256f; // special: divide by 256 to get 0.5 instead of 0.51 for 0x80
+        float fractionalAmount;
+        if (amount == 0f) {
+            return color;
+        } else if (amount == 255f) {
+            fractionalAmount = 1.0f;
+        } else if (amount == -255f) {
+            fractionalAmount = -1.0f;
+        } else {
+            // special: divide by 256 to get 0.5 instead of 0.51 for 0x80
+            fractionalAmount = amount / 256f;
+        }
+
         final float[] hsl = new float[] { 0f, 0f, 0f };
         ColorUtils.colorToHSL(color, hsl);
 
