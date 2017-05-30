@@ -148,23 +148,23 @@ public final class Coloring {
     @ColorInt
     public static int alphaBlendColors(@ColorInt final int topColor, @ColorInt final int bottomColor) {
         // extract top color's components
-        final int topR = Color.red(topColor);
-        final int topG = Color.green(topColor);
-        final int topB = Color.blue(topColor);
-        final double topAlpha = (double) Color.alpha(topColor);
-        final double topA = topAlpha == 255d ? 1.0d : topAlpha / 256d; // special: divide by 256 to get 0.5 instead of 0.51 for 0x80 alpha
+        final double topR = (double) Color.red(topColor);
+        final double topG = (double) Color.green(topColor);
+        final double topB = (double) Color.blue(topColor);
+        final double topA = (double) Color.alpha(topColor);
+        final double alphaFraction = Math.round(topA / 255d * 100d) / 100d; // slice to 2 decimal places
 
         // extract bottom color's components
-        final int botR = Color.red(bottomColor);
-        final int botG = Color.green(bottomColor);
-        final int botB = Color.blue(bottomColor);
+        final double botR = (double) Color.red(bottomColor);
+        final double botG = (double) Color.green(bottomColor);
+        final double botB = (double) Color.blue(bottomColor);
 
-        // rule: outputComponent = (foregroundComponent * foregroundAlpha) + (backgroundComponent * (1.0 - foregroundAlpha))
-        int r = clampRGB((int) Math.round((topR * topA) + (botR * (1.0d - topA))));
-        int g = clampRGB((int) Math.round((topG * topA) + (botG * (1.0d - topA))));
-        int b = clampRGB((int) Math.round((topB * topA) + (botB * (1.0d - topA))));
+        // rule: outputComponent = (foregroundComponent * foregroundAlpha) + (backgroundComponent * (1 - foregroundAlpha))
+        int r = clampRGB((int) Math.ceil(topR * alphaFraction + botR * (1d - alphaFraction)));
+        int g = clampRGB((int) Math.ceil(topG * alphaFraction + botG * (1d - alphaFraction)));
+        int b = clampRGB((int) Math.ceil(topB * alphaFraction + botB * (1d - alphaFraction)));
 
-        return Color.argb(255, r, g, b);
+        return Color.argb(0xFF, r, g, b);
     }
 
     /**
@@ -198,23 +198,16 @@ public final class Coloring {
      */
     @ColorInt
     public static int shiftBrightness(@ColorInt final int color, @IntRange(from = -255, to = 255) final int amount) {
-        float fractionalAmount;
         if (amount == 0f) {
             return color;
-        } else if (amount == 255f) {
-            fractionalAmount = 1.0f;
-        } else if (amount == -255f) {
-            fractionalAmount = -1.0f;
-        } else {
-            // special: divide by 256 to get 0.5 instead of 0.51 for 0x80
-            fractionalAmount = amount / 256f;
         }
 
+        // convert from RGB to HSL (hue/saturation/lightness)
         final float[] hsl = new float[] { 0f, 0f, 0f };
         ColorUtils.colorToHSL(color, hsl);
 
         // clamp the lightness to [0..1] range (0% - 100%)
-        float lightness = hsl[2] + fractionalAmount;
+        float lightness = hsl[2] + amount / 255f;
         if (lightness < 0f) {
             lightness = 0f;
         } else if (lightness > 1f) {
@@ -228,7 +221,7 @@ public final class Coloring {
     }
 
     /**
-     * Reduces the color's opacity by 25%.
+     * Reduces the color's opacity by 25% of its current opacity.
      * Other color components will be kept as they were (R, G, B).
      *
      * @param color Which color to dim
@@ -236,12 +229,11 @@ public final class Coloring {
      */
     @ColorInt
     public static int dimColor(@ColorInt final int color) {
-        final int amount = (int) -(Math.round((double) Color.alpha(color) * 0.25d));
-        return shiftAlpha(color, amount);
+        return shiftAlpha(color, -Color.alpha(color) / 4);
     }
 
     /**
-     * Increases the color's opacity by 25%.
+     * Increases the color's opacity by 25% of its current opacity.
      * Other color components will be kept as they were (R, G, B).
      *
      * @param color Which color to opacify
@@ -249,8 +241,7 @@ public final class Coloring {
      */
     @ColorInt
     public static int opacifyColor(@ColorInt final int color) {
-        final int amount = (int) Math.round((double) Color.alpha(color) * 0.25d);
-        return shiftAlpha(color, amount);
+        return shiftAlpha(color, Color.alpha(color) / 4);
     }
 
     /**
@@ -263,10 +254,7 @@ public final class Coloring {
     @ColorInt
     public static int shiftAlpha(@ColorInt final int color, @IntRange(from = -255, to = 255) final int amount) {
         final int a = clampRGB(Color.alpha(color) + amount);
-        final int r = Color.red(color);
-        final int g = Color.green(color);
-        final int b = Color.blue(color);
-        return Color.argb(a, r, g, b);
+        return ColorUtils.setAlphaComponent(color, a);
     }
 
     /**
