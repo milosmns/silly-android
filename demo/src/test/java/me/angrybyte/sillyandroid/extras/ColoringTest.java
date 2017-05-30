@@ -193,7 +193,7 @@ public final class ColoringTest {
         testCases.add(new int[] { 0xBBA5A5A5, 0xBB787878 });
         testCases.add(new int[] { 0xCC787878, 0xCC4B4B4B });
         testCases.add(new int[] { 0xDD4B4B4B, 0xDD1E1E1E });
-        testCases.add(new int[] { 0xEE00FF62, 0xEE00A540 });
+        testCases.add(new int[] { 0xEE00FF62, 0xEE00A53F });
         testCases.add(new int[] { 0xFF1E1E1E, Color.BLACK });
 
         // test with those cases
@@ -248,42 +248,131 @@ public final class ColoringTest {
         testCases.add(new int[] { Color.TRANSPARENT, -255, Color.TRANSPARENT });
         testCases.add(new int[] { 0xAAFF3050, 30, 0xAAFF6C83 });
         testCases.add(new int[] { 0xBBFF3050, -30, 0xBBF30026 });
-        testCases.add(new int[] { 0xCC30FF50, 50, 0xCC94FFA4 });
+        testCases.add(new int[] { 0xCC30FF50, 50, 0xCC94FFA5 });
         testCases.add(new int[] { 0xDD30FF50, -50, 0xDD00CB1F });
         testCases.add(new int[] { 0xEEFFFF30, 120, 0xEEFFFFFF });
-        testCases.add(new int[] { 0xFFFFFF30, -120, 0xFF404000 });
+        testCases.add(new int[] { 0xFFFFFF30, -120, 0xFF3F3F00 });
 
         // test with those cases
         final String errorText = "Error in shiftBrightness(%s, %s)";
         for (final int[] testCase : testCases) {
-            final String error = String.format(errorText, hex(testCase[0]), hex(testCase[1]));
+            final String error = String.format(errorText, hex(testCase[0]), testCase[1]);
             assertEquals(error, hex(testCase[2]), hex(Coloring.shiftBrightness(testCase[0], testCase[1])));
         }
     }
 
-    // /**
-    //  * Tests the {@link Coloring#dimColor(int)} method.
-    //  */
-    // @Test
-    // public final void testDimColor() {}
-    //
-    // /**
-    //  * Tests the {@link Coloring#opacifyColor(int)} method.
-    //  */
-    // @Test
-    // public final void testOpacifyColor() {}
-    //
-    // /**
-    //  * Tests the {@link Coloring#shiftAlpha(int, int)} method.
-    //  */
-    // @Test
-    // public final void testShiftAlpha() {}
+    /**
+     * Tests the {@link Coloring#dimColor(int)} method.
+     */
+    @Test
+    public final void testDimColor() {
+        // input and output/expected list
+        final List<int[]> testCases = new LinkedList<>();
+        testCases.add(new int[] { Color.WHITE, 0xC0FFFFFF });
+        testCases.add(new int[] { Color.BLACK, 0xC0000000 });
+        testCases.add(new int[] { Color.TRANSPARENT, Color.TRANSPARENT });
+        testCases.add(new int[] { Color.RED, 0xC0FF0000 });
+        testCases.add(new int[] { Color.GREEN, 0xC000FF00 });
+        testCases.add(new int[] { Color.BLUE, 0xC00000FF });
+        testCases.add(new int[] { 0xC0FFFFFF, 0x90FFFFFF });
+        testCases.add(new int[] { 0x90FFFFFF, 0x6CFFFFFF });
+        testCases.add(new int[] { 0x6CFFFFFF, 0x51FFFFFF });
+        testCases.add(new int[] { 0x04FFFFFF, 0x03FFFFFF });
+        testCases.add(new int[] { 0x01000000, 0x01000000 });
+
+        // test with those cases
+        final String errorText = "Error in dimColor(%s)";
+        for (final int[] testCase : testCases) {
+            final String error = String.format(errorText, hex(testCase[0]));
+            assertEquals(error, hex(testCase[1]), hex(Coloring.dimColor(testCase[0])));
+        }
+    }
+
+    /**
+     * Tests the {@link Coloring#opacifyColor(int)} method.
+     */
+    @Test
+    public final void testOpacifyColor() {
+        // input and output/expected list
+        final List<int[]> testCases = new LinkedList<>();
+        testCases.add(new int[] { Color.WHITE, Color.WHITE });
+        testCases.add(new int[] { Color.BLACK, Color.BLACK });
+        testCases.add(new int[] { Color.TRANSPARENT, Color.TRANSPARENT });
+        testCases.add(new int[] { Color.RED, Color.RED });
+        testCases.add(new int[] { Color.GREEN, Color.GREEN });
+        testCases.add(new int[] { Color.BLUE, Color.BLUE });
+        testCases.add(new int[] { 0x01FFFFFF, 0x01FFFFFF });
+        testCases.add(new int[] { 0x04FFFFFF, 0x05FFFFFF });
+        testCases.add(new int[] { 0x10FFFFFF, 0x14FFFFFF });
+        testCases.add(new int[] { 0xA0FFFFFF, 0xC8FFFFFF });
+        testCases.add(new int[] { 0xF0FFFFFF, Color.WHITE });
+
+        // test with those cases
+        final String errorText = "Error in opacifyColor(%s)";
+        for (final int[] testCase : testCases) {
+            final String error = String.format(errorText, hex(testCase[0]));
+            assertEquals(error, hex(testCase[1]), hex(Coloring.opacifyColor(testCase[0])));
+        }
+    }
+
+    /**
+     * Tests the {@link Coloring#shiftAlpha(int, int)} method.
+     */
+    @Test
+    public final void testShiftAlpha() {
+        // input and output/expected list
+        final List<int[]> testCases = new LinkedList<>();
+        testCases.add(new int[] { Color.WHITE, 255, Color.WHITE });
+        testCases.add(new int[] { Color.WHITE, -255, 0x00FFFFFF });
+        testCases.add(new int[] { Color.BLACK, 255, Color.BLACK });
+        testCases.add(new int[] { Color.BLACK, -255, Color.TRANSPARENT });
+        testCases.add(new int[] { Color.YELLOW, 0, Color.YELLOW });
+        testCases.add(new int[] { Color.TRANSPARENT, 255, Color.BLACK });
+        testCases.add(new int[] { Color.TRANSPARENT, -255, Color.TRANSPARENT });
+        testCases.add(new int[] { 0x00000000, 0x20, 0x20000000 });
+        testCases.add(new int[] { 0x00FFFFFF, -0x20, 0x00FFFFFF });
+        testCases.add(new int[] { 0x20000000, 0x20, 0x40000000 });
+        testCases.add(new int[] { 0x20AAAAAA, -0x20, 0x00AAAAAA });
+        testCases.add(new int[] { 0xF0000000, 0x0F, 0xFF000000 });
+        testCases.add(new int[] { 0xF0CCCCCC, -0x0F, 0xE1CCCCCC });
+
+        // test with those cases
+        final String errorText = "Error in shiftAlpha(%s, %s)";
+        for (final int[] testCase : testCases) {
+            final String error = String.format(errorText, hex(testCase[0]), testCase[1]);
+            assertEquals(error, hex(testCase[2]), hex(Coloring.shiftAlpha(testCase[0], testCase[1])));
+        }
+    }
+
+    /**
+     * Tests the {@link Coloring#contrastColor(int)} method.
+     */
+    @Test
+    public final void testContrastColor() {
+        // input and output/expected list
+        final List<int[]> testCases = new LinkedList<>();
+        testCases.add(new int[] { Color.WHITE, Color.BLACK });
+        testCases.add(new int[] { Color.BLACK, Color.WHITE });
+        testCases.add(new int[] { Color.TRANSPARENT, Color.WHITE });
+        testCases.add(new int[] { Color.RED, Color.WHITE });
+        testCases.add(new int[] { Color.GREEN, Color.WHITE });
+        testCases.add(new int[] { Color.BLUE, Color.WHITE });
+        testCases.add(new int[] { Color.YELLOW, Color.BLACK });
+        testCases.add(new int[] { Color.CYAN, Color.WHITE });
+        testCases.add(new int[] { Color.MAGENTA, Color.WHITE });
+        testCases.add(new int[] { Color.DKGRAY, Color.WHITE });
+        testCases.add(new int[] { Color.LTGRAY, Color.BLACK });
+
+        // test with those cases
+        final String errorText = "Error in contrastColor(%s)";
+        for (final int[] testCase : testCases) {
+            final String error = String.format(errorText, hex(testCase[0]));
+            assertEquals(error, hex(testCase[1]), hex(Coloring.contrastColor(testCase[0])));
+        }
+    }
 
     // FIXME Untested:
     //
-    // public final void testContrastColor() {
-    //
-    // }
     //
     // public final void testColorBitmap() {
     //
@@ -297,6 +386,10 @@ public final class ColoringTest {
     //
     // }
     //
+    // public final void testColorDrawable1() {
+    //
+    // }
+    //
     // public final void testColorDrawableWrapped() {
     //
     // }
@@ -306,10 +399,6 @@ public final class ColoringTest {
     // }
     //
     // public final void testColorUnknownDrawable() {
-    //
-    // }
-    //
-    // public final void testColorDrawable1() {
     //
     // }
     //
