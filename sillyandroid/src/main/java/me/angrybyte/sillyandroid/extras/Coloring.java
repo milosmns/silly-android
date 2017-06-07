@@ -297,6 +297,7 @@ public final class Coloring {
         paint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));
         c.drawBitmap(bitmap, 0, 0, paint);
 
+        result.prepareToDraw();
         return result;
     }
 
