@@ -347,7 +347,7 @@ public final class Coloring {
         }
 
         if (drawable instanceof VectorDrawableCompat) {
-            return colorVectorDrawable((VectorDrawableCompat) drawable, color);
+            return colorVectorDrawableCompat((VectorDrawableCompat) drawable, color);
         }
 
         if (drawable instanceof ColorDrawable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -444,10 +444,10 @@ public final class Coloring {
      * @param context    Which context to use
      * @param drawableId Which drawable resource to load, must be a bitmap drawable
      * @param color      Which color to use
-     * @return A colored {@link Drawable} ready for use
+     * @return A colored {@link BitmapDrawable} ready for use
      */
     @NonNull
-    public static Drawable colorDrawable(@NonNull final Context context, @DrawableRes final int drawableId, @ColorInt final int color) {
+    public static BitmapDrawable colorBitmapDrawable(@NonNull final Context context, @DrawableRes final int drawableId, @ColorInt final int color) {
         final BitmapFactory.Options opts = new BitmapFactory.Options();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             // noinspection deprecation
@@ -480,7 +480,7 @@ public final class Coloring {
      */
     @NonNull
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    public static Drawable colorVectorDrawable(@NonNull final VectorDrawable vectorDrawable, @ColorInt final int color) {
+    public static VectorDrawable colorVectorDrawable(@NonNull final VectorDrawable vectorDrawable, @ColorInt final int color) {
         vectorDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
         return vectorDrawable;
     }
@@ -493,7 +493,7 @@ public final class Coloring {
      * @return The same instance with the color filter applied
      */
     @NonNull
-    public static Drawable colorVectorDrawable(@NonNull final VectorDrawableCompat vectorDrawableCompat, @ColorInt final int color) {
+    public static VectorDrawableCompat colorVectorDrawableCompat(@NonNull final VectorDrawableCompat vectorDrawableCompat, @ColorInt final int color) {
         vectorDrawableCompat.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
         return vectorDrawableCompat;
     }
@@ -514,8 +514,8 @@ public final class Coloring {
      * @return A {@link StateListDrawable} drawable object, new instance each time
      */
     @NonNull
-    public static Drawable createStateList(@NonNull final Context context, @ColorInt final int normal, @ColorInt final int clicked,
-                                           @ColorInt final int checked, final boolean shouldFade, @IntRange(from = 0) int cornerRadius) {
+    public static StateListDrawable createStateList(@NonNull final Context context, @ColorInt final int normal, @ColorInt final int clicked,
+                                                    @ColorInt final int checked, final boolean shouldFade, @IntRange(from = 0) int cornerRadius) {
         // initialize state arrays (they're in arrays because you can use different drawables for reverse transitions..)
         final int[] normalState = new int[] {};
         final int[] clickedState = new int[] { android.R.attr.state_pressed };
@@ -780,11 +780,11 @@ public final class Coloring {
      * @param clickedDrawable Used for the clicked/pressed state
      * @param checkedDrawable Used for the checked/selected and active states
      * @param shouldFade      Set to {@code true} if the state transition should have a fading effect
-     * @return A multi-state drawable consisting out of provided drawables, always a new instance
+     * @return A multi-state {@link StateListDrawable} consisting out of provided drawables, always a new instance
      */
     @NonNull
-    public static Drawable createMultiStateDrawable(@NonNull final Drawable normalDrawable, @NonNull final Drawable clickedDrawable,
-                                                    @NonNull final Drawable checkedDrawable, final boolean shouldFade) {
+    public static StateListDrawable createMultiStateDrawable(@NonNull final Drawable normalDrawable, @NonNull final Drawable clickedDrawable,
+                                                             @NonNull final Drawable checkedDrawable, final boolean shouldFade) {
         // migrate to static drawables
         Drawable normalState = normalDrawable;
         if (normalState instanceof StateListDrawable) {

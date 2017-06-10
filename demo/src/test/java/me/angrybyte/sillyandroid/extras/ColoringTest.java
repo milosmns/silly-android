@@ -13,6 +13,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -37,7 +39,10 @@ import java.util.List;
 import me.angrybyte.sillyandroid.BuildConfig;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 /**
  * A set of tests related to the {@link Coloring}.
@@ -460,14 +465,14 @@ public final class ColoringTest {
     }
 
     /**
-     * Tests the {@link Coloring#colorDrawable(Context, int, int)} method.
+     * Tests the {@link Coloring#colorBitmapDrawable(Context, int, int)} method.
      * <p>
      * Due to {@link org.robolectric.shadows.ShadowBitmap}'s empty implementation, this won't really work, so we can only test the transparency.
      */
     @Test
     public final void testColorDrawableInt() {
         // noinspection deprecation - can't enforce Lollipop here
-        final BitmapDrawable colored = (BitmapDrawable) Coloring.colorDrawable(mActivityContext, android.R.drawable.btn_star_big_on, Color.RED);
+        final BitmapDrawable colored = Coloring.colorBitmapDrawable(mActivityContext, android.R.drawable.btn_star_big_on, Color.RED);
         final int coloredPixel = colored.getBitmap().getPixel(colored.getBitmap().getWidth() / 2, colored.getBitmap().getHeight() / 2);
         assertEquals("Colored middle pixel is not transparent", hex(Color.TRANSPARENT), hex(coloredPixel));
     }
@@ -550,7 +555,7 @@ public final class ColoringTest {
     public final void testColorVectorDrawable() {
         try {
             final VectorDrawable vectorDrawable = new VectorDrawable();
-            final VectorDrawable colored = (VectorDrawable) Coloring.colorVectorDrawable(vectorDrawable, Color.RED);
+            final VectorDrawable colored = Coloring.colorVectorDrawable(vectorDrawable, Color.RED);
             final PorterDuff.Mode mode = PorterDuff.Mode.SRC_ATOP;
             assertEquals("Vector color filter does not match", new PorterDuffColorFilter(Color.RED, mode), colored.getColorFilter());
         } catch (RuntimeException e) {
@@ -563,7 +568,7 @@ public final class ColoringTest {
     }
 
     /**
-     * Tests the {@link Coloring#colorVectorDrawable(VectorDrawableCompat, int)} method.
+     * Tests the {@link Coloring#colorVectorDrawableCompat(VectorDrawableCompat, int)} method.
      * <p>
      * Unfortunately {@link VectorDrawableCompat#setColorFilter(int, PorterDuff.Mode)} is not shadowed by Robolectric yet.
      */
@@ -571,13 +576,12 @@ public final class ColoringTest {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public final void testColorVectorDrawableCompat() {
         try {
-            // not accessible outside of
+            // constructor not accessible outside of its own package
             Class<?> cl = Class.forName(VectorDrawableCompat.class.getCanonicalName());
             Constructor<?> constructor = cl.getConstructor();
             constructor.setAccessible(true);
             final VectorDrawableCompat vectorDrawable = (VectorDrawableCompat) constructor.newInstance();
-            final VectorDrawableCompat colored = (VectorDrawableCompat) Coloring.colorVectorDrawable(vectorDrawable, Color.RED);
-            final PorterDuff.Mode mode = PorterDuff.Mode.SRC_ATOP;
+            final VectorDrawableCompat colored = Coloring.colorVectorDrawableCompat(vectorDrawable, Color.RED);
             assertEquals("VectorCompat color filter does not match", null, colored.getColorFilter());
         } catch (RuntimeException e) {
             boolean knownIssue = e.getMessage().contains("no such method");
@@ -590,36 +594,86 @@ public final class ColoringTest {
         }
     }
 
-    // FIXME Untested:
-    //
-    // public final void testCreateStateList() {
-    //
-    // }
-    //
-    // public final void testCreateRippleDrawable() {
-    //
-    // }
-    //
-    // public final void testCreateRippleDrawable1() {
-    //
-    // }
-    //
+    /**
+     * Tests the {@link Coloring#createStateList(Context, int, int, int, boolean, int)} method.
+     * <p>
+     * Unfortunately {@link StateListDrawable#getCurrent()} is not shadowed by Robolectric yet.
+     */
+    @Test
+    public final void testCreateStateList() {
+        final int colorNormal = Color.WHITE;
+        final int colorActive = Color.GRAY;
+        final int colorFocused = Color.YELLOW;
+        final StateListDrawable drawable = Coloring.createStateList(mActivityContext, colorNormal, colorActive, colorFocused, true, 0);
+        assertNotNull("StateListDrawable is null", drawable);
+        drawable.setState(new int[] {});
+        assertTrue("StateListDrawable is not stateful", drawable.isStateful());
+        final Drawable.ConstantState constantState = drawable.getConstantState();
+        assertNotNull("Constant state is null", constantState);
+        final Drawable currentState = drawable.getCurrent();
+        assertNull("Robolectric started shadowing current state", currentState);
+    }
+
+    /**
+     * Tests the {@link Coloring#createRippleDrawable(int)} method.
+     * <p>
+     * Unfortunately {@link android.graphics.drawable.LayerDrawable}'s constructor is not shadowed by Robolectric yet.
+     */
+    @Test
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public final void testCreateRippleDrawableSingle() {
+        try {
+            final RippleDrawable ripple = Coloring.createRippleDrawable(Color.GREEN);
+            fail("Robolectric started shadowing LayerDrawable");
+            assertNotNull("RippleDrawable is null", ripple);
+            final Drawable.ConstantState constantState = ripple.getConstantState();
+            assertNotNull("Constant state is null", constantState);
+        } catch (NullPointerException ignored) {
+            // Robolectric shadowing error, expected in the current version
+        }
+    }
+
+    /**
+     * Tests the {@link Coloring#createRippleDrawable(int, int, Rect, int)} method.
+     * <p>
+     * Unfortunately {@link android.graphics.drawable.LayerDrawable}'s constructor is not shadowed by Robolectric yet.
+     */
+    @Test
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public final void testCreateRippleDrawableMulti() {
+        try {
+            final RippleDrawable ripple = Coloring.createRippleDrawable(Color.WHITE, Color.RED, null, 20);
+            fail("Robolectric started shadowing LayerDrawable");
+            assertNotNull("RippleDrawable is null", ripple);
+            final Drawable.ConstantState constantState = ripple.getConstantState();
+            assertNotNull("Constant state is null", constantState);
+        } catch (NullPointerException ignored) {
+            // Robolectric shadowing error, expected in the current version
+        }
+    }
+
+    // FIXME to be tested yet
+    // @Test
     // public final void testCreateResponsiveDrawable() {
     //
     // }
     //
+    // @Test
     // public final void testCreateResponsiveDrawable1() {
     //
     // }
     //
+    // @Test
     // public final void testCreateContrastTextColors() {
     //
     // }
     //
+    // @Test
     // public final void testCreateContrastStateDrawable() {
     //
     // }
     //
+    // @Test
     // public final void testCreateMultiStateDrawable() {
     //
     // }
