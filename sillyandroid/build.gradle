@@ -33,6 +33,12 @@ android {
         }
     }
 
+    // specific options for TravisCI emulators (they take a while to start)
+    adbOptions {
+        timeOutInMs 20 * 60 * 1000 // 20 minutes
+        installOptions "-d", "-t"
+    }
+
     buildTypes {
         release {
             minifyEnabled false
