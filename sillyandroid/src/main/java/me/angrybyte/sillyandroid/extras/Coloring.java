@@ -722,8 +722,9 @@ public final class Coloring {
      * @return The color state list that takes care of contrasted colors
      */
     @NonNull
-    public static Drawable createContrastStateDrawable(@NonNull final Context context, @ColorInt final int normalColor, @ColorInt final int pressedBackColor,
-                                                       final boolean shouldFade, @NonNull final Drawable original) {
+    public static StateListDrawable createContrastStateDrawable(@NonNull final Context context, @ColorInt final int normalColor, @ColorInt final int
+            pressedBackColor,
+                                                                final boolean shouldFade, @NonNull final Drawable original) {
         // migrate to a static drawable
         Drawable originalState = original;
         if (originalState instanceof StateListDrawable) {
