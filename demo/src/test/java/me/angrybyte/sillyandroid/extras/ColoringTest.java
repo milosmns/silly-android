@@ -408,6 +408,7 @@ public final class ColoringTest {
         }
 
         final Bitmap redSquare = Bitmap.createBitmap(allReds, width, height, config);
+        assertNotNull("Created Bitmap is null", redSquare);
 
         // initialize red Bitmap's internal structures, otherwise it won't draw properly
         redSquare.prepareToDraw();
@@ -423,6 +424,7 @@ public final class ColoringTest {
         assertEquals(errorRed, hex(Color.TRANSPARENT), redPixel);
 
         final Bitmap greenSquare = Coloring.colorBitmap(redSquare, Color.GREEN);
+        assertNotNull("Created colored Bitmap is null", greenSquare);
         final String greenPixel = hex(greenSquare.getPixel(width / 2, height / 2));
         final String errorGreen = String.format("Error while coloring bitmap, middle pixel is %s", greenPixel);
         assertEquals(errorGreen, hex(Color.TRANSPARENT), greenPixel);
@@ -430,11 +432,14 @@ public final class ColoringTest {
 
     /**
      * Tests the {@link Coloring#createColoredDrawable(int, Rect)} method.
+     * <p>
+     * Unfortunately some Drawable properties are not shadowed by Robolectric yet, so we can test only the basic stuff here.
      */
     @Test
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public final void testCreateColoredDrawable() {
         final Drawable transparentNoBounds = Coloring.createColoredDrawable(Color.TRANSPARENT, null);
+        assertNotNull("Colored drawable is null", transparentNoBounds);
         assertTrue("Drawable not a ColorDrawable", transparentNoBounds instanceof ColorDrawable);
         assertEquals("Drawable color is not transparent", Color.TRANSPARENT, ((ColorDrawable) transparentNoBounds).getColor());
         assertEquals("Bounds are not 0", new Rect(0, 0, 0, 0), transparentNoBounds.getBounds());
@@ -442,6 +447,7 @@ public final class ColoringTest {
         assertEquals("Alpha is not 0", 0, ((ColorDrawable) transparentNoBounds).getAlpha());
 
         final Drawable transparentWithBounds = Coloring.createColoredDrawable(Color.TRANSPARENT, new Rect(0, 0, 100, 100));
+        assertNotNull("Colored drawable is null", transparentWithBounds);
         assertTrue("Drawable not a ColorDrawable", transparentWithBounds instanceof ColorDrawable);
         assertEquals("Drawable color is not transparent", Color.TRANSPARENT, ((ColorDrawable) transparentWithBounds).getColor());
         assertEquals("Bounds are not null", new Rect(0, 0, 100, 100), transparentWithBounds.getBounds());
@@ -449,6 +455,7 @@ public final class ColoringTest {
         assertEquals("Alpha is not 0", 0, ((ColorDrawable) transparentWithBounds).getAlpha());
 
         final Drawable redNoBounds = Coloring.createColoredDrawable(Color.RED, null);
+        assertNotNull("Colored drawable is null", redNoBounds);
         assertTrue("Drawable not a ColorDrawable", redNoBounds instanceof ColorDrawable);
         assertEquals("Drawable color is not red", hex(((ColorDrawable) redNoBounds).getColor()), hex(Color.RED));
         assertEquals("Bounds are not null", new Rect(0, 0, 0, 0), redNoBounds.getBounds());
@@ -456,6 +463,7 @@ public final class ColoringTest {
         assertEquals("Alpha is not 255", 255, ((ColorDrawable) redNoBounds).getAlpha());
 
         final Drawable redWithBounds = Coloring.createColoredDrawable(Color.RED, new Rect(0, 0, 100, 100));
+        assertNotNull("Colored drawable is null", redWithBounds);
         assertTrue("Drawable not a ColorDrawable", redWithBounds instanceof ColorDrawable);
         assertEquals("Drawable color is not red", hex(((ColorDrawable) redWithBounds).getColor()), hex(Color.RED));
         assertEquals("Bounds are not null", new Rect(0, 0, 100, 100), redWithBounds.getBounds());
@@ -469,9 +477,10 @@ public final class ColoringTest {
      * Due to {@link org.robolectric.shadows.ShadowBitmap}'s empty implementation, this won't really work, so we can only test the transparency.
      */
     @Test
-    public final void testColorDrawableInt() {
+    public final void testColorDrawableResource() {
         // noinspection deprecation - can't enforce Lollipop here
         final BitmapDrawable colored = Coloring.colorBitmapDrawable(mActivityContext, android.R.drawable.btn_star_big_on, Color.RED);
+        assertNotNull("Colored drawable is null", colored);
         final int coloredPixel = colored.getBitmap().getPixel(colored.getBitmap().getWidth() / 2, colored.getBitmap().getHeight() / 2);
         assertEquals("Colored middle pixel is not transparent", hex(Color.TRANSPARENT), hex(coloredPixel));
     }
@@ -485,10 +494,12 @@ public final class ColoringTest {
     public final void testColorDrawableObject() {
         // noinspection deprecation - can't enforce Lollipop here
         final BitmapDrawable original = (BitmapDrawable) mActivityContext.getResources().getDrawable(android.R.drawable.btn_star_big_on);
+        assertNotNull("Original drawable is null", original);
         final int originalPixel = original.getBitmap().getPixel(original.getBitmap().getWidth() / 2, original.getBitmap().getHeight() / 2);
         assertEquals("Original middle pixel is not transparent", hex(Color.TRANSPARENT), hex(originalPixel));
 
         final BitmapDrawable colored = (BitmapDrawable) Coloring.colorDrawable(mActivityContext, original, Color.RED);
+        assertNotNull("Colored drawable is null", colored);
         final int coloredPixel = colored.getBitmap().getPixel(colored.getBitmap().getWidth() / 2, colored.getBitmap().getHeight() / 2);
         assertEquals("Colored middle pixel is not transparent", hex(Color.TRANSPARENT), hex(coloredPixel));
     }
@@ -499,13 +510,15 @@ public final class ColoringTest {
      * Due to {@link org.robolectric.shadows.ShadowBitmap}'s empty implementation, this won't really work, so we can only test the transparency.
      */
     @Test
-    public final void testColorDrawableWrappedInt() {
+    public final void testColorDrawableWrappedColor() {
         // noinspection deprecation - can't enforce Lollipop here
         final BitmapDrawable original = (BitmapDrawable) mActivityContext.getResources().getDrawable(android.R.drawable.btn_star_big_on);
+        assertNotNull("Original drawable is null", original);
         final int originalPixel = original.getBitmap().getPixel(original.getBitmap().getWidth() / 2, original.getBitmap().getHeight() / 2);
         assertEquals("Original middle pixel is not transparent", hex(Color.TRANSPARENT), hex(originalPixel));
 
         final BitmapDrawable colored = (BitmapDrawable) Coloring.colorDrawableWrapped(original, Color.RED);
+        assertNotNull("Colored drawable is null", colored);
         final int coloredPixel = colored.getBitmap().getPixel(colored.getBitmap().getWidth() / 2, colored.getBitmap().getHeight() / 2);
         assertEquals("Colored middle pixel is not transparent", hex(Color.TRANSPARENT), hex(coloredPixel));
     }
@@ -516,13 +529,15 @@ public final class ColoringTest {
      * Due to {@link org.robolectric.shadows.ShadowBitmap}'s empty implementation, this won't really work, so we can only test the transparency.
      */
     @Test
-    public final void testColorDrawableWrappedObject() {
+    public final void testColorDrawableWrappedStateList() {
         // noinspection deprecation - can't enforce Lollipop here
         final BitmapDrawable original = (BitmapDrawable) mActivityContext.getResources().getDrawable(android.R.drawable.btn_star_big_on);
+        assertNotNull("Original drawable is null", original);
         final int originalPixel = original.getBitmap().getPixel(original.getBitmap().getWidth() / 2, original.getBitmap().getHeight() / 2);
         assertEquals("Original middle pixel is not transparent", hex(Color.TRANSPARENT), hex(originalPixel));
 
         final BitmapDrawable colored = (BitmapDrawable) Coloring.colorDrawableWrapped(original, ColorStateList.valueOf(Color.RED));
+        assertNotNull("Colored drawable is null", colored);
         final int coloredPixel = colored.getBitmap().getPixel(colored.getBitmap().getWidth() / 2, colored.getBitmap().getHeight() / 2);
         assertEquals("Colored middle pixel is not transparent", hex(Color.TRANSPARENT), hex(coloredPixel));
     }
@@ -536,10 +551,12 @@ public final class ColoringTest {
     public final void testColorUnknownDrawable() {
         // noinspection deprecation - can't enforce Lollipop here
         final BitmapDrawable original = (BitmapDrawable) mActivityContext.getResources().getDrawable(android.R.drawable.btn_star_big_on);
+        assertNotNull("Original drawable is null", original);
         final int originalPixel = original.getBitmap().getPixel(original.getBitmap().getWidth() / 2, original.getBitmap().getHeight() / 2);
         assertEquals("Original middle pixel is not transparent", hex(Color.TRANSPARENT), hex(originalPixel));
 
         final BitmapDrawable colored = (BitmapDrawable) Coloring.colorUnknownDrawable(original, Color.RED);
+        assertNotNull("Colored drawable is null", colored);
         final int coloredPixel = colored.getBitmap().getPixel(colored.getBitmap().getWidth() / 2, colored.getBitmap().getHeight() / 2);
         assertEquals("Colored middle pixel is not transparent", hex(Color.TRANSPARENT), hex(coloredPixel));
     }
@@ -554,6 +571,7 @@ public final class ColoringTest {
     public final void testColorVectorDrawable() {
         try {
             final VectorDrawable vectorDrawable = new VectorDrawable();
+            assertNotNull("VectorDrawable is null", vectorDrawable);
             final VectorDrawable colored = Coloring.colorVectorDrawable(vectorDrawable, Color.RED);
             final PorterDuff.Mode mode = PorterDuff.Mode.SRC_ATOP;
             assertEquals("Vector color filter does not match", new PorterDuffColorFilter(Color.RED, mode), colored.getColorFilter());
@@ -579,8 +597,9 @@ public final class ColoringTest {
             Class<?> cl = Class.forName(VectorDrawableCompat.class.getCanonicalName());
             Constructor<?> constructor = cl.getConstructor();
             constructor.setAccessible(true);
-            final VectorDrawableCompat vectorDrawable = (VectorDrawableCompat) constructor.newInstance();
-            final VectorDrawableCompat colored = Coloring.colorVectorDrawableCompat(vectorDrawable, Color.RED);
+            final VectorDrawableCompat vectorDrawableCompat = (VectorDrawableCompat) constructor.newInstance();
+            assertNotNull("VectorDrawableCompat is null", vectorDrawableCompat);
+            final VectorDrawableCompat colored = Coloring.colorVectorDrawableCompat(vectorDrawableCompat, Color.RED);
             assertEquals("VectorCompat color filter does not match", null, colored.getColorFilter());
         } catch (RuntimeException e) {
             boolean knownIssue = e.getMessage().contains("no such method");
@@ -649,31 +668,92 @@ public final class ColoringTest {
         }
     }
 
-    // FIXME to be tested yet
-    // @Test
-    // public final void testCreateResponsiveDrawable() {
-    //
-    // }
-    //
-    // @Test
-    // public final void testCreateResponsiveDrawable1() {
-    //
-    // }
-    //
-    // @Test
-    // public final void testCreateContrastTextColors() {
-    //
-    // }
-    //
-    // @Test
-    // public final void testCreateContrastStateDrawable() {
-    //
-    // }
-    //
-    // @Test
-    // public final void testCreateMultiStateDrawable() {
-    //
-    // }
+    /**
+     * Tests the {@link Coloring#createResponsiveDrawable(Context, int, int, int, boolean, int)} method.
+     * <p>
+     * Unfortunately some Drawable properties are not shadowed by Robolectric yet, so we can test only the basic stuff here.
+     */
+    @Test
+    public final void testCreateResponsiveDrawableBorderless() {
+        final Drawable drawable = Coloring.createResponsiveDrawable(mActivityContext, Color.WHITE, Color.GRAY, Color.GREEN, true, 20);
+        assertNotNull("Responsive drawable is null", drawable);
+        assertTrue("Responsive drawable is of unknown type: " + drawable.getClass().getCanonicalName(), drawable instanceof StateListDrawable || drawable
+                instanceof RippleDrawable);
+        final Drawable.ConstantState constantState = drawable.getConstantState();
+        assertNotNull("Constant state is null", constantState);
+    }
+
+    /**
+     * Tests the {@link Coloring#createResponsiveDrawable(Context, int, int, int, boolean, int, Rect)} method.
+     * <p>
+     * Unfortunately some Drawable properties are not shadowed by Robolectric yet, so we can test only the basic stuff here.
+     */
+    @Test
+    public final void testCreateResponsiveDrawableBorders() {
+        final Drawable drawable = Coloring.createResponsiveDrawable(mActivityContext, Color.WHITE, Color.GRAY, Color.GREEN, true, 20, new Rect(0, 0, 20, 20));
+        assertNotNull("Responsive drawable is null", drawable);
+        assertTrue("Responsive drawable is of unknown type: " + drawable.getClass().getCanonicalName(), drawable instanceof StateListDrawable || drawable
+                instanceof RippleDrawable);
+        final Drawable.ConstantState constantState = drawable.getConstantState();
+        assertNotNull("Constant state is null", constantState);
+    }
+
+    /**
+     * Tests the {@link Coloring#createContrastTextColors(int, int)} method.
+     */
+    @Test
+    public final void testCreateContrastTextColors() {
+        final ColorStateList stateList = Coloring.createContrastTextColors(Color.WHITE, Color.BLACK);
+        assertNotNull("ColorStateList is null", stateList);
+        assertTrue("ColorStateList is not stateful", stateList.isStateful());
+        assertEquals("Default color is not white", hex(Color.WHITE), hex(stateList.getDefaultColor()));
+        final int activeTextColor = stateList.getColorForState(new int[] { android.R.attr.state_pressed }, Color.BLACK);
+        assertEquals("Clicked color is not contrasted to black", hex(Coloring.contrastColor(Color.BLACK)), hex(activeTextColor));
+    }
+
+    /**
+     * Tests the {@link Coloring#createContrastStateDrawable(Context, int, int, boolean, Drawable)} method.
+     * <p>
+     * Unfortunately some Drawable properties are not shadowed by Robolectric yet, so we can test only the basic stuff here.
+     */
+    @Test
+    public final void testCreateContrastStateDrawable() {
+        // noinspection deprecation - can't enforce Lollipop here
+        final BitmapDrawable original = (BitmapDrawable) mActivityContext.getResources().getDrawable(android.R.drawable.btn_star_big_on);
+        assertNotNull("Original drawable is null", original);
+
+        final StateListDrawable stateList = Coloring.createContrastStateDrawable(mActivityContext, Color.WHITE, Color.BLACK, true, original);
+        assertNotNull("Contrast state drawable is null", stateList);
+        assertTrue("Contrast state drawable is not stateful", stateList.isStateful());
+        final Drawable.ConstantState constantState = stateList.getConstantState();
+        assertNotNull("Constant state is null", constantState);
+    }
+
+    /**
+     * Tests the {@link Coloring#createMultiStateDrawable(Drawable, Drawable, Drawable, boolean)} method.
+     * <p>
+     * Unfortunately some Drawable properties are not shadowed by Robolectric yet, so we can test only the basic stuff here.
+     */
+    @Test
+    public final void testCreateMultiStateDrawable() {
+        // noinspection deprecation - can't enforce Lollipop here
+        final BitmapDrawable normal = (BitmapDrawable) mActivityContext.getResources().getDrawable(android.R.drawable.btn_star_big_on);
+        assertNotNull("Normal drawable is null", normal);
+
+        // noinspection deprecation - can't enforce Lollipop here
+        final BitmapDrawable clicked = (BitmapDrawable) mActivityContext.getResources().getDrawable(android.R.drawable.btn_star_big_off);
+        assertNotNull("Clicked drawable is null", clicked);
+
+        // noinspection deprecation - can't enforce Lollipop here
+        final BitmapDrawable checked = (BitmapDrawable) mActivityContext.getResources().getDrawable(android.R.drawable.star_off);
+        assertNotNull("Checked drawable is null", checked);
+
+        final StateListDrawable stateList = Coloring.createMultiStateDrawable(normal, clicked, checked, true);
+        assertNotNull("Contrast state drawable is null", stateList);
+        assertTrue("Contrast state drawable is not stateful", stateList.isStateful());
+        final Drawable.ConstantState constantState = stateList.getConstantState();
+        assertNotNull("Constant state is null", constantState);
+    }
 
     // <editor-fold desc="Private helpers">
 
