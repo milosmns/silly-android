@@ -42,7 +42,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 
 /**
  * A set of tests related to the {@link Coloring}.
@@ -624,7 +623,6 @@ public final class ColoringTest {
     public final void testCreateRippleDrawableSingle() {
         try {
             final RippleDrawable ripple = Coloring.createRippleDrawable(Color.GREEN);
-            fail("Robolectric started shadowing LayerDrawable");
             assertNotNull("RippleDrawable is null", ripple);
             final Drawable.ConstantState constantState = ripple.getConstantState();
             assertNotNull("Constant state is null", constantState);
@@ -643,7 +641,6 @@ public final class ColoringTest {
     public final void testCreateRippleDrawableMulti() {
         try {
             final RippleDrawable ripple = Coloring.createRippleDrawable(Color.WHITE, Color.RED, null, 20);
-            fail("Robolectric started shadowing LayerDrawable");
             assertNotNull("RippleDrawable is null", ripple);
             final Drawable.ConstantState constantState = ripple.getConstantState();
             assertNotNull("Constant state is null", constantState);
