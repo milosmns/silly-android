@@ -325,6 +325,36 @@ public final class SillyAndroid {
     }
 
     /**
+     * Sets the top and bottom padding to the given View, keeping the horizontal padding values as the were.
+     *
+     * @param view    Which view to set the padding to, must not be {@code null}
+     * @param padding The vertical padding value
+     */
+    public static void setPaddingVertical(@NonNull final View view, @Px final int padding) {
+        final int paddingStart = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ? view.getPaddingStart() : view.getPaddingLeft();
+        final int paddingEnd = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ? view.getPaddingEnd() : view.getPaddingRight();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            view.setPaddingRelative(paddingStart, padding, paddingEnd, padding);
+        } else {
+            view.setPadding(paddingStart, padding, paddingEnd, padding);
+        }
+    }
+
+    /**
+     * Sets the left/start and right/end padding to the given View, keeping the vertical padding values as the were.
+     *
+     * @param view    Which view to set the padding to, must not be {@code null}
+     * @param padding The horizontal padding value
+     */
+    public static void setPaddingHorizontal(@NonNull final View view, @Px final int padding) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            view.setPaddingRelative(padding, view.getPaddingTop(), padding, view.getPaddingBottom());
+        } else {
+            view.setPadding(padding, view.getPaddingTop(), padding, view.getPaddingBottom());
+        }
+    }
+
+    /**
      * Sets the same padding for all sides to the given View.
      *
      * @param view    Which view to set the padding to, must not be {@code null}

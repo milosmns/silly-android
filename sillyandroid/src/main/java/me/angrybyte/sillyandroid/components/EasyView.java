@@ -124,6 +124,20 @@ public class EasyView extends View implements LayoutWrapper {
     }
 
     /**
+     * Invokes the {@link SillyAndroid#setPaddingVertical(View, int)} with the same arguments.
+     */
+    public final void setPaddingVertical(@Px final int padding) {
+        SillyAndroid.setPaddingVertical(this, padding);
+    }
+
+    /**
+     * Invokes the {@link SillyAndroid#setPaddingHorizontal(View, int)} with the same arguments.
+     */
+    public final void setPaddingHorizontal(@Px final int padding) {
+        SillyAndroid.setPaddingHorizontal(this, padding);
+    }
+
+    /**
      * Invokes {@link SillyAndroid#setPadding(View, int)} with the same arguments.
      */
     public final void setPaddingR(@Px final int padding) {
