@@ -14,6 +14,7 @@ import android.support.annotation.UiThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 
 import me.angrybyte.sillyandroid.SillyAndroid;
@@ -72,6 +73,20 @@ public abstract class EasyViewGroup extends ViewGroup implements LayoutWrapper {
      */
     public final void setBackgroundCompat(@Nullable final Drawable drawable) {
         ViewCompat.setBackground(this, drawable);
+    }
+
+    /**
+     * Invokes the {@link SillyAndroid#setPaddingVertical(View, int)} with the same arguments.
+     */
+    public final void setPaddingVertical(@Px final int padding) {
+        SillyAndroid.setPaddingVertical(this, padding);
+    }
+
+    /**
+     * Invokes the {@link SillyAndroid#setPaddingHorizontal(View, int)} with the same arguments.
+     */
+    public final void setPaddingHorizontal(@Px final int padding) {
+        SillyAndroid.setPaddingHorizontal(this, padding);
     }
 
     /**

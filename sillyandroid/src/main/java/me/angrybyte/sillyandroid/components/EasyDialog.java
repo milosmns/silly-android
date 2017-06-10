@@ -173,6 +173,20 @@ public class EasyDialog extends Dialog implements LayoutWrapper {
     }
 
     /**
+     * Invokes the {@link SillyAndroid#setPaddingVertical(View, int)} with the same arguments.
+     */
+    protected final void setPaddingVertical(@NonNull final View view, @Px final int padding) {
+        SillyAndroid.setPaddingVertical(view, padding);
+    }
+
+    /**
+     * Invokes the {@link SillyAndroid#setPaddingHorizontal(View, int)} with the same arguments.
+     */
+    protected final void setPaddingHorizontal(@NonNull final View view, @Px final int padding) {
+        SillyAndroid.setPaddingHorizontal(view, padding);
+    }
+
+    /**
      * Invokes {@link SillyAndroid#setPadding(View, int)} with the same arguments.
      */
     protected final void setPadding(@NonNull final View view, @Px final int padding) {
