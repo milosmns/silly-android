@@ -246,20 +246,36 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
     }
 
     /**
+     * Requests the given permissions using runtime permission dialogs; if API level is not sufficient, nothing happens.
+     *
+     * @param code        The code to request the permissions with. It will be sent back to you in {@link #onPermissionsResult(int, Set, Set)}.
+     * @param permissions Which permissions to ask for. They will be grouped and sent back to you in {@link #onPermissionsResult(int, Set, Set)}
+     * @return {@code True} if the permission request was made, {@code false} otherwise
+     */
+    protected final boolean requestPermissions(@IntRange(from = 0, to = 127) final int code, @Nullable final String... permissions) {
+        if (permissions != null && permissions.length > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(permissions, code);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Forwards results from {@link #onRequestPermissionsResult(int, String[], int[])}, only in a much prettier and easier to use format.
      *
-     * @param requestCode The original requestCode
-     * @param granted     The set of granted permissions
-     * @param denied      The set of denied permissions
+     * @param code    The original requestCode
+     * @param granted The set of granted permissions
+     * @param denied  The set of denied permissions
      */
     @CallSuper
-    protected void onPermissionsResult(final int requestCode, @NonNull Set<String> granted, @NonNull Set<String> denied) {
+    protected void onPermissionsResult(@IntRange(from = 0, to = 127) final int code, @NonNull final Set<String> granted, @NonNull final Set<String> denied) {
         if (BuildConfig.DEBUG) {
             // log results for debug purposes
             final String grantedText = Arrays.toString(granted.toArray());
             final String deniedText = Arrays.toString(denied.toArray());
             final String format = "Permissions request %d = [granted: %s; permissions denied: %s]";
-            Log.d(getClass().getSimpleName(), String.format(format, requestCode, grantedText, deniedText));
+            Log.d(getClass().getSimpleName(), String.format(format, code, grantedText, deniedText));
         }
     }
 
