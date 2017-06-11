@@ -12,6 +12,7 @@ env:
     - PLATFORM_TOOLS=25.0.4
     - BUILD_TOOLS=25.0.2
     - COMPILE_SDK=25
+    - ADB_INSTALL_TIMEOUT=15 # Wait up to 15 minutes for adb to connect to the emulator
 
 # Enable only JDK 8, source does not build with JDK 7
 addons:
