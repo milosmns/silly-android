@@ -36,6 +36,7 @@
             android:paddingLeft="@dimen/spacing_large"
             android:paddingRight="@dimen/spacing_large"
             android:text="@string/label_random_padding"
+            android:textColor="@color/yellow"
             android:textSize="@dimen/text_size_small" />
     </LinearLayout>
 
