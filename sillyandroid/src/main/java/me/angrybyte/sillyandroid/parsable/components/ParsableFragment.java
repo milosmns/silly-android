@@ -8,6 +8,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import me.angrybyte.sillyandroid.SillyAndroid;
 import me.angrybyte.sillyandroid.components.EasyFragment;
 import me.angrybyte.sillyandroid.parsable.AnnotationParser;
+import me.angrybyte.sillyandroid.parsable.Annotations;
 import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 
 /**
@@ -25,14 +27,28 @@ import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 @SuppressWarnings("unused")
 public class ParsableFragment extends EasyFragment implements View.OnClickListener, View.OnLongClickListener {
 
+    /**
+     * The layout ID pulled from the {@link me.angrybyte.sillyandroid.parsable.Annotations.Layout} annotation will be stored here.
+     */
     @LayoutRes
     @SuppressWarnings("unused")
     private int mLayoutId;
 
+    /**
+     * The menu ID pulled from the {@link me.angrybyte.sillyandroid.parsable.Annotations.Menu} annotation will be stored here.
+     */
     @MenuRes
     @SuppressWarnings("unused")
     private int mMenuId;
 
+    /**
+     * All Views annotated with {@link me.angrybyte.sillyandroid.parsable.Annotations.FindView} annotation will be mapped here.
+     */
+    private SparseArray<View> mFoundViews;
+
+    /**
+     * A flag that doesn't allow us to parse the same View hierarchy twice using {@link AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
+     */
     private boolean mIsParsed;
 
     /**
@@ -87,7 +103,8 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
         if (getLayoutId() > 0 && context != null) {
             final View contentView = inflater.inflate(getLayoutId(), container, false);
             // using 'this' instead of a new wrapper won't work because the wrapper uses #getView(), which will at this point return null
-            AnnotationParser.parseFields(context, this, new LayoutWrapper() {
+            mFoundViews.clear();
+            mFoundViews = AnnotationParser.parseFields(context, this, new LayoutWrapper() {
                 @Override
                 public <ViewType extends View> ViewType findView(@IdRes final int viewId) {
                     return SillyAndroid.findViewById(contentView, viewId);
@@ -109,6 +126,13 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
         }
     }
 
+    @Override
+    @CallSuper
+    public void onDestroy() {
+        super.onDestroy();
+        mFoundViews.clear();
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -121,6 +145,18 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     @Override
     public boolean onLongClick(final View v) {
         return false;
+    }
+
+    /**
+     * Tries to find a {@link Annotations.FindView}-annotated View from the {@link #mFoundViews} cache. Note that cache is emptied when this fragment dies.
+     *
+     * @param viewId The ID of the View being looked for
+     * @return Either a View object; or {@code null} if not found, not parsed at all or fragment died already
+     */
+    @Nullable
+    @SuppressWarnings("unused")
+    protected final View getFoundView(@IdRes final int viewId) {
+        return mFoundViews == null ? null : mFoundViews.get(viewId);
     }
 
     /**

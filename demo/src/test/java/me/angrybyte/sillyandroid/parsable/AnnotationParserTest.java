@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static me.angrybyte.sillyandroid.parsable.AnnotationParser.parseFields;
 import static me.angrybyte.sillyandroid.parsable.Annotations.Clickable;
 import static me.angrybyte.sillyandroid.parsable.Annotations.FindView;
 import static me.angrybyte.sillyandroid.parsable.Annotations.Layout;
@@ -304,7 +306,8 @@ public final class AnnotationParserTest {
     public final void testParseFields() {
         final TestMenuLayoutActivity activity = (TestMenuLayoutActivity) mActivityContext;
         final LayoutWrapper layoutWrapper = (LayoutWrapper) mActivityContext;
-        AnnotationParser.parseFields(mActivityContext, activity, layoutWrapper);
+        final SparseArray<View> parseResults = parseFields(mActivityContext, activity, layoutWrapper);
+        assertNotNull("Parse results are null", parseResults);
         final View injected = activity.getInjectedView();
         assertNotNull("View not injected, is null", injected);
         assertEquals("View not injected properly", injected.getId(), 1);
@@ -317,7 +320,8 @@ public final class AnnotationParserTest {
     public final void testParseClickableView() {
         final TestMenuLayoutActivity activity = (TestMenuLayoutActivity) mActivityContext;
         final LayoutWrapper layoutWrapper = (LayoutWrapper) mActivityContext;
-        AnnotationParser.parseFields(mActivityContext, activity, layoutWrapper);
+        final SparseArray<View> parseResults = AnnotationParser.parseFields(mActivityContext, activity, layoutWrapper);
+        assertNotNull("Parse results are null", parseResults);
         activity.getInjectedView().performClick();
         assertTrue("View click not performed", activity.isViewClicked());
     }
@@ -329,7 +333,8 @@ public final class AnnotationParserTest {
     public final void testParseLongClickableView() {
         final TestMenuLayoutActivity activity = (TestMenuLayoutActivity) mActivityContext;
         final LayoutWrapper layoutWrapper = (LayoutWrapper) mActivityContext;
-        AnnotationParser.parseFields(mActivityContext, activity, layoutWrapper);
+        final SparseArray<View> parseResults = parseFields(mActivityContext, activity, layoutWrapper);
+        assertNotNull("Parse results are null", parseResults);
         activity.getInjectedView().performLongClick();
         assertTrue("View long click not performed", activity.isViewLongClicked());
     }
