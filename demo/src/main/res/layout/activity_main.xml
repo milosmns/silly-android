@@ -6,14 +6,14 @@
     tools:context="me.angrybyte.sillyandroid.demo.MainActivity">
 
     <LinearLayout
-        android:id="@+id/layoutContainer"
+        android:id="@+id/container_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/titleTextView"
+            android:id="@+id/display_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/spacing_huge"
@@ -22,16 +22,19 @@
             android:textSize="@dimen/text_size_huge" />
 
         <Button
-            android:id="@+id/printAllViews"
+            android:id="@+id/button_print_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/print_all_views" />
+            android:layout_marginBottom="@dimen/spacing_normal"
+            android:text="@string/label_print_info"
+            android:textSize="@dimen/text_size_large" />
 
         <Button
-            android:id="@+id/printContentView"
+            android:id="@+id/button_random_padding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/print_content_view" />
+            android:text="@string/label_random_padding"
+            android:textSize="@dimen/text_size_small" />
     </LinearLayout>
 
 </ScrollView>
