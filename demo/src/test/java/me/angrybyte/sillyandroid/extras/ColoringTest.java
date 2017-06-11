@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.VectorDrawable;
@@ -436,39 +437,41 @@ public final class ColoringTest {
      * Unfortunately some Drawable properties are not shadowed by Robolectric yet, so we can test only the basic stuff here.
      */
     @Test
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public final void testCreateColoredDrawable() {
         final Drawable transparentNoBounds = Coloring.createColoredDrawable(Color.TRANSPARENT, null);
         assertNotNull("Colored drawable is null", transparentNoBounds);
         assertTrue("Drawable not a ColorDrawable", transparentNoBounds instanceof ColorDrawable);
         assertEquals("Drawable color is not transparent", Color.TRANSPARENT, ((ColorDrawable) transparentNoBounds).getColor());
         assertEquals("Bounds are not 0", new Rect(0, 0, 0, 0), transparentNoBounds.getBounds());
-        // noinspection RedundantCast - it's not. alpha getter was added for Drawable in KITKAT
-        assertEquals("Alpha is not 0", 0, ((ColorDrawable) transparentNoBounds).getAlpha());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            assertEquals("Alpha is not 0", 0, transparentNoBounds.getAlpha());
+        }
 
         final Drawable transparentWithBounds = Coloring.createColoredDrawable(Color.TRANSPARENT, new Rect(0, 0, 100, 100));
         assertNotNull("Colored drawable is null", transparentWithBounds);
-        assertTrue("Drawable not a ColorDrawable", transparentWithBounds instanceof ColorDrawable);
-        assertEquals("Drawable color is not transparent", Color.TRANSPARENT, ((ColorDrawable) transparentWithBounds).getColor());
+        assertTrue("Drawable not a GradientDrawable", transparentWithBounds instanceof GradientDrawable);
         assertEquals("Bounds are not null", new Rect(0, 0, 100, 100), transparentWithBounds.getBounds());
-        // noinspection RedundantCast - it's not. alpha getter was added for Drawable in KITKAT
-        assertEquals("Alpha is not 0", 0, ((ColorDrawable) transparentWithBounds).getAlpha());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            assertEquals("Alpha is not 0", 0, transparentWithBounds.getAlpha());
+        }
 
         final Drawable redNoBounds = Coloring.createColoredDrawable(Color.RED, null);
         assertNotNull("Colored drawable is null", redNoBounds);
         assertTrue("Drawable not a ColorDrawable", redNoBounds instanceof ColorDrawable);
         assertEquals("Drawable color is not red", hex(((ColorDrawable) redNoBounds).getColor()), hex(Color.RED));
         assertEquals("Bounds are not null", new Rect(0, 0, 0, 0), redNoBounds.getBounds());
-        // noinspection RedundantCast - it's not. alpha getter was added for Drawable in KITKAT
-        assertEquals("Alpha is not 255", 255, ((ColorDrawable) redNoBounds).getAlpha());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            assertEquals("Alpha is not 255", 255, redNoBounds.getAlpha());
+        }
 
         final Drawable redWithBounds = Coloring.createColoredDrawable(Color.RED, new Rect(0, 0, 100, 100));
         assertNotNull("Colored drawable is null", redWithBounds);
-        assertTrue("Drawable not a ColorDrawable", redWithBounds instanceof ColorDrawable);
-        assertEquals("Drawable color is not red", hex(((ColorDrawable) redWithBounds).getColor()), hex(Color.RED));
+        assertTrue("Drawable not a GradientDrawable", redWithBounds instanceof GradientDrawable);
         assertEquals("Bounds are not null", new Rect(0, 0, 100, 100), redWithBounds.getBounds());
-        // noinspection RedundantCast - it's not. alpha getter was added for Drawable in KITKAT
-        assertEquals("Alpha is not 255", 255, ((ColorDrawable) redWithBounds).getAlpha());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            assertEquals("Alpha is not 255", 255, redWithBounds.getAlpha());
+        }
     }
 
     /**
