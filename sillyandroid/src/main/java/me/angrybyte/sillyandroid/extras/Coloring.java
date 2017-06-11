@@ -52,6 +52,13 @@ public final class Coloring {
     public static final int BRIGHTNESS_THRESHOLD = 180;
 
     /**
+     * Hidden default constructor.
+     */
+    private Coloring() {
+        super();
+    }
+
+    /**
      * Invokes {@link SillyAndroid#clamp(int, int, int)} with the given component (R,G,B) and [0, 255] range.
      *
      * @param component R, G or B component of a color; potentially out of the [0, 255] range due to modifications
@@ -314,10 +321,10 @@ public final class Coloring {
     public static Drawable createColoredDrawable(@ColorInt final int color, @Nullable final Rect bounds) {
         // create the drawable depending on the OS (pre-Honeycomb couldn't use color drawables inside state lists)
         Drawable drawable;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            drawable = new ColorDrawable(color).mutate();
-        } else {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB || bounds != null) {
             drawable = new GradientDrawable(Orientation.BOTTOM_TOP, new int[] { color, color }).mutate();
+        } else {
+            drawable = new ColorDrawable(color).mutate();
         }
 
         // set the alpha value
@@ -600,11 +607,13 @@ public final class Coloring {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     public static RippleDrawable createRippleDrawable(@ColorInt final int normalColor, @ColorInt final int rippleColor, @Nullable final Rect bounds,
                                                       @IntRange(from = 0) final int cornerRadius) {
-        // TODO MM switch to #createColoredDrawable() to be able set the cornerRadius on the mask?
         Drawable maskDrawable = null;
         if (bounds != null) {
             // clip color is white
-            maskDrawable = new ColorDrawable(Color.WHITE);
+            maskDrawable = createColoredDrawable(Color.WHITE, bounds);
+            if (maskDrawable instanceof GradientDrawable) {
+                ((GradientDrawable) maskDrawable).setCornerRadius(cornerRadius);
+            }
             maskDrawable.setBounds(bounds);
         }
 
