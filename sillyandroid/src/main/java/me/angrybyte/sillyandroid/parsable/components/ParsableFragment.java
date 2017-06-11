@@ -103,7 +103,9 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
         if (getLayoutId() > 0 && context != null) {
             final View contentView = inflater.inflate(getLayoutId(), container, false);
             // using 'this' instead of a new wrapper won't work because the wrapper uses #getView(), which will at this point return null
-            mFoundViews.clear();
+            if (mFoundViews != null) {
+                mFoundViews.clear();
+            }
             mFoundViews = AnnotationParser.parseFields(context, this, new LayoutWrapper() {
                 @Override
                 public <ViewType extends View> ViewType findView(@IdRes final int viewId) {
@@ -130,7 +132,9 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     @CallSuper
     public void onDestroy() {
         super.onDestroy();
-        mFoundViews.clear();
+        if (mFoundViews != null) {
+            mFoundViews.clear();
+        }
     }
 
     /**

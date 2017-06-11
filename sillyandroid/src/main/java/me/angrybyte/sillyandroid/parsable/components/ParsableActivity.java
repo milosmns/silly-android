@@ -59,7 +59,9 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
     @Override
     public void setContentView(@LayoutRes final int layoutResID) {
         super.setContentView(layoutResID);
-        mFoundViews.clear();
+        if (mFoundViews != null) {
+            mFoundViews.clear();
+        }
         mFoundViews = AnnotationParser.parseFields(this, this, this);
     }
 
@@ -69,7 +71,9 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
     @Override
     public void setContentView(@NonNull final View view) {
         super.setContentView(view);
-        mFoundViews.clear();
+        if (mFoundViews != null) {
+            mFoundViews.clear();
+        }
         mFoundViews = AnnotationParser.parseFields(this, this, this);
     }
 
@@ -79,7 +83,9 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
     @Override
     public void setContentView(@NonNull final View view, @Nullable final ViewGroup.LayoutParams params) {
         super.setContentView(view, params);
-        mFoundViews.clear();
+        if (mFoundViews != null) {
+            mFoundViews.clear();
+        }
         mFoundViews = AnnotationParser.parseFields(this, this, this);
     }
 
@@ -100,7 +106,9 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
     @CallSuper
     public void onDestroy() {
         super.onDestroy();
-        mFoundViews.clear();
+        if (mFoundViews != null) {
+            mFoundViews.clear();
+        }
     }
 
     /**
