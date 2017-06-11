@@ -2,10 +2,18 @@ package me.angrybyte.sillyandroid.demo;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
+import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +24,7 @@ import android.widget.TextView;
 import java.util.Set;
 
 import me.angrybyte.sillyandroid.SillyAndroid;
+import me.angrybyte.sillyandroid.extras.Coloring;
 import me.angrybyte.sillyandroid.parsable.Annotations;
 import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 import me.angrybyte.sillyandroid.parsable.components.ParsableActivity;
@@ -59,6 +68,43 @@ public final class MainActivity extends ParsableActivity {
     @Annotations.LongClickable
     @Annotations.FindView(R.id.button_random_padding)
     private Button mPaddingButton;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        /*
+         * Prepare the special button coloring to demonstrate the Coloring class (you would have something like this happen generically in real apps):
+         *
+         * - IDLE state colors -
+         *     Background: GRAY
+         *     Text: Contrast to [IDLE.Background]
+         *     Icon: Contrast to [IDLE.Background]
+         *
+         * - PRESSED state colors -
+         *     Background: #FFCC00 (bright yellow)
+         *     Text: Contrast to [PRESSED.Background]
+         *     Icon: Contrast to [PRESSED.Background]
+         *
+         * Android does not recolor these to contrast colors when pressed, so we're doing that manually below.
+         */
+        final int idleBackgroundColor = Color.GRAY; // button background when not pressed
+        final int idleContentColor = Coloring.contrastColor(idleBackgroundColor); // text and icon color when not pressed
+        final int pressedBackgroundColor = 0xFFFFCC00; // button background highlight color when pressed
+        final Drawable originalDrawable = ContextCompat.getDrawable(this, android.R.drawable.star_big_on); // load a random icon from android
+        final StateListDrawable statefulDrawable = Coloring.createContrastStateDrawable(this, idleContentColor, pressedBackgroundColor, true, originalDrawable);
+        final ColorStateList statefulTextColors = Coloring.createContrastTextColors(idleContentColor, pressedBackgroundColor);
+        final Rect originalBounds = mPaddingButton.getBackground().copyBounds(); // copy original drawable's bounds so that the ripple is bordered
+        final int cornerRoundness = SillyAndroid.convertDipsToPixels(this, 4);
+        final Drawable backgroundDrawable = Coloring.createResponsiveDrawable(this, idleBackgroundColor, pressedBackgroundColor, idleBackgroundColor, true,
+                cornerRoundness, originalBounds);
+        setBackgroundCompat(mPaddingButton, backgroundDrawable);
+        mPaddingButton.setCompoundDrawablesWithIntrinsicBounds(statefulDrawable, null, null, null);
+        mPaddingButton.setTextColor(statefulTextColors);
+    }
 
     /**
      * {@inheritDoc}
@@ -114,6 +160,10 @@ public final class MainActivity extends ParsableActivity {
     private void printInfo() {
         final StringBuilder builder = new StringBuilder();
 
+        // print current context
+        builder.append("Current ").append(Context.class.getSimpleName()).append(": ").append(this.toString()).append("\n");
+        // check instance of parsable layout wrapper
+        builder.append(LayoutWrapper.class.isAssignableFrom(getClass()) ? "Assignable from LayoutWrapper" : "Not assignable from LayoutWrapper");
         // see DeviceType constants
         builder.append("Device type: ").append(getDeviceType()).append("\n");
         // screen size in pixels
@@ -154,6 +204,10 @@ public final class MainActivity extends ParsableActivity {
                 printInfo();
                 break;
             }
+            default: {
+                Log.w(TAG, "onClick: Unknown View clicked: " + getResources().getResourceName(v.getId()));
+                break;
+            }
         }
     }
 
@@ -174,6 +228,7 @@ public final class MainActivity extends ParsableActivity {
             }
             default: {
                 Log.e(TAG, "onPermissionsResult: Unknown request code " + code);
+                break;
             }
         }
     }
