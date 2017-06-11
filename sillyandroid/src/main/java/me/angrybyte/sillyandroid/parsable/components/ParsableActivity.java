@@ -102,10 +102,12 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @CallSuper
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onBlockingDestroy() {
+        super.onBlockingDestroy();
         if (mFoundViews != null) {
             mFoundViews.clear();
         }
