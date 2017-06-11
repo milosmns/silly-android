@@ -64,7 +64,7 @@ public abstract class EasyViewGroup extends ViewGroup implements LayoutWrapper {
     /**
      * Returns the result from {@link SillyAndroid#findViewById(android.view.View, int)}.
      */
-    public final <ViewType extends android.view.View> ViewType findView(@IdRes final int viewId) {
+    public final <ViewType extends View> ViewType findView(@IdRes final int viewId) {
         return SillyAndroid.findViewById(this, viewId);
     }
 

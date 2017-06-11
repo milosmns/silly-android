@@ -32,12 +32,16 @@ public abstract class BlockingLifecycleActivity extends AppCompatActivity {
     /**
      * Invoked immediately after {@link Activity#onStop()} event happens on the <b>current activity instance</b>.
      */
-    protected void onBlockingStop() {}
+    protected void onBlockingStop() {
+        // implement this instead of onStop()
+    }
 
     /**
      * Invoked immediately after {@link Activity#onDestroy()} event happens on the <b>current activity instance</b>.
      */
-    protected void onBlockingDestroy() {}
+    protected void onBlockingDestroy() {
+        // implement this instead of onStop()
+    }
 
     /**
      * Checks if {@link #onBlockingStop()} has been invoked on this instance.
