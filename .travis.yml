@@ -14,6 +14,7 @@ env:
     - COMPILE_SDK=25
     - ANDROID_TARGET=android-22 # Enable for connected checks on emulators (Google doesn't support Linux ARMv7 emulation for SDK 23+)
     - ANDROID_ABI=armeabi-v7a # Enable for connected checks on emulators
+    - ADB_INSTALL_TIMEOUT=15 # Wait up to 15 minutes for adb to connect to the emulator
 
 # Enable only JDK 8, source does not build with JDK 7
 addons:
