@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
@@ -36,6 +37,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import java.io.Closeable;
@@ -45,13 +49,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Objects;
 
-import static android.content.ContentValues.TAG;
-
 /**
  * This is the library basis. It contains methods used to customize and adapt system-provided Android components.
  */
 @SuppressWarnings("WeakerAccess")
 public final class SillyAndroid {
+
+    private static final String TAG = SillyAndroid.class.getSimpleName();
 
     /**
      * A wrapper class to shorten the UI configuration queries.
@@ -72,7 +76,7 @@ public final class SillyAndroid {
          * A device type constant set, one of {@link #PHONE_PORT}, {@link #PHONE_LAND}, {@link #TAB_PORT}, {@link #TAB_LAND}, {@link #TABLET_PORT},
          * {@link #TABLET_LAND}, {@link #WATCH}, {@link #TV}.
          */
-        @IntDef({ PHONE_PORT, PHONE_LAND, TAB_PORT, TAB_LAND, TABLET_PORT, TABLET_LAND, WATCH, TV })
+        @IntDef({PHONE_PORT, PHONE_LAND, TAB_PORT, TAB_LAND, TABLET_PORT, TABLET_LAND, WATCH, TV})
         @Retention(RetentionPolicy.SOURCE)
         public @interface DeviceType {}
 
@@ -203,6 +207,24 @@ public final class SillyAndroid {
             }
             return 0;
         }
+    }
+
+    /**
+     * A listener interface used for observing changes in layout height, i.e. when the software keyboard pops up or hides.
+     */
+    public interface OnKeyboardChangeListener {
+
+        /**
+         * Notifies the listener of a new keyboard pop-up, i.e. when the software keyboard is shown.
+         *
+         * @param size How high is the keyboard, in pixels
+         */
+        void onKeyboardShown(@IntRange(from = 1) final int size);
+
+        /**
+         * Notifies the listener of an event when the software keyboards hides from the view.
+         */
+        void onKeyboardHidden();
     }
 
     /**
@@ -625,7 +647,7 @@ public final class SillyAndroid {
      * @param context Which context to use to check
      * @return {@code True} if there is a non-WiFi network connected, {@code false} if not
      */
-    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
     public static boolean isNonWifiNetworkConnected(@NonNull final Context context) {
         final ConnectivityManager connectivityManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo networkInfo = connectivityManager == null ? null : connectivityManager.getActiveNetworkInfo();
@@ -643,7 +665,7 @@ public final class SillyAndroid {
      * @param context Which context to use to check
      * @return {@code True} if there is any network connected, {@code false} if not
      */
-    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
     public static boolean isNetworkConnected(@NonNull final Context context) {
         return isWifiConnected(context) || isNonWifiNetworkConnected(context);
     }
@@ -724,6 +746,75 @@ public final class SillyAndroid {
      */
     public static void toastLong(@NonNull final Context context, @NonNull final String string) {
         Toast.makeText(context, string, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Tries to hide the software keyboard using the {@link InputMethodManager}.
+     *
+     * @return {@code True} if keyboard was properly hidden, {@code false} if something went wrong
+     */
+    public static boolean hideKeyboard(@NonNull final Activity context) {
+        try {
+            final InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            final View layout = SillyAndroid.getContentView(context);
+            if (layout == null) {
+                return false;
+            }
+            imm.hideSoftInputFromWindow(layout.getApplicationWindowToken(), 0);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Hiding keyboard failed", e);
+            return false;
+        }
+    }
+
+    /**
+     * Creates a new {@link android.view.ViewTreeObserver.OnGlobalLayoutListener} that attempts to calculate the keyboard size.
+     * Note that this does not guarantee that a software keyboard is present, it's just a best effort detection attempt.
+     * Also note that, although it's not guaranteed to work with all keyboards in all situations, this was tested against top 20 keyboards from the store and
+     * had no issues detecting the changes.
+     *
+     * @param with    What to subscribe with (cannot be {@code null})
+     * @param context The Activity context to use (cannot be {@code null})
+     * @return A new instance of the layout listener. Note that this won't do anything until you attach the returned instance to the global layout by invoking
+     * {@link View#getViewTreeObserver()} and then {@link ViewTreeObserver#addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener)} on the
+     * Activity's root layout, passing in the listener instance returned from this method. You also need to manually detach the listener when done listening.
+     * The best practice is to do it with the {@link Activity#onStart()} and {@link Activity#onStop()} lifecycle methods.
+     */
+    @NonNull
+    public static ViewTreeObserver.OnGlobalLayoutListener listenToKeyboard(@NonNull final OnKeyboardChangeListener with, @NonNull final Activity context) {
+        return new ViewTreeObserver.OnGlobalLayoutListener() {
+            private boolean isKeyboardVisible;
+
+            @Override
+            public void onGlobalLayout() {
+                final int statusBarHeight = UI.getStatusBarHeight(context);
+                final int navigationBarHeight = UI.getNavigationBarHeight(context);
+
+                // check the display window size for the app layout
+                final Rect rect = new Rect();
+                context.getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
+
+                // screen height - (user app height + status + nav) -> if non-zero, then there is a soft keyboard
+                final ViewGroup layout = SillyAndroid.getContentView(context);
+                if (layout == null) {
+                    throw new IllegalArgumentException("Passed Activity needs to have its content view set before attaching this listener");
+                }
+                final int keyboardHeight = layout.getRootView().getHeight() - (statusBarHeight + navigationBarHeight + rect.height());
+
+                if (keyboardHeight <= 0) {
+                    if (isKeyboardVisible) {
+                        with.onKeyboardHidden();
+                        isKeyboardVisible = false;
+                    }
+                } else {
+                    if (!isKeyboardVisible) {
+                        with.onKeyboardShown(keyboardHeight);
+                        isKeyboardVisible = true;
+                    }
+                }
+            }
+        };
     }
 
 }

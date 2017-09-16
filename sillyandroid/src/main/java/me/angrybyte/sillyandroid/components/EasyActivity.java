@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
@@ -25,6 +26,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import java.io.Closeable;
 import java.util.Arrays;
@@ -42,7 +44,9 @@ import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
  */
 @UiThread
 @SuppressWarnings("unused")
-public class EasyActivity extends BlockingLifecycleActivity implements LayoutWrapper {
+public class EasyActivity extends BlockingLifecycleActivity implements LayoutWrapper, SillyAndroid.OnKeyboardChangeListener {
+
+    private ViewTreeObserver.OnGlobalLayoutListener mKeyboardListener;
 
     // <editor-fold desc="Public API">
 
@@ -167,7 +171,7 @@ public class EasyActivity extends BlockingLifecycleActivity implements LayoutWra
     /**
      * Returns the result from {@link SillyAndroid#isNetworkConnected(Context)}.
      */
-    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
     protected final boolean isNetworkConnected() {
         return SillyAndroid.isNetworkConnected(this);
     }
@@ -178,6 +182,27 @@ public class EasyActivity extends BlockingLifecycleActivity implements LayoutWra
     protected final boolean isVoiceInputAvailable() {
         return SillyAndroid.isVoiceInputAvailable(this);
     }
+
+    /**
+     * Returns the result from {@link SillyAndroid#hideKeyboard(Activity)}.
+     */
+    protected final boolean hideKeyboard() {
+        return SillyAndroid.hideKeyboard(this);
+    }
+
+    /**
+     * Catches the result from {@link SillyAndroid.OnKeyboardChangeListener#onKeyboardShown(int)}.
+     *
+     * @param size How high is the keyboard, in pixels
+     */
+    @Override
+    public void onKeyboardShown(@IntRange(from = 1) final int size) {}
+
+    /**
+     * Catches the result from {@link SillyAndroid.OnKeyboardChangeListener#onKeyboardHidden()}.
+     */
+    @Override
+    public void onKeyboardHidden() {}
     // </editor-fold>
 
     // <editor-fold desc="Toasts">
@@ -281,6 +306,43 @@ public class EasyActivity extends BlockingLifecycleActivity implements LayoutWra
 
         // invoke the proper callback
         onPermissionsResult(requestCode, granted, denied);
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Integrations">
+
+    @Override
+    @CallSuper
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mKeyboardListener = SillyAndroid.listenToKeyboard(this, this);
+    }
+
+    @Override
+    @CallSuper
+    protected void onStart() {
+        super.onStart();
+        getContentView().getViewTreeObserver().addOnGlobalLayoutListener(mKeyboardListener);
+    }
+
+    @Override
+    @CallSuper
+    protected void onBlockingStop() {
+        super.onBlockingStop();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            getContentView().getViewTreeObserver().removeOnGlobalLayoutListener(mKeyboardListener);
+        } else {
+            // noinspection deprecation
+            getContentView().getViewTreeObserver().removeGlobalOnLayoutListener(mKeyboardListener);
+        }
+    }
+
+    @Override
+    @CallSuper
+    protected void onBlockingDestroy() {
+        super.onBlockingDestroy();
+        // prevents a leak when you have cyclic reference between the listener and the activity
+        mKeyboardListener = null;
     }
     // </editor-fold>
 

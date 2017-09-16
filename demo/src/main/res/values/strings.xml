@@ -8,5 +8,8 @@
     <string name="toast_permission_missing">Oh man… You need to accept these…</string>
     <string name="label_random_padding">Random padding</string>
     <string name="label_print_info">Print info</string>
+    <string name="label_hide_keyboard">Hide keyboard</string>
+    <string name="hint_keyboard_size">Keyboard size: %s</string>
+    <string name="hint_keyboard_none">No keyboard active</string>
 
 </resources>

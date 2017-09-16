@@ -12,11 +12,32 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/spacing_small"
+            android:paddingRight="@dimen/spacing_small">
+
+            <EditText
+                android:id="@+id/edit_text_keyboard"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="@string/hint_keyboard_none" />
+
+            <Button
+                android:id="@+id/button_hide_keyboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_hide_keyboard" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/display_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/spacing_huge"
+            android:layout_marginTop="@dimen/spacing_normal"
             android:text="@string/title"
             android:textColor="@android:color/background_light"
             android:textSize="@dimen/text_size_huge" />
@@ -25,7 +46,7 @@
             android:id="@+id/button_print_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_normal"
+            android:layout_marginTop="@dimen/spacing_normal"
             android:text="@string/label_print_info"
             android:textSize="@dimen/text_size_large" />
 
@@ -33,11 +54,13 @@
             android:id="@+id/button_random_padding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_normal"
             android:paddingLeft="@dimen/spacing_large"
             android:paddingRight="@dimen/spacing_large"
             android:text="@string/label_random_padding"
             android:textColor="@color/yellow"
             android:textSize="@dimen/text_size_small" />
+
     </LinearLayout>
 
 </ScrollView>
