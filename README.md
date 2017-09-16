@@ -14,12 +14,14 @@ In shortest terms, _Silly Android_ is a set of **most commonly** used workaround
 
 Examples
 --------
-_**Note**: Not all features are demonstrated in this section. Please check the 'Code organization' section for more info._
+_**Note**: Not all features are demonstrated in this section. Please check the 'Code organization' section for more info.
+All samples internally reference the `SillyAndroid` class which does all of the heavy lifting - and, all APIs are available
+through that class directly, but are integrated into `Easy` and `Parsable` components for ease of use._
 
 Extra dimensions, colors and other values:
 ```xml
     ...
-    <!-- SillyAndroid provides '@dimen/spacing_large', '@color/yellow' and '@dimen/text_size_small' values -->
+    <!-- SillyAndroid provides '@dimen/spacing_large', '@color/yellow', '@dimen/text_size_small', etc. -->
     <Button
         android:id="@+id/button_random_padding"
         android:layout_width="wrap_content"
@@ -46,6 +48,26 @@ Screen size calculations:
     }
     ...
 ```
+Software keyboard helpers (available in all _Easy_ components):
+```java
+    ...
+    @Override
+    public void onKeyboardShown(int size) {
+        Log.d(TAG, "Current keyboard size is: " + size);
+    }
+    
+    @Override
+    public void onKeyboardHidden() {
+        Log.d(TAG, "Current keyboard is hidden!");
+    }
+    
+    @Override
+    public void onClick(@NonNull View view) {
+        // this returns false if it fails to hide the keyboard:
+        hideKeyboard(); 
+    }
+    ...
+```
 UI configuration checks:
 ```java
     ...
@@ -55,7 +77,7 @@ UI configuration checks:
     }
     ...
 ```
-`EasyActivity` permission enhancement (also available in fragments):
+`EasyActivity` permission enhancement (also available in `EasyFragment`s):
 ```java
     ...
     // obviously you don't need to request this, but it's just a demo
@@ -67,7 +89,7 @@ UI configuration checks:
     // do your permitted work here
     ...
 ```
-`EasyFragment` permission enhancement (also available in activities):
+`EasyFragment` permission enhancement (also available in `EasyActivit`ies):
 ```java
     @Override
     protected void onPermissionsResult(int reqestCode, @NonNull Set<String> granted, @NonNull Set<String> denied) {
