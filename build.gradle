@@ -24,8 +24,8 @@ allprojects {
 
 ext {
     // If changed, commit and merge to 'release' branch to auto-deploy. Only tagged commits on release branch will be deployed
-    VERSION_CODE = 100
-    VERSION_NAME = "1.00"
+    VERSION_CODE = 110
+    VERSION_NAME = "1.1"
 
     // don't forget to update CI config in: '.travis.yml'
     BUILD_TOOLS = "25.0.2"
