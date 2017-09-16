@@ -2,6 +2,7 @@ package me.angrybyte.sillyandroid.components;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
@@ -24,7 +26,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import java.io.Closeable;
 import java.util.Arrays;
@@ -41,7 +46,9 @@ import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
  */
 @UiThread
 @SuppressWarnings("unused")
-public class EasyFragment extends Fragment implements LayoutWrapper {
+public class EasyFragment extends Fragment implements LayoutWrapper, SillyAndroid.OnKeyboardChangeListener {
+
+    private ViewTreeObserver.OnGlobalLayoutListener mKeyboardListener;
 
     // <editor-fold desc="Public API">
 
@@ -173,7 +180,7 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
     /**
      * Returns the result from {@link SillyAndroid#isNetworkConnected(Context)}.
      */
-    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
     protected final boolean isNetworkConnected() {
         final Context context = getContext();
         return context != null && SillyAndroid.isNetworkConnected(context);
@@ -186,6 +193,28 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
         final Context context = getContext();
         return context != null && SillyAndroid.isVoiceInputAvailable(context);
     }
+
+    /**
+     * Returns the result from {@link SillyAndroid#hideKeyboard(Activity)}.
+     */
+    protected final boolean hideKeyboard() {
+        final Context context = getContext();
+        return context instanceof Activity && SillyAndroid.hideKeyboard((Activity) context);
+    }
+
+    /**
+     * Catches the result from {@link SillyAndroid.OnKeyboardChangeListener#onKeyboardShown(int)}.
+     *
+     * @param size How high is the keyboard, in pixels
+     */
+    @Override
+    public void onKeyboardShown(@IntRange(from = 1) final int size) {}
+
+    /**
+     * Catches the result from {@link SillyAndroid.OnKeyboardChangeListener#onKeyboardHidden()}.
+     */
+    @Override
+    public void onKeyboardHidden() {}
     // </editor-fold>
 
     // <editor-fold desc="Toasts">
@@ -302,6 +331,54 @@ public class EasyFragment extends Fragment implements LayoutWrapper {
 
         // invoke the proper callback
         onPermissionsResult(requestCode, granted, denied);
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Integrations">
+
+    @Nullable
+    @Override
+    @CallSuper
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+        final Context fragmentContext = getContext();
+        final Context paramContext = container != null ? container.getContext() : inflater.getContext();
+        if (fragmentContext instanceof Activity) {
+            mKeyboardListener = SillyAndroid.listenToKeyboard(this, (Activity) fragmentContext);
+        } else if (paramContext instanceof Activity) {
+            mKeyboardListener = SillyAndroid.listenToKeyboard(this, (Activity) paramContext);
+        }
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    @CallSuper
+    public void onStart() {
+        super.onStart();
+        final View view = getView();
+        if (view != null && mKeyboardListener != null) {
+            view.getViewTreeObserver().addOnGlobalLayoutListener(mKeyboardListener);
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void onStop() {
+        super.onStop();
+        final View view = getView();
+        if (view != null && mKeyboardListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            view.getViewTreeObserver().removeOnGlobalLayoutListener(mKeyboardListener);
+        } else if (view != null && mKeyboardListener != null) {
+            // noinspection deprecation
+            view.getViewTreeObserver().removeGlobalOnLayoutListener(mKeyboardListener);
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void onDestroy() {
+        super.onDestroy();
+        // prevents a leak when you have cyclic reference between the listener and the activity
+        mKeyboardListener = null;
     }
     // </editor-fold>
 

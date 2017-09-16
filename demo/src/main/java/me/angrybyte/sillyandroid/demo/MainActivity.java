@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Set;
@@ -39,6 +40,7 @@ public final class MainActivity extends ParsableActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    // <editor-fold desc="View bindings">
     /**
      * The main layout container. (no, you don't have to do this, it's just an example).
      * Parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
@@ -62,12 +64,28 @@ public final class MainActivity extends ParsableActivity {
     private Button mInfoButton;
 
     /**
+     * The "hide keyboard" button.
+     * Parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
+     */
+    @Annotations.Clickable
+    @Annotations.FindView(R.id.button_hide_keyboard)
+    private Button mHideKeyboardButton;
+
+    /**
      * The "apply random padding" button.
      * Parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
      */
     @Annotations.LongClickable
     @Annotations.FindView(R.id.button_random_padding)
     private Button mPaddingButton;
+
+    /**
+     * The keyboard tester input field.
+     * Parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
+     */
+    @Annotations.FindView(R.id.edit_text_keyboard)
+    private EditText mEditText;
+    // </editor-fold>
 
     /**
      * {@inheritDoc}
@@ -104,6 +122,24 @@ public final class MainActivity extends ParsableActivity {
         setBackgroundCompat(mPaddingButton, backgroundDrawable);
         mPaddingButton.setCompoundDrawablesWithIntrinsicBounds(statefulDrawable, null, null, null);
         mPaddingButton.setTextColor(statefulTextColors);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onKeyboardShown(@IntRange(from = 1) final int size) {
+        super.onKeyboardShown(size);
+        mEditText.setHint(getString(R.string.hint_keyboard_size, String.valueOf(size)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onKeyboardHidden() {
+        super.onKeyboardHidden();
+        mEditText.setHint(getString(R.string.hint_keyboard_none));
     }
 
     /**
@@ -156,7 +192,7 @@ public final class MainActivity extends ParsableActivity {
     /**
      * Displays some demo information on the {@link #mDisplayView}.
      */
-    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
     private void printInfo() {
         final StringBuilder builder = new StringBuilder();
 
@@ -202,6 +238,12 @@ public final class MainActivity extends ParsableActivity {
                     return;
                 }
                 printInfo();
+                break;
+            }
+            case R.id.button_hide_keyboard: {
+                if (!hideKeyboard()) {
+                    toastShort("Failed to hide keyboard, check the log");
+                }
                 break;
             }
             default: {

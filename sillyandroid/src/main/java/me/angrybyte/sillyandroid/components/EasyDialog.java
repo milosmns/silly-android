@@ -2,12 +2,14 @@ package me.angrybyte.sillyandroid.components;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.IntRange;
@@ -22,6 +24,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.PopupMenu;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import java.io.Closeable;
 
@@ -32,8 +35,10 @@ import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
  * An extension of the {@link android.app.Dialog} with applied extensions from the {@link SillyAndroid} extension set.
  */
 @UiThread
-@SuppressWarnings({ "unused", "WeakerAccess" })
-public class EasyDialog extends Dialog implements LayoutWrapper {
+@SuppressWarnings({"unused", "WeakerAccess"})
+public class EasyDialog extends Dialog implements LayoutWrapper, SillyAndroid.OnKeyboardChangeListener {
+
+    private ViewTreeObserver.OnGlobalLayoutListener mKeyboardListener;
 
     // <editor-fold desc="Constructors">
 
@@ -47,6 +52,7 @@ public class EasyDialog extends Dialog implements LayoutWrapper {
      */
     public EasyDialog(@NonNull final Context context) {
         super(context);
+        onConstruct(context);
     }
 
     /**
@@ -66,6 +72,7 @@ public class EasyDialog extends Dialog implements LayoutWrapper {
      */
     public EasyDialog(@NonNull final Context context, @StyleRes final int themeResId) {
         super(context, themeResId);
+        onConstruct(context);
     }
 
     /**
@@ -73,6 +80,14 @@ public class EasyDialog extends Dialog implements LayoutWrapper {
      */
     public EasyDialog(@NonNull final Context context, final boolean cancelable, @Nullable final OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
+        onConstruct(context);
+    }
+
+    @CallSuper
+    protected void onConstruct(@NonNull final Context context) {
+        if (context instanceof Activity) {
+            mKeyboardListener = SillyAndroid.listenToKeyboard(this, (Activity) context);
+        }
     }
     // </editor-fold>
 
@@ -196,7 +211,7 @@ public class EasyDialog extends Dialog implements LayoutWrapper {
     /**
      * Returns the result from {@link SillyAndroid#isNetworkConnected(Context)}.
      */
-    @RequiresPermission(allOf = { Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE })
+    @RequiresPermission(allOf = {Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.ACCESS_NETWORK_STATE})
     protected final boolean isNetworkConnected() {
         return SillyAndroid.isNetworkConnected(getContext());
     }
@@ -207,6 +222,28 @@ public class EasyDialog extends Dialog implements LayoutWrapper {
     protected final boolean isVoiceInputAvailable() {
         return SillyAndroid.isVoiceInputAvailable(getContext());
     }
+
+    /**
+     * Returns the result from {@link SillyAndroid#hideKeyboard(Activity)}.
+     */
+    protected final boolean hideKeyboard() {
+        final Context context = getContext();
+        return context instanceof Activity && SillyAndroid.hideKeyboard((Activity) context);
+    }
+
+    /**
+     * Catches the result from {@link SillyAndroid.OnKeyboardChangeListener#onKeyboardShown(int)}.
+     *
+     * @param size How high is the keyboard, in pixels
+     */
+    @Override
+    public void onKeyboardShown(@IntRange(from = 1) final int size) {}
+
+    /**
+     * Catches the result from {@link SillyAndroid.OnKeyboardChangeListener#onKeyboardHidden()}.
+     */
+    @Override
+    public void onKeyboardHidden() {}
     // </editor-fold>
 
     // <editor-fold desc="Toasts">
@@ -237,6 +274,33 @@ public class EasyDialog extends Dialog implements LayoutWrapper {
      */
     protected final void toastLong(@NonNull final String string) {
         SillyAndroid.toastLong(getContext(), string);
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Integrations">
+
+    @Override
+    @CallSuper
+    protected void onStart() {
+        super.onStart();
+        final View contentView = getContentView();
+        if (contentView != null && mKeyboardListener != null) {
+            contentView.getViewTreeObserver().addOnGlobalLayoutListener(mKeyboardListener);
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void dismiss() {
+        final View contentView = getContentView();
+        if (contentView != null && mKeyboardListener != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            contentView.getViewTreeObserver().removeOnGlobalLayoutListener(mKeyboardListener);
+            mKeyboardListener = null;
+        } else if (contentView != null && mKeyboardListener != null) {
+            // noinspection deprecation
+            contentView.getViewTreeObserver().removeGlobalOnLayoutListener(mKeyboardListener);
+        }
+        super.dismiss();
     }
     // </editor-fold>
 

@@ -91,8 +91,10 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     @Nullable
     @Override
     @CallSuper
-    public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        // it's barely possible to go in here, but it's Android, so.. check if not parsed by now
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+        final View superView = super.onCreateView(inflater, container, savedInstanceState);
+
+        // it seems impossible to go in here, but it's Android, so.. check if not parsed by now
         final Context context = getContext() == null ? inflater.getContext() : getContext();
         if (!mIsParsed && context != null) {
             AnnotationParser.parseType(context, this);
@@ -114,7 +116,7 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
             });
         }
 
-        return null; // nothing worked, die.
+        return superView; // nothing worked, go super.
     }
 
     /**

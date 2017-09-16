@@ -2,6 +2,7 @@ package me.angrybyte.sillyandroid.parsable.components;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.MenuRes;
@@ -20,7 +21,7 @@ import me.angrybyte.sillyandroid.parsable.Annotations;
 /**
  * An extension from {@link EasyDialog} with included {@link AnnotationParser} capabilities.
  */
-@SuppressWarnings({ "WeakerAccess", "unused" })
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class ParsableDialog extends EasyDialog implements View.OnClickListener, View.OnLongClickListener {
 
     /**
@@ -54,7 +55,6 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
      */
     public ParsableDialog(@NonNull final Context context) {
         super(context);
-        initializeParsedProperties(context);
     }
 
     /**
@@ -62,7 +62,6 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
      */
     public ParsableDialog(@NonNull final Context context, @StyleRes final int themeResId) {
         super(context, themeResId);
-        initializeParsedProperties(context);
     }
 
     /**
@@ -70,6 +69,12 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
      */
     protected ParsableDialog(@NonNull final Context context, final boolean cancelable, @Nullable final OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
+    }
+
+    @Override
+    @CallSuper
+    protected void onConstruct(@NonNull final Context context) {
+        super.onConstruct(context);
         initializeParsedProperties(context);
     }
     // </editor-fold>
