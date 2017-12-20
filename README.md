@@ -8,7 +8,7 @@ Silly Android
 
 What is this?
 -------------
-_Silly Android_ is an Android (Java) library with various plugins for the core Android framework. In general, AppCompat offers lot of help; but often enough, we need more. A lot of quirky Android APIs introduce the need for a bunch of utility classes, other times we just add a considerable amount of boilerplate code. Having said that, _Silly Android_ **does not** aim to remove all boilerplate code from your apps, or **fix all** of the silly API design decisions imposed by the default framework; people are tired of copying the same utilities and workarounds over and over, from one app they work on to the next one - and _Silly Android_'s core goal is to help with that.
+_Silly Android_ is an Android (Java) library with various plugins for the core Android framework. In general, AppCompat offers a lot of help; but often enough, we need more. A lot of quirky Android APIs introduce the need for a bunch of utility classes, other times we just add a considerable amount of boilerplate code. Having said that, _Silly Android_ **does not** aim to remove all boilerplate code from your apps, or **fix all** of the silly API design decisions imposed by the default framework; people are tired of copying the same utilities and workarounds over and over, from one app they work on to the next one - and _Silly Android_'s core goal is to help with that.
 
 In shortest terms, _Silly Android_ is a set of **most commonly** used workarounds, fixes and utilities, all of which should have been included in the core framework by default. When you find yourself asking questions like _"Why is this simple task so complicated to do?"_ or _"How was this not done by default?"_ - _Silly Android_ should be the help you need.
 
