@@ -1,7 +1,7 @@
 Silly Android
 =============
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Build Status](https://travis-ci.org/milosmns/silly-android.svg?branch=master)](https://travis-ci.org/milosmns/silly-android)
+[![Build Status](https://travis-ci.org/milosmns/silly-android.svg?branch=release)](https://travis-ci.org/milosmns/silly-android)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1efe7dca11024c14811e6012f0d3ae0a)](https://www.codacy.com/app/milosmns/silly-android)
 [![Code Climate](https://codeclimate.com/github/milosmns/silly-android/badges/gpa.svg)](https://codeclimate.com/github/milosmns/silly-android)
 [![Download](https://api.bintray.com/packages/milosmns/maven/sillyandroid/images/download.svg)](https://bintray.com/milosmns/maven/sillyandroid/_latestVersion)
