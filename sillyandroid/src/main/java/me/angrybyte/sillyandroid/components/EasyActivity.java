@@ -217,6 +217,7 @@ public class EasyActivity extends BlockingLifecycleActivity implements LayoutWra
     /**
      * Invokes {@link SillyAndroid#toastShort(Context, String)}.
      */
+    @SuppressWarnings("SameParameterValue")
     protected final void toastShort(@NonNull final String string) {
         SillyAndroid.toastShort(this, string);
     }
@@ -245,6 +246,7 @@ public class EasyActivity extends BlockingLifecycleActivity implements LayoutWra
      * @return {@code True} if permission check {@link ContextCompat#checkSelfPermission(Context, String)} returns {@link PackageManager#PERMISSION_GRANTED}
      * for the given permission, {@code false} if it is {@code null} or not granted
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected final boolean hasPermission(@Nullable String permission) {
         return permission != null && ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
     }
@@ -256,6 +258,7 @@ public class EasyActivity extends BlockingLifecycleActivity implements LayoutWra
      * @param permissions Which permissions to ask for. They will be grouped and sent back to you in {@link #onPermissionsResult(int, Set, Set)}
      * @return {@code True} if the permission request was made, {@code false} otherwise
      */
+    @SuppressWarnings("SameParameterValue")
     protected final boolean requestPermissions(@IntRange(from = 0, to = 127) final int code, @Nullable final String... permissions) {
         if (permissions != null && permissions.length > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(permissions, code);

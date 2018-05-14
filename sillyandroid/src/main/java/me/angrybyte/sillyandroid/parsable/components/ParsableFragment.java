@@ -1,5 +1,6 @@
 package me.angrybyte.sillyandroid.parsable.components;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -91,6 +92,7 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
     @Nullable
     @Override
     @CallSuper
+    @SuppressLint("ResourceType") // TODO getLayoutId() can return < 0 ???
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         final View superView = super.onCreateView(inflater, container, savedInstanceState);
 
@@ -123,6 +125,7 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
      * {@inheritDoc}
      */
     @Override
+    @SuppressLint("ResourceType") // TODO getLayoutId() can return < 0 ???
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         if (getMenuId() > 0) {

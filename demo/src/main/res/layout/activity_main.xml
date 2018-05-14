@@ -24,7 +24,8 @@
                 android:id="@+id/edit_text_keyboard"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="@string/hint_keyboard_none" />
+                android:hint="@string/hint_keyboard_none"
+                android:inputType="text" />
 
             <Button
                 android:id="@+id/button_hide_keyboard"

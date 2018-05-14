@@ -113,7 +113,8 @@ public final class MainActivity extends ParsableActivity {
         final int idleContentColor = Coloring.contrastColor(idleBackgroundColor); // text and icon color when not pressed
         final int pressedBackgroundColor = 0xFFFFCC00; // button background highlight color when pressed
         final Drawable originalDrawable = ContextCompat.getDrawable(this, android.R.drawable.star_big_on); // load a random icon from android
-        final StateListDrawable statefulDrawable = Coloring.createContrastStateDrawable(this, idleContentColor, pressedBackgroundColor, true, originalDrawable);
+        @SuppressWarnings("ConstantConditions") final StateListDrawable statefulDrawable = Coloring.createContrastStateDrawable(this, idleContentColor,
+                pressedBackgroundColor, true, originalDrawable);
         final ColorStateList statefulTextColors = Coloring.createContrastTextColors(idleContentColor, pressedBackgroundColor);
         final Rect originalBounds = mPaddingButton.getBackground().copyBounds(); // copy original drawable's bounds so that the ripple is bordered
         final int cornerRoundness = SillyAndroid.convertDipsToPixels(this, 4);

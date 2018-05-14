@@ -1,22 +1,24 @@
 buildscript {
     repositories {
+        google()
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.1.2'
         classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1' // JaCoCo Android tests
     }
 }
 
 plugins {
     id "com.github.dcendents.android-maven" version "1.5" // used for uploading to mavenCentral
-    id "com.jfrog.bintray" version "1.7.3" // used for uploading to jCenter
-    id "me.tatarka.retrolambda" version "3.6.0" // allowing Lambdas on Java 7 and older
+    id "com.jfrog.bintray" version "1.8.0" // used for uploading to jCenter
+    // id "me.tatarka.retrolambda" version "3.6.0" // allowing Lambdas on Java 7 and older
 }
 
 allprojects {
     repositories {
+        google()
         jcenter()
         mavenCentral()
     }
@@ -24,18 +26,18 @@ allprojects {
 
 ext {
     // If changed, commit and merge to 'release' branch to auto-deploy. Only tagged commits on release branch will be deployed
-    VERSION_CODE = 110
-    VERSION_NAME = "1.1"
+    VERSION_CODE = 111
+    VERSION_NAME = "1.1.1"
 
     // don't forget to update CI config in: '.travis.yml'
-    BUILD_TOOLS = "25.0.2"
-    MINIMUM_SDK = 9
-    COMPILE_SDK = 25
-    TARGET_SDK = 25
+    BUILD_TOOLS = "27.0.3"
+    MINIMUM_SDK = 14
+    COMPILE_SDK = 27
+    TARGET_SDK = 27
 
     // app/library module dependency versions
-    APPCOMPAT = "25.3.1"
+    APPCOMPAT = "27.1.1"
     ESPRESSO = "2.2.2"
     JUNIT = "4.12"
-    ROBOLECTRIC = "3.3.2"
+    ROBOLECTRIC = "3.8"
 }
