@@ -48,6 +48,7 @@ public abstract class BlockingLifecycleActivity extends AppCompatActivity {
      *
      * @return {@code True} if "stop" was invoked by now, {@code false} if not
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected final boolean isStopInvoked() {
         return mIsStopInvoked;
     }
@@ -57,6 +58,7 @@ public abstract class BlockingLifecycleActivity extends AppCompatActivity {
      *
      * @return {@code True} if "destroy" was invoked by now, {@code false} if not
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected final boolean isDestroyInvoked() {
         return mIsDestroyInvoked;
     }

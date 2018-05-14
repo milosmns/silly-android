@@ -200,7 +200,7 @@ public final class AnnotationParser {
         }
         if (viewId < 1 && !safeFail) {
             throw new IllegalStateException("View not found for " + field.getName());
-        } else if (viewId < 1 && safeFail) {
+        } else if (viewId < 1) {
             Log.e(TAG, "Failed to find View for " + field.getName());
             return null;
         }
@@ -234,6 +234,7 @@ public final class AnnotationParser {
      * @param fieldName The name of the field being modified
      * @return {@code True} if the value was successfully assigned, {@code false} otherwise
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean setIntFieldValue(@NonNull final Object instance, final int value, @NonNull final String fieldName) {
         // check the cache first (iterating is much faster than reflection)
         Field fieldReference = null;

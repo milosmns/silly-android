@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableWrapper;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.graphics.drawable.RippleDrawable;
@@ -28,14 +29,13 @@ import android.support.annotation.RequiresApi;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.graphics.drawable.DrawableWrapper;
 
 import me.angrybyte.sillyandroid.SillyAndroid;
 
 /**
  * Enhanced color, tinting and drawable manipulation helpers.
  */
-@SuppressWarnings({ "WeakerAccess", "unused" })
+@SuppressWarnings({"WeakerAccess", "unused"})
 public final class Coloring {
 
     /**
@@ -210,7 +210,7 @@ public final class Coloring {
         }
 
         // convert from RGB to HSL (hue/saturation/lightness)
-        final float[] hsl = new float[] { 0f, 0f, 0f };
+        final float[] hsl = new float[]{0f, 0f, 0f};
         ColorUtils.colorToHSL(color, hsl);
 
         // clamp the lightness to [0..1] range (0% - 100%)
@@ -321,8 +321,8 @@ public final class Coloring {
     public static Drawable createColoredDrawable(@ColorInt final int color, @Nullable final Rect bounds) {
         // create the drawable depending on the OS (pre-Honeycomb couldn't use color drawables inside state lists)
         Drawable drawable;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB || bounds != null) {
-            drawable = new GradientDrawable(Orientation.BOTTOM_TOP, new int[] { color, color }).mutate();
+        if (bounds != null) {
+            drawable = new GradientDrawable(Orientation.BOTTOM_TOP, new int[]{color, color}).mutate();
         } else {
             drawable = new ColorDrawable(color).mutate();
         }
@@ -349,7 +349,7 @@ public final class Coloring {
      */
     @NonNull
     public static Drawable colorDrawable(@NonNull final Context context, @NonNull final Drawable drawable, @ColorInt final int color) {
-        if (drawable instanceof VectorDrawable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && drawable instanceof VectorDrawable) {
             return colorVectorDrawable((VectorDrawable) drawable, color);
         }
 
@@ -357,7 +357,7 @@ public final class Coloring {
             return colorVectorDrawableCompat((VectorDrawableCompat) drawable, color);
         }
 
-        if (drawable instanceof ColorDrawable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (drawable instanceof ColorDrawable) {
             ((ColorDrawable) drawable).setColor(color);
             return drawable;
         }
@@ -420,7 +420,9 @@ public final class Coloring {
     @NonNull
     public static Drawable colorUnknownDrawable(@NonNull final Drawable drawable, @ColorInt final int color) {
         // check if this is a drawable wrapper, then do coloring by drawable wrapping
-        if (drawable instanceof DrawableWrapper || drawable instanceof android.support.v7.graphics.drawable.DrawableWrapper) {
+        final boolean isDrawableWrapperPlatform;
+        isDrawableWrapperPlatform = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && drawable instanceof DrawableWrapper;
+        if (isDrawableWrapperPlatform || drawable instanceof android.support.v7.graphics.drawable.DrawableWrapper) {
             final Drawable wrapResult = colorDrawableWrapped(drawable, color);
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 // there is a bug for JellyBean MR2 when this won't work, so.. set the tint filter manually
@@ -466,7 +468,7 @@ public final class Coloring {
             // noinspection deprecation
             opts.inInputShareable = true; // share an input resource stream to preserve memory, only for pre-Lollipop devices
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1 && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             // noinspection deprecation
             opts.inPreferQualityOverSpeed = false; // load quickly on Gingerbread MR1 and later, ignored as of Nougat
         }
@@ -524,15 +526,12 @@ public final class Coloring {
     public static StateListDrawable createStateList(@NonNull final Context context, @ColorInt final int normal, @ColorInt final int clicked,
                                                     @ColorInt final int checked, final boolean shouldFade, @IntRange(from = 0) int cornerRadius) {
         // initialize state arrays (they're in arrays because you can use different drawables for reverse transitions..)
-        final int[] normalState = new int[] {};
-        final int[] clickedState = new int[] { android.R.attr.state_pressed };
-        final int[] checkedState = new int[] { android.R.attr.state_checked };
-        final int[] selectedState = new int[] { android.R.attr.state_selected };
-        final int[] focusedState = new int[] { android.R.attr.state_focused };
-        int[] activatedState = new int[] {};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            activatedState = new int[] { android.R.attr.state_activated };
-        }
+        final int[] normalState = new int[]{};
+        final int[] clickedState = new int[]{android.R.attr.state_pressed};
+        final int[] checkedState = new int[]{android.R.attr.state_checked};
+        final int[] selectedState = new int[]{android.R.attr.state_selected};
+        final int[] focusedState = new int[]{android.R.attr.state_focused};
+        int[] activatedState = new int[]{android.R.attr.state_activated};
 
         // normal state drawable
         final Drawable normalDrawable = createColoredDrawable(normal, new Rect(0, 0, DEFAULT_BOUNDS, DEFAULT_BOUNDS));
@@ -564,20 +563,16 @@ public final class Coloring {
             states.addState(selectedState, focusedDrawable); // reuse the focused drawable
             states.addState(focusedState, focusedDrawable);
             states.addState(checkedState, checkedDrawable);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                states.addState(activatedState, focusedDrawable);
-            }
+            states.addState(activatedState, focusedDrawable);
             states.addState(normalState, normalDrawable); // !
             return states;
         } else {
             // fade enabled, add only normal and pressed states (Honeycomb bug..)
             states.addState(clickedState, clickedDrawable); // !
             states.addState(normalState, normalDrawable); // !
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                // fading only works on Honeycomb and later..
-                states.setEnterFadeDuration(0);
-                states.setExitFadeDuration(DEFAULT_FADE_DURATION);
-            }
+            // fading only works on Honeycomb and later..
+            states.setEnterFadeDuration(0);
+            states.setExitFadeDuration(DEFAULT_FADE_DURATION);
             return states;
         }
     }
@@ -688,28 +683,20 @@ public final class Coloring {
     @NonNull
     public static ColorStateList createContrastTextColors(@ColorInt final int normalColor, @ColorInt final int pressedBackColor) {
         // initialize state arrays (they're in arrays because you can use different colors for reverse transitions..)
-        final int[] normalState = new int[] {};
-        final int[] clickedState = new int[] { android.R.attr.state_pressed };
-        final int[] checkedState = new int[] { android.R.attr.state_checked };
-        final int[] selectedState = new int[] { android.R.attr.state_selected };
-        final int[] focusedState = new int[] { android.R.attr.state_focused };
-        int[] activatedState = new int[] {};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            activatedState = new int[] { android.R.attr.state_activated };
-        }
+        final int[] normalState = new int[]{};
+        final int[] clickedState = new int[]{android.R.attr.state_pressed};
+        final int[] checkedState = new int[]{android.R.attr.state_checked};
+        final int[] selectedState = new int[]{android.R.attr.state_selected};
+        final int[] focusedState = new int[]{android.R.attr.state_focused};
+        int[] activatedState = new int[]{android.R.attr.state_activated};
 
         // initialize identifiers
         int[] stateColors;
         int[][] stateIdentifiers;
         int contrastColor = contrastColor(pressedBackColor);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            stateIdentifiers = new int[][] { selectedState, focusedState, clickedState, checkedState, activatedState, normalState };
-            stateColors = new int[] { contrastColor, contrastColor, contrastColor, contrastColor, contrastColor, normalColor };
-        } else {
-            stateIdentifiers = new int[][] { selectedState, focusedState, clickedState, checkedState, normalState };
-            stateColors = new int[] { contrastColor, contrastColor, contrastColor, contrastColor, normalColor };
-        }
+        stateIdentifiers = new int[][]{selectedState, focusedState, clickedState, checkedState, activatedState, normalState};
+        stateColors = new int[]{contrastColor, contrastColor, contrastColor, contrastColor, contrastColor, normalColor};
 
         return new ColorStateList(stateIdentifiers, stateColors);
     }
@@ -741,15 +728,12 @@ public final class Coloring {
         }
 
         // initialize state arrays (they're in arrays because you can use different colors for reverse transitions..)
-        final int[] normalState = new int[] {};
-        final int[] clickedState = new int[] { android.R.attr.state_pressed };
-        final int[] checkedState = new int[] { android.R.attr.state_checked };
-        final int[] selectedState = new int[] { android.R.attr.state_selected };
-        final int[] focusedState = new int[] { android.R.attr.state_focused };
-        int[] activatedState = new int[] {};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            activatedState = new int[] { android.R.attr.state_activated };
-        }
+        final int[] normalState = new int[]{};
+        final int[] clickedState = new int[]{android.R.attr.state_pressed};
+        final int[] checkedState = new int[]{android.R.attr.state_checked};
+        final int[] selectedState = new int[]{android.R.attr.state_selected};
+        final int[] focusedState = new int[]{android.R.attr.state_focused};
+        int[] activatedState = new int[]{android.R.attr.state_activated};
 
         final Drawable normalDrawable = colorDrawable(context, originalState, normalColor);
         final Drawable clickedDrawable = colorDrawable(context, originalState, contrastColor(pressedBackColor));
@@ -765,20 +749,16 @@ public final class Coloring {
             states.addState(selectedState, focusedDrawable); // reuse the focused drawable
             states.addState(focusedState, focusedDrawable);
             states.addState(checkedState, checkedDrawable);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                states.addState(activatedState, focusedDrawable);
-            }
+            states.addState(activatedState, focusedDrawable);
             states.addState(normalState, normalDrawable); // !
             return states;
         } else {
             // fade enabled, add only normal and pressed states (Honeycomb bug..)
             states.addState(clickedState, clickedDrawable); // !
             states.addState(normalState, normalDrawable); // !
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                // fading only works on Honeycomb and later..
-                states.setEnterFadeDuration(0);
-                states.setExitFadeDuration(DEFAULT_FADE_DURATION);
-            }
+            // fading only works on Honeycomb and later..
+            states.setEnterFadeDuration(0);
+            states.setExitFadeDuration(DEFAULT_FADE_DURATION);
             return states;
         }
     }
@@ -810,15 +790,12 @@ public final class Coloring {
         }
 
         // initialize state arrays (they're in arrays because you can use different colors for reverse transitions..)
-        final int[] normalStates = new int[] {};
-        final int[] clickedStates = new int[] { android.R.attr.state_pressed };
-        final int[] checkedStates = new int[] { android.R.attr.state_checked };
-        final int[] selectedStates = new int[] { android.R.attr.state_selected };
-        final int[] focusedStates = new int[] { android.R.attr.state_focused };
-        int[] activatedState = new int[] {};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            activatedState = new int[] { android.R.attr.state_activated };
-        }
+        final int[] normalStates = new int[]{};
+        final int[] clickedStates = new int[]{android.R.attr.state_pressed};
+        final int[] checkedStates = new int[]{android.R.attr.state_checked};
+        final int[] selectedStates = new int[]{android.R.attr.state_selected};
+        final int[] focusedStates = new int[]{android.R.attr.state_focused};
+        int[] activatedState = new int[]{android.R.attr.state_activated};
 
         // prepare the state list (order of the states is extremely important!)
         final StateListDrawable states = new StateListDrawable();
@@ -829,20 +806,16 @@ public final class Coloring {
             states.addState(selectedStates, checkedState);
             states.addState(focusedStates, normalState);
             states.addState(checkedStates, checkedState);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                states.addState(activatedState, checkedState);
-            }
+            states.addState(activatedState, checkedState);
             states.addState(normalStates, normalState); // !
             return states;
         } else {
             // fade enabled, add only normal and pressed states (Honeycomb bug..)
             states.addState(clickedStates, clickedState); // !
             states.addState(normalStates, normalState); // !
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                // fading only works on Honeycomb and later..
-                states.setEnterFadeDuration(0);
-                states.setExitFadeDuration(DEFAULT_FADE_DURATION);
-            }
+            // fading only works on Honeycomb and later..
+            states.setEnterFadeDuration(0);
+            states.setExitFadeDuration(DEFAULT_FADE_DURATION);
             return states;
         }
     }

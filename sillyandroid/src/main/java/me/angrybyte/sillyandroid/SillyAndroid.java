@@ -694,7 +694,7 @@ public final class SillyAndroid {
             return true;
         } else {
             final PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-            return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
+            return powerManager != null && powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
         }
     }
 
@@ -757,11 +757,7 @@ public final class SillyAndroid {
         try {
             final InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
             final View layout = SillyAndroid.getContentView(context);
-            if (layout == null) {
-                return false;
-            }
-            imm.hideSoftInputFromWindow(layout.getApplicationWindowToken(), 0);
-            return true;
+            return layout != null && imm != null && imm.hideSoftInputFromWindow(layout.getApplicationWindowToken(), 0);
         } catch (Exception e) {
             Log.e(TAG, "Hiding keyboard failed", e);
             return false;

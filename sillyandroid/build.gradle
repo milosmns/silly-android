@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'me.tatarka.retrolambda'
+// apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'checkstyle'
 apply plugin: 'jacoco-android'
 
@@ -76,7 +76,7 @@ android {
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -87,9 +87,9 @@ jacocoAndroidUnitTestReport {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    provided "com.android.support:appcompat-v7:$APPCOMPAT"
-    testCompile "com.android.support:appcompat-v7:$APPCOMPAT"
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly "com.android.support:appcompat-v7:$APPCOMPAT"
+    testImplementation "com.android.support:appcompat-v7:$APPCOMPAT"
 }
 
 // Maven push plugin

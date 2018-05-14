@@ -1,5 +1,6 @@
 package me.angrybyte.sillyandroid.parsable.components;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.CallSuper;
@@ -123,6 +124,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
      *
      * @param context Which context to use
      */
+    @SuppressLint("ResourceType") // TODO getLayoutId() can return < 0 ???
     private void initializeParsedProperties(@NonNull final Context context) {
         AnnotationParser.parseType(context, this);
         if (getLayoutId() > 0) {
@@ -140,6 +142,7 @@ public class ParsableDialog extends EasyDialog implements View.OnClickListener, 
      * {@inheritDoc}
      */
     @Override
+    @SuppressLint("ResourceType") // TODO getLayoutId() can return < 0 ???
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         super.onCreateOptionsMenu(menu);
         if (getMenuId() > 0 && getOwnerActivity() != null) {

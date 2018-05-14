@@ -1,5 +1,6 @@
 package me.angrybyte.sillyandroid.parsable.components;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
@@ -45,6 +46,7 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
      */
     @Override
     @CallSuper
+    @SuppressLint("ResourceType") // TODO getLayoutId() can return < 0 ???
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AnnotationParser.parseType(this, this);
@@ -93,6 +95,7 @@ public class ParsableActivity extends EasyActivity implements View.OnClickListen
      * {@inheritDoc}
      */
     @Override
+    @SuppressLint("ResourceType") // TODO getLayoutId() can return < 0 ???
     public boolean onCreateOptionsMenu(final Menu menu) {
         super.onCreateOptionsMenu(menu);
         if (getMenuId() > 0) {
