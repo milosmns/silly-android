@@ -9,9 +9,9 @@ branches:
 # Setup environment variables
 env:
   global:
-    - PLATFORM_TOOLS=25.0.4
-    - BUILD_TOOLS=25.0.2
-    - COMPILE_SDK=25
+    - PLATFORM_TOOLS=27.0.1
+    - BUILD_TOOLS=27.0.3
+    - COMPILE_SDK=27
     - ANDROID_TARGET=android-22 # Enable for connected checks on emulators (Google doesn't support Linux ARMv7 emulation for SDK 23+)
     - ANDROID_ABI=armeabi-v7a # Enable for connected checks on emulators
     - ADB_INSTALL_TIMEOUT=15 # Wait up to 15 minutes for adb to connect to the emulator
