@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class DialogManagerImpl implements DialogManager {
 
     private static final String TAG = DialogManagerImpl.class.getSimpleName();
 
-    private static final class DialogInfo implements Parcelable {
+    static final class DialogInfo implements Parcelable {
 
         public final int id;
         @Nullable
@@ -66,14 +67,14 @@ public class DialogManagerImpl implements DialogManager {
         // </editor-fold>
     }
 
-    private static final class State implements Parcelable {
+    static final class State implements Parcelable {
 
         public int size;
-        public Set<DialogInfo> dialogs;
+        public Set<DialogInfo> configs;
 
         public State(Map<Integer, DialogInfo> dialogConfigs) {
-            dialogs = new LinkedHashSet<>(dialogConfigs.values());
-            size = dialogs.size();
+            configs = new LinkedHashSet<>(dialogConfigs.values());
+            size = configs.size();
         }
 
         // <editor-fold desc="Parcelable implementation">
@@ -82,7 +83,7 @@ public class DialogManagerImpl implements DialogManager {
             for (int i = 0; i < size; i++) {
                 final Parcelable parcelable = in.readParcelable(getClass().getClassLoader());
                 if (parcelable instanceof DialogInfo) {
-                    dialogs.add((DialogInfo) parcelable);
+                    configs.add((DialogInfo) parcelable);
                 }
             }
         }
@@ -90,7 +91,7 @@ public class DialogManagerImpl implements DialogManager {
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(size);
-            for (DialogInfo iDialogInfo : dialogs) {
+            for (DialogInfo iDialogInfo : configs) {
                 dest.writeParcelable(iDialogInfo, 0);
             }
         }
@@ -146,23 +147,8 @@ public class DialogManagerImpl implements DialogManager {
     @Override
     public void showDialog(final int dialogId, @Nullable final Bundle config) {
         final Dialog created = createDialog(dialogId, config);
-        if (created == null) {
-            Log.w(TAG, "Can't show a dialog, callback returned `null` for ID " + dialogId);
-            return;
-        }
-        mDialogConfigs.put(dialogId, new DialogInfo(dialogId, config, false));
-        created.setOnShowListener(dialog -> {
-            if (mListener != null) {
-                mListener.onDialogShown(dialogId);
-            }
-        });
-        created.setOnDismissListener(dialog -> {
-            if (mListener != null) {
-                mListener.onDialogDismissed(dialogId);
-            }
-            // TODO take care of instance and config removals
-        });
-        created.show();
+        if (created == null) { return; }
+        showDialogInternal(dialogId, created);
     }
 
     @Override
@@ -173,30 +159,8 @@ public class DialogManagerImpl implements DialogManager {
     @Override
     public void showDialogFragment(final int dialogId, @Nullable final Bundle config) {
         final DialogFragment created = createDialogFragment(dialogId, config);
-        if (created == null) {
-            Log.w(TAG, "Can't create a dialog fragment, callback returned `null` for ID " + dialogId);
-            return;
-        }
-        mDialogConfigs.put(dialogId, new DialogInfo(dialogId, config, true));
-        final FragmentManager manager = mFragmentManagerRef.get();
-        if (manager == null) {
-            Log.w(TAG, "Can't show a dialog fragment, FragmentManager instance expired");
-            return;
-        }
-        created.show(manager, getFragmentTag(dialogId));
-        // DialogFragment#getDialog() is null prior to this call
-        manager.executePendingTransactions();
-        created.getDialog().setOnShowListener(dialog -> {
-            if (mListener != null) {
-                mListener.onDialogShown(dialogId);
-            }
-        });
-        created.getDialog().setOnDismissListener(dialog -> {
-            if (mListener != null) {
-                mListener.onDialogDismissed(dialogId);
-                // TODO take care of instance and config removals
-            }
-        });
+        if (created == null) { return; }
+        showDialogFragmentInternal(dialogId, created);
     }
 
     @Override
@@ -240,29 +204,18 @@ public class DialogManagerImpl implements DialogManager {
     public void restoreState(@Nullable final Parcelable state, final boolean showNow) {
         if (state instanceof State) {
             final State toRestoreFrom = (State) state;
-            mDialogConfigs.clear();
-            mDialogInstances.clear();
-            mDialogFragmentInstances.clear();
-            for (DialogInfo iDialogInfo : toRestoreFrom.dialogs) {
-                mDialogConfigs.put(iDialogInfo.id, iDialogInfo);
-                if (showNow) {
-                    if (iDialogInfo.isFragment && mCallback != null) {
-                        createDialogFragment(iDialogInfo.id, iDialogInfo.config);
-                    } else {
-                        createDialog(iDialogInfo.id, iDialogInfo.config);
-                    }
-                }
-            }
+            recreateFromConfigs(toRestoreFrom.configs, showNow);
         }
     }
 
     @Override
-    public void recreateAll() {
-        // TODO implement
+    public void recreateAll(final boolean showNow) {
+        dismissAll();
+        recreateFromConfigs(mDialogConfigs.values(), showNow);
     }
 
     @Override
-    public void showAll() {
+    public void unhideAll() {
         for (Dialog iDialog : mDialogInstances.values()) {
             if (!iDialog.isShowing()) {
                 iDialog.show();
@@ -291,38 +244,112 @@ public class DialogManagerImpl implements DialogManager {
 
     @Override
     public void dismissAll() {
-        // TODO implement
+        for (Dialog iDialog : mDialogInstances.values()) {
+            if (iDialog.isShowing()) {
+                iDialog.dismiss();
+            }
+        }
+        for (DialogFragment iDialogFragment : mDialogFragmentInstances.values()) {
+            if (iDialogFragment.getDialog() != null && iDialogFragment.getDialog().isShowing()) {
+                iDialogFragment.dismissAllowingStateLoss();
+            }
+        }
+        clearAllMappings();
     }
 
     /* Private helpers */
 
-    @NonNull
-    private String getFragmentTag(final int dialogId) {
-        return TAG + "_ID:" + dialogId;
-    }
-
     @Nullable
     private Dialog createDialog(final int dialogId, @Nullable final Bundle config) {
-        // TODO take care of listeners
         if (mCallback == null) {
             Log.w(TAG, "Can't show a dialog without the callback being set prior to this call");
             return null;
         }
         final Dialog created = mCallback.onCreateDialog(dialogId, config);
+        mDialogConfigs.put(dialogId, new DialogInfo(dialogId, config, false));
         mDialogInstances.put(dialogId, created);
         return created;
     }
 
     @Nullable
     private DialogFragment createDialogFragment(final int dialogId, @Nullable final Bundle config) {
-        // TODO take care of listeners
         if (mCallback == null) {
             Log.w(TAG, "Can't create a dialog fragment without the callback being set prior to this call");
             return null;
         }
         final DialogFragment created = mCallback.onCreateDialogFragment(dialogId, config);
+        mDialogConfigs.put(dialogId, new DialogInfo(dialogId, config, true));
         mDialogFragmentInstances.put(dialogId, created);
         return created;
+    }
+
+    private void showDialogInternal(final int dialogId, @NonNull final Dialog instance) {
+        instance.setOnShowListener(dialog -> {
+            if (mListener != null) {
+                mListener.onDialogShown(dialogId);
+            }
+        });
+        instance.setOnDismissListener(dialog -> {
+            if (mListener != null) {
+                mListener.onDialogDismissed(dialogId);
+                mDialogConfigs.remove(dialogId);
+                mDialogInstances.remove(dialogId);
+            }
+        });
+        instance.show();
+    }
+
+    private void showDialogFragmentInternal(final int dialogId, @NonNull final DialogFragment instance) {
+        final FragmentManager manager = mFragmentManagerRef.get();
+        if (manager == null) {
+            Log.w(TAG, "Can't show a dialog fragment, FragmentManager instance expired");
+            return;
+        }
+        instance.show(manager, getFragmentTag(dialogId));
+        // DialogFragment#getDialog() is `null` prior to this call
+        manager.executePendingTransactions();
+        instance.getDialog().setOnShowListener(dialog -> {
+            if (mListener != null) {
+                mListener.onDialogShown(dialogId);
+            }
+        });
+        instance.getDialog().setOnDismissListener(dialog -> {
+            if (mListener != null) {
+                mListener.onDialogDismissed(dialogId);
+                mDialogConfigs.remove(dialogId);
+                mDialogFragmentInstances.remove(dialogId);
+            }
+        });
+    }
+
+    private void recreateFromConfigs(@NonNull final Collection<DialogInfo> configs, boolean showNow) {
+        clearAllMappings();
+        for (DialogInfo iDialogInfo : configs) {
+            if (!iDialogInfo.isFragment) {
+                final Dialog created = createDialog(iDialogInfo.id, iDialogInfo.config);
+                if (created == null) { return; }
+                if (showNow) {
+                    showDialogInternal(iDialogInfo.id, created);
+                }
+            } else {
+                final DialogFragment created = createDialogFragment(iDialogInfo.id, iDialogInfo.config);
+                if (created == null) { return; }
+                if (showNow) {
+                    showDialogFragmentInternal(iDialogInfo.id, created);
+                }
+            }
+        }
+    }
+
+    private void clearAllMappings() {
+        mDialogConfigs.clear();
+        mDialogInstances.clear();
+        mDialogFragmentInstances.clear();
+    }
+
+    @NonNull
+    private String getFragmentTag(final int dialogId) {
+        return TAG + "_ID:" + dialogId;
     }
 
 }
