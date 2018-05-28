@@ -46,9 +46,9 @@ public interface DialogManager {
 
     void restoreState(@Nullable final Parcelable state, final boolean showNow);
 
-    void recreateAll();
+    void recreateAll(final boolean showNow);
 
-    void showAll();
+    void unhideAll();
 
     void hideAll();
 
