@@ -92,6 +92,7 @@ dependencies {
 
     testImplementation "com.android.support:appcompat-v7:$APPCOMPAT"
     testImplementation "org.mockito:mockito-core:$MOCKITO"
+    testImplementation 'junit:junit:4.12'
 }
 
 // Maven push plugin
