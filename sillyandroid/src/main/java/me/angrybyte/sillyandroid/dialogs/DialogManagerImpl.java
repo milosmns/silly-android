@@ -257,6 +257,14 @@ public class DialogManagerImpl implements DialogManager {
         clearAllMappings();
     }
 
+    @Override
+    public void dispose() {
+        dismissAll();
+        mCallback = null;
+        mListener = null;
+        mFragmentManagerRef.clear();
+    }
+
     /* Private helpers */
 
     @Nullable
