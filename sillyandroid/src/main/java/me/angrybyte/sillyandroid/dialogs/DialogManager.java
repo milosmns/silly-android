@@ -54,4 +54,6 @@ public interface DialogManager {
 
     void dismissAll();
 
+    void dispose();
+
 }
