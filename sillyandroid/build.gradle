@@ -89,7 +89,9 @@ jacocoAndroidUnitTestReport {
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
     compileOnly "com.android.support:appcompat-v7:$APPCOMPAT"
+
     testImplementation "com.android.support:appcompat-v7:$APPCOMPAT"
+    testImplementation "org.mockito:mockito-core:$MOCKITO"
 }
 
 // Maven push plugin

@@ -40,4 +40,5 @@ ext {
     ESPRESSO = "2.2.2"
     JUNIT = "4.12"
     ROBOLECTRIC = "3.8"
+    MOCKITO = "2.18.3"
 }
