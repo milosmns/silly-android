@@ -134,9 +134,21 @@ public class DialogManagerImpl implements DialogManager {
         mCallback = callback;
     }
 
+    @Nullable
+    @Override
+    public DialogManagerCallback getCallback() {
+        return mCallback;
+    }
+
     @Override
     public void setListener(@Nullable final DialogManagerListener listener) {
         mListener = listener;
+    }
+
+    @Nullable
+    @Override
+    public DialogManagerListener getListener() {
+        return mListener;
     }
 
     @Override
