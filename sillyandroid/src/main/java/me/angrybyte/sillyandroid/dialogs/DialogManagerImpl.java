@@ -222,8 +222,9 @@ public class DialogManagerImpl implements DialogManager {
 
     @Override
     public void recreateAll(final boolean showNow) {
+        final Collection<DialogInfo> configs = new LinkedHashSet<>(mDialogConfigs.values());
         dismissAll();
-        recreateFromConfigs(mDialogConfigs.values(), showNow);
+        recreateFromConfigs(configs, showNow);
     }
 
     @Override
