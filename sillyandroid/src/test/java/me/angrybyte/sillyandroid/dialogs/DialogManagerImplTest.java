@@ -199,21 +199,52 @@ public class DialogManagerImplTest {
     }
     // </editor-fold>
 
+    // <editor-fold desc="State saving & restoring">
     @Test
-    public void saveState() {
-    }
+    public void saveState_dialogsOnly() { }
 
     @Test
-    public void restoreState() {
-    }
+    public void restoreState_dialogsOnly() { }
+    // </editor-fold>
 
+    // <editor-fold desc="Memory management">
     @Test
     public void recreateAll() {
+        // setup the callback
+        final DialogManagerCallback callback = createCallbackMock();
+        final Dialog[] dialogMocks = new Dialog[]{createDialogMock(), createDialogMock()};
+        when(callback.onCreateDialog(eq(KNOWN_DIALOG), isNull())).thenReturn(dialogMocks[0]);
+        when(callback.onCreateDialog(eq(ANOTHER_DIALOG), isNull())).thenReturn(dialogMocks[0]);
+        mDialogManager.setCallback(callback);
+        // show both dialogs
+        mDialogManager.showDialog(KNOWN_DIALOG);
+        mDialogManager.showDialog(ANOTHER_DIALOG);
+        // check if dialogs were shown
+        assertTrue(mDialogManager.isDialogShowing(KNOWN_DIALOG));
+        assertTrue(mDialogManager.isDialogShowing(ANOTHER_DIALOG));
+        // now hide them to set states to 'hidden'
+        mDialogManager.hideAll();
+        assertFalse(mDialogManager.isDialogShowing(KNOWN_DIALOG));
+        assertFalse(mDialogManager.isDialogShowing(ANOTHER_DIALOG));
+        // recreate them (this will reset the 'hidden' state to false)
+        mDialogManager.recreateAll(true);
+        assertTrue(mDialogManager.isDialogShowing(KNOWN_DIALOG));
+        assertTrue(mDialogManager.isDialogShowing(ANOTHER_DIALOG));
+        // and finally dismiss them
+        mDialogManager.dismissAll();
+        assertFalse(mDialogManager.isDialogShowing(KNOWN_DIALOG));
+        assertFalse(mDialogManager.isDialogShowing(ANOTHER_DIALOG));
     }
 
     @Test
     public void dispose() {
+        mDialogManager.setCallback(createCallbackMock());
+        mDialogManager.setListener(createListenerMock());
+        mDialogManager.dispose();
+        assertNull(mDialogManager.getCallback());
+        assertNull(mDialogManager.getListener());
     }
+    // </editor-fold>
 
     /* Private helpers */
 
