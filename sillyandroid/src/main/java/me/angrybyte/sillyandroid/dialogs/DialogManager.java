@@ -27,7 +27,13 @@ public interface DialogManager {
 
     void setCallback(@Nullable final DialogManagerCallback callback);
 
+    @Nullable
+    DialogManagerCallback getCallback();
+
     void setListener(@Nullable final DialogManagerListener listener);
+
+    @Nullable
+    DialogManagerListener getListener();
 
     void showDialog(final int dialogId);
 
