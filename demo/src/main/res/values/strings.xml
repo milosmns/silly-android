@@ -7,6 +7,7 @@
     <string name="toast_die_done">Killing activity…</string>
     <string name="toast_permission_missing">Oh man… You need to accept these…</string>
     <string name="label_random_padding">Random padding</string>
+    <string name="label_show_managed_dialog">Show managed dialog</string>
     <string name="label_print_info">Print info</string>
     <string name="label_hide_keyboard">Hide keyboard</string>
     <string name="hint_keyboard_size">Keyboard size: %s</string>
