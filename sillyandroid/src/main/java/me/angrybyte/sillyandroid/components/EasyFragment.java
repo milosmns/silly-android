@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
@@ -21,6 +22,7 @@ import android.support.annotation.Px;
 import android.support.annotation.RequiresPermission;
 import android.support.annotation.StringRes;
 import android.support.annotation.UiThread;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
@@ -39,6 +41,8 @@ import java.util.Set;
 
 import me.angrybyte.sillyandroid.BuildConfig;
 import me.angrybyte.sillyandroid.SillyAndroid;
+import me.angrybyte.sillyandroid.dialogs.DialogManager;
+import me.angrybyte.sillyandroid.dialogs.DialogManagerImpl;
 import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 
 /**
@@ -46,9 +50,13 @@ import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
  */
 @UiThread
 @SuppressWarnings("unused")
-public class EasyFragment extends Fragment implements LayoutWrapper, SillyAndroid.OnKeyboardChangeListener {
+public class EasyFragment extends Fragment implements LayoutWrapper, SillyAndroid.OnKeyboardChangeListener,
+        DialogManager.DialogManagerCallback, DialogManager.DialogManagerListener {
+
+    public static final String KEY_DIALOG_MANAGER = DialogManager.class.getSimpleName().toUpperCase();
 
     private ViewTreeObserver.OnGlobalLayoutListener mKeyboardListener;
+    private DialogManager mDialogManager;
 
     // <editor-fold desc="Public API">
 
@@ -347,6 +355,22 @@ public class EasyFragment extends Fragment implements LayoutWrapper, SillyAndroi
         } else if (paramContext instanceof Activity) {
             mKeyboardListener = SillyAndroid.listenToKeyboard(this, (Activity) paramContext);
         }
+        if (mDialogManager == null) {
+            // noinspection ConstantConditions - TODO or is it null!?
+            mDialogManager = new DialogManagerImpl(getFragmentManager());
+            mDialogManager.setCallback(this);
+            mDialogManager.setListener(this);
+            if (savedInstanceState != null) {
+                // wow nice API, Fragments!
+                final Parcelable dialogManagerState = savedInstanceState.getParcelable(KEY_DIALOG_MANAGER);
+                if (dialogManagerState != null) {
+                    mDialogManager.restoreState(dialogManagerState, true);
+                }
+            }
+        } else {
+            // TODO debatable, let's keep for now
+            mDialogManager.recreateAll(true);
+        }
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -358,6 +382,12 @@ public class EasyFragment extends Fragment implements LayoutWrapper, SillyAndroi
         if (view != null && mKeyboardListener != null) {
             view.getViewTreeObserver().addOnGlobalLayoutListener(mKeyboardListener);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        outState.putParcelable(KEY_DIALOG_MANAGER, mDialogManager.saveState());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -379,6 +409,37 @@ public class EasyFragment extends Fragment implements LayoutWrapper, SillyAndroi
         super.onDestroy();
         // prevents a leak when you have cyclic reference between the listener and the activity
         mKeyboardListener = null;
+        mDialogManager.dispose();
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="DialogManager Integration">
+
+    @Nullable
+    @Override
+    @CallSuper
+    public Dialog onCreateDialog(final int dialogId, @Nullable final Bundle config) {
+        // TODO maybe do some basic implementations, like a two-options question?
+        return null;
+    }
+
+    @Nullable
+    @Override
+    @CallSuper
+    public DialogFragment onCreateDialogFragment(final int dialogId, @Nullable final Bundle config) {
+        return null;
+    }
+
+    @Override
+    @CallSuper
+    public void onDialogShown(final int dialogId) {
+        Log.d(getClass().getSimpleName(), "Dialog was shown: ID = " + Integer.toHexString(dialogId));
+    }
+
+    @Override
+    @CallSuper
+    public void onDialogDismissed(final int dialogId) {
+        Log.d(getClass().getSimpleName(), "Dialog was dismissed: ID = " + Integer.toHexString(dialogId));
     }
     // </editor-fold>
 
