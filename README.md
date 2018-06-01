@@ -39,6 +39,11 @@ Typed `findView()` method (available in all _Easy_ components)
     TextView displayView = findView(R.id.my_text_view); // no cast necessary!
     ...
 ```
+Dialog management (see more in the [Wiki page](https://github.com/milosmns/silly-android/wiki/DialogManager-Wiki))
+```java
+// Create/dismiss/save/restore all managed by the DialogManager!
+getDialogManager().showDialog(DIALOG_ID, configBundle);
+```
 Screen size calculations:
 ```java
     ...
@@ -198,6 +203,7 @@ Code organization
 - Check out the `me.angrybyte.sillyandroid.extras.Coloring` class for various color and drawable utilities.
 - Android components such as Activity, Fragment, Dialog, View and ViewGroup have been enhanced to include features from the _Silly Android_ internally, you can check that out in the `me.angrybyte.sillyandroid.components` package. They are now called `EasyActivity`, `EasyFragment` and so on.
 - Even more enhancements are added to the _Easy_ component set using _Silly Android_'s annotations, such as View injections, typed `T findView(int id)` methods, automated click and long-click handling, and more. For information about that, see package `me.angrybyte.sillyandroid.parsable.components`.
+- Dialog management components are in the `me.angrybyte.sillyandroid.dialogs` package.
 - For a coded demo of the fully enhanced Activity class, go to `me.angrybyte.sillyandroid.demo.MainActivity`.
 - Check out the colors, UI sizes and text sizes added in `sillyandroid/src/main/res`.
 
