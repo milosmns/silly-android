@@ -34,6 +34,7 @@ import java.io.Closeable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import me.angrybyte.sillyandroid.BuildConfig;
@@ -51,7 +52,7 @@ import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 public class EasyActivity extends BlockingLifecycleActivity implements LayoutWrapper, SillyAndroid.OnKeyboardChangeListener,
         DialogManager.DialogManagerCallback, DialogManager.DialogManagerListener {
 
-    public static final String KEY_DIALOG_MANAGER = DialogManager.class.getSimpleName().toUpperCase();
+    public static final String KEY_DIALOG_MANAGER = DialogManager.class.getSimpleName().toUpperCase(Locale.getDefault());
 
     private ViewTreeObserver.OnGlobalLayoutListener mKeyboardListener;
     private DialogManager mDialogManager;
