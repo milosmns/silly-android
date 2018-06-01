@@ -3,6 +3,8 @@ package me.angrybyte.sillyandroid.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 
@@ -10,18 +12,24 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import me.angrybyte.sillyandroid.dialogs.DialogManager.DialogManagerCallback;
 import me.angrybyte.sillyandroid.dialogs.DialogManager.DialogManagerListener;
+import me.angrybyte.sillyandroid.dialogs.DialogManagerImpl.DialogInfo;
+import me.angrybyte.sillyandroid.dialogs.DialogManagerImpl.State;
+import me.angrybyte.util.MockParcel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
@@ -122,9 +130,10 @@ public class DialogManagerImplTest {
         // setup the callback
         final DialogManagerCallback callback = createCallbackMock();
         final Dialog dialogMock = createDialogMock();
-        when(callback.onCreateDialog(eq(KNOWN_DIALOG), isA(Bundle.class))).thenReturn(dialogMock);
+        final Bundle dialogConfig = new Bundle();
+        when(callback.onCreateDialog(eq(KNOWN_DIALOG), eq(dialogConfig))).thenReturn(dialogMock);
         mDialogManager.setCallback(callback);
-        mDialogManager.showDialog(KNOWN_DIALOG, new Bundle());
+        mDialogManager.showDialog(KNOWN_DIALOG, dialogConfig);
         // verify callback was invoked
         verify(dialogMock).setOnShowListener(isNotNull());
         verify(dialogMock).setOnDismissListener(isNotNull());
@@ -166,7 +175,7 @@ public class DialogManagerImplTest {
         mDialogManager.showDialog(KNOWN_DIALOG);
         // check if dialog was shown
         assertTrue(mDialogManager.isDialogShowing(KNOWN_DIALOG));
-        dialogMock.dismiss();
+        mDialogManager.dismissDialog(KNOWN_DIALOG);
         assertFalse(mDialogManager.isDialogShowing(KNOWN_DIALOG));
     }
 
@@ -176,7 +185,7 @@ public class DialogManagerImplTest {
         final DialogManagerCallback callback = createCallbackMock();
         final Dialog[] dialogMocks = new Dialog[]{createDialogMock(), createDialogMock()};
         when(callback.onCreateDialog(eq(KNOWN_DIALOG), isNull())).thenReturn(dialogMocks[0]);
-        when(callback.onCreateDialog(eq(ANOTHER_DIALOG), isNull())).thenReturn(dialogMocks[0]);
+        when(callback.onCreateDialog(eq(ANOTHER_DIALOG), isNull())).thenReturn(dialogMocks[1]);
         mDialogManager.setCallback(callback);
         // show both dialogs
         mDialogManager.showDialog(KNOWN_DIALOG);
@@ -201,10 +210,82 @@ public class DialogManagerImplTest {
 
     // <editor-fold desc="State saving & restoring">
     @Test
-    public void saveState_dialogsOnly() { }
+    public void DialogManager_State_parcelable() {
+        // artificially create State
+        final Bundle[] dialogConfigs = new Bundle[]{new Bundle(), null};
+        final DialogInfo[] dialogInfos = new DialogInfo[]{
+                new DialogInfo(KNOWN_DIALOG, dialogConfigs[0], false),
+                new DialogInfo(ANOTHER_DIALOG, dialogConfigs[1], false)
+        };
+        final Map<Integer, DialogInfo> configMap = new LinkedHashMap<>();
+        configMap.put(KNOWN_DIALOG, dialogInfos[0]);
+        configMap.put(ANOTHER_DIALOG, dialogInfos[1]);
+        final State externalState = new State(configMap);
+        // now write it to parcel
+        final Parcel mockParcel = MockParcel.obtain();
+        externalState.writeToParcel(mockParcel, 0);
+        // read it back from parcel
+        final State readState = State.CREATOR.createFromParcel(mockParcel);
+        // verify it's equal to the input, but not the same reference
+        assertEquals(externalState, readState);
+        assertNotSame(externalState, readState);
+    }
 
     @Test
-    public void restoreState_dialogsOnly() { }
+    public void saveState_dialogsOnly() {
+        // setup the callback
+        final DialogManagerCallback callback = createCallbackMock();
+        final Dialog[] dialogMocks = new Dialog[]{createDialogMock(), createDialogMock()};
+        final Bundle[] dialogConfigs = new Bundle[]{new Bundle(), null};
+        when(callback.onCreateDialog(eq(KNOWN_DIALOG), eq(dialogConfigs[0]))).thenReturn(dialogMocks[0]);
+        when(callback.onCreateDialog(eq(ANOTHER_DIALOG), eq(dialogConfigs[1]))).thenReturn(dialogMocks[1]);
+        mDialogManager.setCallback(callback);
+        // show both dialogs
+        mDialogManager.showDialog(KNOWN_DIALOG, dialogConfigs[0]);
+        mDialogManager.showDialog(ANOTHER_DIALOG, dialogConfigs[1]);
+        // get the state
+        final Parcelable parcelableState = mDialogManager.saveState();
+        assertTrue(parcelableState instanceof State);
+        // convert parcelable to usable state
+        final State state = (State) parcelableState;
+        final ArrayList<DialogInfo> infos = new ArrayList<>(state.configs);
+        // verify dialog set size
+        assertEquals(2, state.size);
+        assertEquals(2, infos.size());
+        // verify first dialog
+        assertEquals(KNOWN_DIALOG, infos.get(0).id);
+        assertEquals(dialogConfigs[0], infos.get(0).config);
+        assertEquals(false, infos.get(0).isFragment);
+        // verify second dialog
+        assertEquals(ANOTHER_DIALOG, infos.get(1).id);
+        assertEquals(dialogConfigs[1], infos.get(1).config);
+        assertEquals(false, infos.get(1).isFragment);
+    }
+
+    @Test
+    public void restoreState_dialogsOnly() {
+        // setup the callback
+        final DialogManagerCallback callback = createCallbackMock();
+        final Dialog[] dialogMocks = new Dialog[]{createDialogMock(), createDialogMock()};
+        final Bundle[] dialogConfigs = new Bundle[]{new Bundle(), null};
+        when(callback.onCreateDialog(eq(KNOWN_DIALOG), eq(dialogConfigs[0]))).thenReturn(dialogMocks[0]);
+        when(callback.onCreateDialog(eq(ANOTHER_DIALOG), eq(dialogConfigs[1]))).thenReturn(dialogMocks[1]);
+        mDialogManager.setCallback(callback);
+        // artificially create State
+        final DialogInfo[] dialogInfos = new DialogInfo[]{
+                new DialogInfo(KNOWN_DIALOG, dialogConfigs[0], false),
+                new DialogInfo(ANOTHER_DIALOG, dialogConfigs[1], false)
+        };
+        final Map<Integer, DialogInfo> configMap = new LinkedHashMap<>();
+        configMap.put(KNOWN_DIALOG, dialogInfos[0]);
+        configMap.put(ANOTHER_DIALOG, dialogInfos[1]);
+        final State externalState = new State(configMap);
+        // push the created state into the manager
+        mDialogManager.restoreState(externalState, true);
+        // verify that dialogs were shown
+        assertTrue(mDialogManager.isDialogShowing(KNOWN_DIALOG));
+        assertTrue(mDialogManager.isDialogShowing(ANOTHER_DIALOG));
+    }
     // </editor-fold>
 
     // <editor-fold desc="Memory management">
@@ -214,7 +295,7 @@ public class DialogManagerImplTest {
         final DialogManagerCallback callback = createCallbackMock();
         final Dialog[] dialogMocks = new Dialog[]{createDialogMock(), createDialogMock()};
         when(callback.onCreateDialog(eq(KNOWN_DIALOG), isNull())).thenReturn(dialogMocks[0]);
-        when(callback.onCreateDialog(eq(ANOTHER_DIALOG), isNull())).thenReturn(dialogMocks[0]);
+        when(callback.onCreateDialog(eq(ANOTHER_DIALOG), isNull())).thenReturn(dialogMocks[1]);
         mDialogManager.setCallback(callback);
         // show both dialogs
         mDialogManager.showDialog(KNOWN_DIALOG);

@@ -17,6 +17,11 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * The basic implementation of the {@link DialogManager} API. Of course, you can modify this implementation
+ * by extending the class, or even write your own version - but really there is no need as this covers 99% of
+ * the use cases you might come across, and it's also covered by JUnit so you don't have to worry about tests.
+ */
 public class DialogManagerImpl implements DialogManager {
 
     private static final String TAG = DialogManagerImpl.class.getSimpleName();
@@ -33,6 +38,25 @@ public class DialogManagerImpl implements DialogManager {
             this.config = config;
             this.isFragment = isFragment;
         }
+
+        // <editor-fold desc="Equals & HashCode">
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            DialogInfo info = (DialogInfo) o;
+            return id == info.id && isFragment == info.isFragment &&
+                    (config != null ? config.equals(info.config) : info.config == null);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = id;
+            result = 31 * result + (config != null ? config.hashCode() : 0);
+            result = 31 * result + (isFragment ? 1 : 0);
+            return result;
+        }
+        // </editor-fold>
 
         // <editor-fold desc="Parcelable implementation">
         public DialogInfo(Parcel in) {
@@ -72,14 +96,33 @@ public class DialogManagerImpl implements DialogManager {
         public int size;
         public Set<DialogInfo> configs;
 
-        public State(Map<Integer, DialogInfo> dialogConfigs) {
+        public State(@NonNull final Map<Integer, DialogInfo> dialogConfigs) {
             configs = new LinkedHashSet<>(dialogConfigs.values());
             size = configs.size();
         }
 
+        // <editor-fold desc="Equals & HashCode">
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            State state = (State) o;
+            return size == state.size &&
+                    (configs != null ? configs.equals(state.configs) : state.configs == null);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = size;
+            result = 31 * result + (configs != null ? configs.hashCode() : 0);
+            return result;
+        }
+        // </editor-fold>
+
         // <editor-fold desc="Parcelable implementation">
         public State(Parcel in) {
             size = in.readInt();
+            configs = new LinkedHashSet<>();
             for (int i = 0; i < size; i++) {
                 final Parcelable parcelable = in.readParcelable(getClass().getClassLoader());
                 if (parcelable instanceof DialogInfo) {
