@@ -378,6 +378,14 @@ public class EasyActivity extends BlockingLifecycleActivity implements LayoutWra
 
     // <editor-fold desc="DialogManager Integration">
 
+    /**
+     * Available after {@code super#onCreate()}.
+     */
+    @NonNull
+    protected DialogManager getDialogManager() {
+        return mDialogManager;
+    }
+
     @Nullable
     @Override
     @CallSuper

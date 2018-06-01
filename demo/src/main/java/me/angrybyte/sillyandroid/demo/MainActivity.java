@@ -1,6 +1,7 @@
 package me.angrybyte.sillyandroid.demo;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,11 +24,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Date;
 import java.util.Set;
 
 import me.angrybyte.sillyandroid.SillyAndroid;
 import me.angrybyte.sillyandroid.extras.Coloring;
-import me.angrybyte.sillyandroid.parsable.Annotations;
+import me.angrybyte.sillyandroid.parsable.Annotations.Clickable;
+import me.angrybyte.sillyandroid.parsable.Annotations.FindView;
+import me.angrybyte.sillyandroid.parsable.Annotations.Layout;
+import me.angrybyte.sillyandroid.parsable.Annotations.LongClickable;
+import me.angrybyte.sillyandroid.parsable.Annotations.Menu;
 import me.angrybyte.sillyandroid.parsable.LayoutWrapper;
 import me.angrybyte.sillyandroid.parsable.components.ParsableActivity;
 
@@ -34,57 +41,66 @@ import me.angrybyte.sillyandroid.parsable.components.ParsableActivity;
  * The main activity of the demo app, parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseType(Context, Object)}.
  */
 @SuppressWarnings("unused")
-@Annotations.Layout(R.layout.activity_main)
-@Annotations.Menu(R.menu.activity_main)
+@Layout(R.layout.activity_main)
+@Menu(R.menu.activity_main)
 public final class MainActivity extends ParsableActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int DIALOG_DEMO = 0xD00001;
 
     // <editor-fold desc="View bindings">
     /**
      * The main layout container. (no, you don't have to do this, it's just an example).
      * Parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
      */
-    @Annotations.FindView(R.id.container_main)
+    @FindView(R.id.container_main)
     private ViewGroup mMainContainer;
 
     /**
      * The main textual display TextView.
      * Parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
      */
-    @Annotations.FindView(R.id.display_text_view)
+    @FindView(R.id.display_text_view)
     private TextView mDisplayView;
 
     /**
      * The "print info" button.
      * Parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
      */
-    @Annotations.Clickable
-    @Annotations.FindView(R.id.button_print_info)
+    @Clickable
+    @FindView(R.id.button_print_info)
     private Button mInfoButton;
 
     /**
      * The "hide keyboard" button.
      * Parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
      */
-    @Annotations.Clickable
-    @Annotations.FindView(R.id.button_hide_keyboard)
+    @Clickable
+    @FindView(R.id.button_hide_keyboard)
     private Button mHideKeyboardButton;
 
     /**
      * The "apply random padding" button.
      * Parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
      */
-    @Annotations.LongClickable
-    @Annotations.FindView(R.id.button_random_padding)
+    @LongClickable
+    @FindView(R.id.button_random_padding)
     private Button mPaddingButton;
 
     /**
      * The keyboard tester input field.
      * Parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
      */
-    @Annotations.FindView(R.id.edit_text_keyboard)
+    @FindView(R.id.edit_text_keyboard)
     private EditText mEditText;
+
+    /**
+     * The managed dialog button.
+     * Parsed using {@link me.angrybyte.sillyandroid.parsable.AnnotationParser#parseFields(Context, Object, LayoutWrapper)}.
+     */
+    @Clickable
+    @FindView(R.id.button_show_dialog)
+    private Button mManagedDialogButton;
     // </editor-fold>
 
     /**
@@ -225,6 +241,32 @@ public final class MainActivity extends ParsableActivity {
     /**
      * {@inheritDoc}
      */
+    @Nullable
+    @Override
+    public Dialog onCreateDialog(final int dialogId, @Nullable final Bundle config) {
+        switch (dialogId) {
+            case DIALOG_DEMO: {
+                // prepare the dialog, don't show it
+                final AlertDialog dialog = new AlertDialog.Builder(this)
+                        .setTitle("A managed dialog")
+                        .setNeutralButton("Yeah, ok", (d, which) -> d.dismiss())
+                        .create();
+                final String message = "Managed dialog, ID = " + Integer.toHexString(DIALOG_DEMO) + "\n"
+                        + "HashCode = " + Integer.toHexString(dialog.hashCode()) + "\n"
+                        + "Config = " + String.valueOf(config) + "\n"
+                        + "Time created = " + new Date().toString();
+                dialog.setMessage(message);
+                // still don't call #show() on the dialog!
+                return dialog;
+            }
+            default:
+                return super.onCreateDialog(dialogId, config);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onClick(final View v) {
         super.onClick(v);
@@ -245,6 +287,10 @@ public final class MainActivity extends ParsableActivity {
                 if (!hideKeyboard()) {
                     toastShort("Failed to hide keyboard, check the log");
                 }
+                break;
+            }
+            case R.id.button_show_dialog: {
+                getDialogManager().showDialog(DIALOG_DEMO);
                 break;
             }
             default: {

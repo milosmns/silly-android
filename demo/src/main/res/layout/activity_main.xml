@@ -62,6 +62,18 @@
             android:textColor="@color/yellow"
             android:textSize="@dimen/text_size_small" />
 
+        <Button
+            android:id="@+id/button_show_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/spacing_normal"
+            android:paddingLeft="@dimen/spacing_normal"
+            android:paddingRight="@dimen/spacing_normal"
+            android:text="@string/label_show_managed_dialog"
+            android:textAllCaps="true"
+            android:textColor="@color/green"
+            android:textSize="@dimen/text_size_normal" />
+
     </LinearLayout>
 
 </ScrollView>

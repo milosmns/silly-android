@@ -415,6 +415,14 @@ public class EasyFragment extends Fragment implements LayoutWrapper, SillyAndroi
 
     // <editor-fold desc="DialogManager Integration">
 
+    /**
+     * Available after {@code #onCreateView()}.
+     */
+    @NonNull
+    protected DialogManager getDialogManager() {
+        return mDialogManager;
+    }
+
     @Nullable
     @Override
     @CallSuper
