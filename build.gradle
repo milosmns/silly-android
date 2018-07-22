@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.1.3'
         classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1' // JaCoCo Android tests
     }
 }
@@ -13,7 +13,6 @@ buildscript {
 plugins {
     id "com.github.dcendents.android-maven" version "1.5" // used for uploading to mavenCentral
     id "com.jfrog.bintray" version "1.8.0" // used for uploading to jCenter
-    // id "me.tatarka.retrolambda" version "3.6.0" // allowing Lambdas on Java 7 and older
 }
 
 allprojects {
@@ -26,8 +25,8 @@ allprojects {
 
 ext {
     // If changed, commit and merge to 'release' branch to auto-deploy. Only tagged commits on release branch will be deployed
-    VERSION_CODE = 120
-    VERSION_NAME = "1.2.0"
+    VERSION_CODE = 130
+    VERSION_NAME = "1.3.0"
 
     // don't forget to update CI config in: '.travis.yml'
     BUILD_TOOLS = "27.0.3"
