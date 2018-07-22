@@ -116,6 +116,7 @@ public class ParsableFragment extends EasyFragment implements View.OnClickListen
                     return SillyAndroid.findViewById(contentView, viewId);
                 }
             });
+            return contentView;
         }
 
         return superView; // nothing worked, go super.
