@@ -184,6 +184,12 @@ Automatic View finding and injections for _Parsable_ components:
         private Button mLongClickableButton;
     }
 ```
+[Google Guava-like verification](https://github.com/google/guava/wiki/PreconditionsExplained) with `Preconditions` class:
+```java
+    void saveResource(@NonNull final String resource) {
+        mResource = Preconditions.checkNotNull(resource); // crashes if resource is null
+    }
+```
 
 Setup
 -----
